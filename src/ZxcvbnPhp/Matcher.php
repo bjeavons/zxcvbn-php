@@ -12,7 +12,7 @@ class Matcher {
   protected static function getMatchers() {
     // @todo
     return array(
-      'Zxcvbn\Matchers\Digit',
+      'ZxcvbnPhp\Matchers\Digit',
     );
   }
 

@@ -22,8 +22,10 @@ class Zxcvbn {
    */
   public static function passwordStrength($password, array $userInputs = array()) {
 
+    $timeStart = microtime(TRUE);
     if (strlen($password) === 0) {
-      return self::result($password, 0, array(), 0, 0);
+      $timeStop = microtime(TRUE) - $timeStart;
+      return self::result($password, 0, array(), 0, 0, array('calc_time' => $timeStop));
     }
 
     // Get matches for $password
@@ -36,25 +38,31 @@ class Zxcvbn {
     $crackTime = Scorer::crackTime($entropy);
     $score = Scorer::score($crackTime);
 
-    return self::result($password, $entropy, $bestMatches, $crackTime, $score);
+    $timeStop = microtime(TRUE) - $timeStart;
+    return self::result($password, $entropy, $bestMatches, $crackTime, $score, array('calc_time' => $timeStop));
   }
 
   /**
-   * @param $password
-   * @param $entropy
-   * @param $matches
-   * @param $crackTime
-   * @param $score
+   * Result array.
+   *
+   * @param string $password
+   * @param float $entropy
+   * @param array $matches
+   * @param float $crackTime
+   * @param int $score
+   * @param array $params
+   *
    * @return array
    */
-  protected static function result($password, $entropy, $matches, $crackTime, $score) {
-    return array(
+  protected static function result($password, $entropy, $matches, $crackTime, $score, $params = array()) {
+    $r = array(
       'password'       => $password,
       'entropy'        => $entropy,
       'match_sequence' => $matches,
       'crack_time'     => $crackTime,
       'score'          => $score
     );
+    return array_merge($r, $params);
   }
 
 }
