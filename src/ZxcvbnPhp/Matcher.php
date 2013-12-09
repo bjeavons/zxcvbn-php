@@ -38,7 +38,10 @@ class Matcher
         $matches = array();
         foreach (self::getMatchers() as $matcher) {
             if (method_exists($matcher, 'match')) {
-                $matches = array_merge($matches, $matcher::match($password));
+                $matched = $matcher::match($password);
+                if (is_array($matched) && !empty($matched)) {
+                    $matches = array_merge($matches, $matched);
+                }
             }
         }
         return $matches;

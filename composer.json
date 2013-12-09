@@ -1,14 +1,14 @@
 {
     "name": "bjeavons/Zxcvbn-PHP",
     "type": "library",
-    "description": ".",
-    "keywords": [""],
-    "homepage": "",
+    "description": "PHP implementation of the Zxcvbn password strength estimator",
+    "keywords": ["zxcvbn","password"],
+    "homepage": "https://github.com/bjeavons/zxcvbn-php",
     "license": "GPL-3.0",
     "authors": [
         {
             "name": "See contributors",
-            "homepage": ""
+            "homepage": "https://github.com/bjeavons/zxcvbn-php"
         }
     ],
     "require": {
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Zxcvbn": "src/"
+            "ZxcvbnPhp": "src/"
         }
     }
 }

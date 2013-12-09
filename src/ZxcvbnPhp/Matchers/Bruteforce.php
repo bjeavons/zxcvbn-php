@@ -1,7 +1,17 @@
 <?php
 
+/**
+ *
+ */
+
 namespace ZxcvbnPhp\Matchers;
 
+/**
+ * Class Bruteforce
+ * @package ZxcvbnPhp\Matchers
+ *
+ * Intentionally not named with Match suffix to prevent autoloading from Matcher.
+ */
 class Bruteforce extends Match
 {
 
