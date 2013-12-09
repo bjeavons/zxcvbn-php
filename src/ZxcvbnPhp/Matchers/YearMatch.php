@@ -2,18 +2,20 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-class Digit extends Match
+class YearMatch extends Match
 {
 
+    const NUM_YEARS = 119;
+
     /**
-     * Match occurences of 3 or more digits in a password
+     * Match occurences of years in a password
      *
      * @copydoc Match::match()
      */
     public static function match($password)
     {
         $matches = array();
-        $captures = parent::findAll($password, "/(\d{3,})/");
+        $captures = parent::findAll($password, "/(19\d\d|200\d|201\d)/");
         foreach ($captures as $capture) {
             $matches[] = new self($password, $capture['begin'], $capture['end'], $capture['token']);
         }
@@ -29,7 +31,7 @@ class Digit extends Match
     public function __construct($password, $begin, $end, $token)
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'digit';
+        $this->pattern = 'year';
     }
 
     /**
@@ -38,7 +40,7 @@ class Digit extends Match
     public function getEntropy()
     {
         if (is_null($this->entropy)) {
-            $this->entropy = $this->log(pow(10, strlen($this->token)));
+            $this->entropy = $this->log(self::NUM_YEARS);
         }
         return $this->entropy;
     }

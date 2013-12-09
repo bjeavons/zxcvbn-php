@@ -29,7 +29,7 @@ class Zxcvbn
             return self::result($password, 0, array(), 0, 0, array('calc_time' => $timeStop));
         }
 
-        // Get matches for $password
+        // Get matches for $password.
         $matches = Matcher::getMatches($password);
 
         // Calcuate minimum entropy and best match sequence.

@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-use ZxcvbnPhp\Matchers\MatchInterface;
-
 abstract class Match implements MatchInterface
 {
 
@@ -117,16 +115,16 @@ abstract class Match implements MatchInterface
         foreach ($chars as $char) {
             $ord = ord($char);
 
-            if ($ord >= 0x30 && $ord <= 0x39) {
+            if ($this->isDigit($ord)) {
                 $digits = 10;
             }
-            elseif ($ord >= 0x41 && $ord <= 0x5a) {
+            elseif ($this->isUpper($ord)) {
                 $upper = 26;
             }
-            elseif ($ord >= 0x61 && $ord <= 0x7a) {
+            elseif ($this->isLower($ord)) {
                 $lower = 26;
             }
-            elseif ($ord <= 0x7f) {
+            elseif ($this->isLower($ord)) {
                 $symbols = 33;
             }
             else {
@@ -135,6 +133,26 @@ abstract class Match implements MatchInterface
         }
         $this->cardinality = $lower + $digits + $upper + $symbols + $unicode;
         return $this->cardinality;
+    }
+
+    protected function isDigit($ord)
+    {
+        return $ord >= 0x30 && $ord <= 0x39;
+    }
+
+    protected function isUpper($ord)
+    {
+        return $ord >= 0x41 && $ord <= 0x5a;
+    }
+
+    protected function isLower($ord)
+    {
+        return $ord >= 0x61 && $ord <= 0x7a;
+    }
+
+    protected function isSymbol($ord)
+    {
+        return $ord <= 0x7f;
     }
 
     /**

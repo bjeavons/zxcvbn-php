@@ -12,9 +12,16 @@ class Matcher
      */
     protected static function getMatchers()
     {
-        // @todo
+        // @todo change to dynamic
         return array(
-            'ZxcvbnPhp\Matchers\Digit',
+            'ZxcvbnPhp\Matchers\DateMatch',
+            'ZxcvbnPhp\Matchers\DigitMatch',
+            'ZxcvbnPhp\Matchers\L33tMatch',
+            'ZxcvbnPhp\Matchers\RepeatMatch',
+            'ZxcvbnPhp\Matchers\SequenceMatch',
+            'ZxcvbnPhp\Matchers\SpatialMatch',
+            'ZxcvbnPhp\Matchers\YearMatch',
+            //'ZxcvbnPhp\Matchers\DictionaryMatch',
         );
     }
 
@@ -30,7 +37,9 @@ class Matcher
     {
         $matches = array();
         foreach (self::getMatchers() as $matcher) {
-            $matches = array_merge($matches, $matcher::match($password));
+            if (method_exists($matcher, 'match')) {
+                $matches = array_merge($matches, $matcher::match($password));
+            }
         }
         return $matches;
     }
