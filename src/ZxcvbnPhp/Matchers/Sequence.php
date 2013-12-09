@@ -4,73 +4,28 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Matchers\Match;
 
-class Sequence extends Matcher {
+class Sequence extends Match {
 
-  protected function matchPattern($pattern) {
-    return $pattern;
-  }
+  /**
+   * @var
+   */
 
-  public function match($password) {
-    $groups = $this->group($password);
-    $result = array();
-    $i = 0;
-    foreach ( $groups as $i => $group )
-    {
-      $group = str_split($group);
-      $char = $group[0];
-      $length = count($group);
-
-      if ( $length > 2 )
-      {
-        $j = $i + $length - 1;
-
-        $pattern = array(
-          'pattern' => 'repeat',
-          'i' => $i,
-          'j' => $j,
-          'token' => substr( $password, $i, $j + 1 ),
-          'repeated_char' => $char,
-        );
-        $result[] = $this->matchPattern($pattern);
-      };
-
-      $i += $length;
-    };
-    return $result;
-  }
-
-  public function entropy($match) {
+  public static function match($password) {
 
   }
 
   /**
-   * Group by characters
-   *
    * @param $password
-   * @return array
+   * @param $begin
+   * @param $end
+   * @param $token
    */
-  protected function group($password) {
-    $grouped = array();
+  public function __construct($password, $begin, $end, $token, $char) {
+    parent::__construct($password, $begin, $end, $token);
+    $this->pattern = 'sequence';
+  }
 
-    $password_chars = str_split( $password );
+  public function entropy() {
 
-    $prev_char = NULL;
-    $index = NULL;
-
-    foreach ( $password_chars as $char )
-    {
-      if ( $prev_char === $char )
-      {
-        $grouped[$index] .= $char;
-      }
-      else
-      {
-        $index = ( is_null( $index ) ? 0 : $index + 1 );
-
-        $grouped[$index] = $char;
-      };
-    };
-
-    return $grouped;
   }
 }

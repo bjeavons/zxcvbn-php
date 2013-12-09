@@ -2,7 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-interface MatchInterface {
+interface MatchInterface
+{
 
   public static function match($password);
 

@@ -2,7 +2,8 @@
 
 namespace ZxcvbnPhp;
 
-class Scorer {
+class Scorer
+{
 
   # ------------------------------------------------------------------------------
 # threat model -- stolen hash catastrophe scenario -----------------------------
@@ -19,41 +20,39 @@ class Scorer {
   # (usually a guess would take longer -- this assumes fast hardware and a small work factor.)
   # adjust for your site accordingly if you use another hash function, possibly by
   # several orders of magnitude!
-  const SINGLE_GUESS = 0.010;
-  const NUM_ATTACKERS = 100; // number of cores guessing in parallel.
+    const SINGLE_GUESS = 0.010;
+    const NUM_ATTACKERS = 100; // number of cores guessing in parallel.
 
-  /**
-   * Return average time to crack based on entropy.
-   *
-   * @param $entropy
-   * @return float
-   */
-  public static function crackTime($entropy) {
-    return (0.5 * pow(2, $entropy)) * (Scorer::SINGLE_GUESS / Scorer::NUM_ATTACKERS);
-  }
-
-  /**
-   * @param $seconds
-   * @return int
-   */
-  public static function score($seconds) {
-    if ($seconds < pow(10, 2)) {
-      return 0;
+    /**
+    * Return average time to crack based on entropy.
+    *
+    * @param $entropy
+    * @return float
+    */
+    public static function crackTime($entropy)
+    {
+        return (0.5 * pow(2, $entropy)) * (Scorer::SINGLE_GUESS / Scorer::NUM_ATTACKERS);
     }
 
-    if ($seconds < pow(10, 4)) {
-      return 1;
+    /**
+     * @param $seconds
+     * @return int
+     */
+    public static function score($seconds)
+    {
+        if ($seconds < pow(10, 2)) {
+            return 0;
+        }
+        if ($seconds < pow(10, 4)) {
+            return 1;
+        }
+        if ($seconds < pow(10, 6)) {
+            return 2;
+        }
+        if ($seconds < pow(10, 8)) {
+            return 3;
+        }
+        return 4;
     }
-
-    if ($seconds < pow(10, 6)) {
-      return 2;
-    }
-
-    if ($seconds < pow(10, 8)) {
-      return 3;
-    }
-
-    return 4;
-  }
 
 }
