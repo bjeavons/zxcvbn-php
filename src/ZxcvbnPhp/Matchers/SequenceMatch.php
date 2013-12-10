@@ -89,9 +89,9 @@ class SequenceMatch extends Match
         parent::__construct($password, $begin, $end, $token);
         $this->pattern = 'sequence';
         if (!empty($params)) {
-            $this->sequenceName = isset($params['sequenceName']) ?: $params['sequenceName'];
-            $this->sequenceSpace = isset($params['sequenceSpace']) ?: $params['sequenceSpace'];
-            $this->ascending = isset($params['ascending']) ?: $params['ascending'];
+            $this->sequenceName = isset($params['sequenceName']) ? $params['sequenceName'] : null;
+            $this->sequenceSpace = isset($params['sequenceSpace']) ? $params['sequenceSpace'] : null;
+            $this->ascending = isset($params['ascending']) ? $params['ascending'] : null;
         }
     }
 
