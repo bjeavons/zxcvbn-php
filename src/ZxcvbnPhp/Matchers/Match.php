@@ -38,7 +38,7 @@ abstract class Match implements MatchInterface
     /**
      * @var
      */
-    protected $cardinality;
+    public $cardinality;
 
     /**
      * @param $password
@@ -164,5 +164,31 @@ abstract class Match implements MatchInterface
     protected function log($number)
     {
         return log($number, 2);
+    }
+
+    /**
+     * Calculate binomial coefficient (n choose k).
+     *
+     * http://www.php.net/manual/en/ref.math.php#57895
+     *
+     * @param $n
+     * @param $k
+     * @return int
+     */
+    protected function binom($n, $k) {
+        $j = $res = 1;
+
+        if($k < 0 || $k > $n) {
+            return 0;
+        }
+        if(($n - $k) < $k) {
+            $k = $n - $k;
+        }
+        while($j <= $k) {
+            $res *= $n--;
+            $res /= $j++;
+        }
+
+        return $res;
     }
 }
