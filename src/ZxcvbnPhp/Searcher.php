@@ -8,17 +8,22 @@ class Searcher
 {
 
     /**
-     * Find best match sequence and minimum entropy for a password and its matches.
+     * @var
+     */
+    public $matchSequence;
+
+    /**
+     * Calculate the minimum entropy for a password and its matches.
      *
      * @param string $password
      *   Password.
      * @param array $matches
      *   Array of Match objects on the password.
      *
-     * @return array
-     *   Minimum entropy float and array of non-overlapping best matches.
+     * @return float
+     *   Minimum entropy for non-overlapping best matches of a password.
      */
-    public static function getMinimumEntropyMatchSequence($password, $matches)
+    public function getMinimumEntropy($password, $matches)
     {
         $passwordLength = strlen($password);
         $entropyStack = array();
@@ -30,7 +35,7 @@ class Searcher
 
         foreach (range(0, $passwordLength - 1) as $k ) {
             // starting scenario to try and beat: adding a brute-force character to the minimum entropy sequence at k-1.
-            $entropyStack[$k] = self::prevValue($entropyStack, $k) + $charEntropy;
+            $entropyStack[$k] = $this->prevValue($entropyStack, $k) + $charEntropy;
             $backpointers[$k] = null;
             foreach ($matches as $match) {
                 if (!isset($match->begin) || $match->end != $k ) {
@@ -39,7 +44,7 @@ class Searcher
 
                 // See if entropy prior to match + entropy of this match is less than
                 // the current minimum top of the stack.
-                $candidateEntropy = self::prevValue($entropyStack, $match->begin) + $match->getEntropy();
+                $candidateEntropy = $this->prevValue($entropyStack, $match->begin) + $match->getEntropy();
                 if ($candidateEntropy <= $entropyStack[$k]) {
                     $entropyStack[$k] = $candidateEntropy;
                     $backpointers[$k] = $match;
@@ -69,7 +74,7 @@ class Searcher
         // Handle subtrings that weren't matched as bruteforce match.
         foreach ($matchSequence as $match) {
             if ($match->begin - $s > 0) {
-                $matchSequenceCopy[] = self::makeBruteforceMatch($password, $s, $match->begin - 1);
+                $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $match->begin - 1);
             };
 
             $s = $match->end + 1;
@@ -77,13 +82,13 @@ class Searcher
         }
 
         if ($s < $passwordLength) {
-            $matchSequenceCopy[] = self::makeBruteforceMatch($password, $s, $passwordLength - 1);
+            $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $passwordLength - 1);
         }
 
-        $matchSequence = $matchSequenceCopy;
+        $this->matchSequence = $matchSequenceCopy;
         $minEntropy = $entropyStack[$passwordLength - 1];
 
-        return array($minEntropy, $matchSequence);
+        return $minEntropy;
     }
 
     /**
@@ -96,7 +101,7 @@ class Searcher
      *
      * @return mixed
      */
-    protected static function prevValue($array, $index)
+    protected function prevValue($array, $index)
     {
         $index = $index - 1;
         return ($index < 0 || $index >= count($array)) ? 0 : $array[$index];
@@ -111,7 +116,7 @@ class Searcher
      *
      * @return Bruteforce match
      */
-    protected static function makeBruteforceMatch($password, $begin, $end)
+    protected function makeBruteforceMatch($password, $begin, $end)
     {
         $match = new Bruteforce($password, $begin, $end, substr($password, $begin, $end + 1));
         // Set entropy in match.

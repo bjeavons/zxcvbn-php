@@ -15,7 +15,7 @@ class DigitMatch extends Match
         $matches = array();
         $captures = parent::findAll($password, "/(\d{3,})/");
         foreach ($captures as $capture) {
-            $matches[] = new self($password, $capture['begin'], $capture['end'], $capture['token']);
+            $matches[] = new static($password, $capture['begin'], $capture['end'], $capture['token']);
         }
         return $matches;
     }

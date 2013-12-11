@@ -22,7 +22,7 @@ class Bruteforce extends Match
     public static function match($password)
     {
         // Matches entire string.
-        $match = new self($password, 0, strlen($password) - 1, $password);
+        $match = new static($password, 0, strlen($password) - 1, $password);
         return array($match);
     }
 

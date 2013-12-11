@@ -18,7 +18,7 @@ class RepeatMatch extends Match
      */
     public static function match($password)
     {
-        $groups = self::group($password);
+        $groups = static::group($password);
         $matches = array();
 
         $k = 0;
@@ -29,7 +29,7 @@ class RepeatMatch extends Match
             if ($length > 2) {
                 $end = $k + $length - 1;
                 $token = substr($password, $k, $end + 1);
-                $matches[] = new self($password, $k, $end, $token, $char);
+                $matches[] = new static($password, $k, $end, $token, $char);
             }
             $k += $length;
         }

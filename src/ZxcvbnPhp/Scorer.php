@@ -2,31 +2,21 @@
 
 namespace ZxcvbnPhp;
 
-class Scorer
+class Scorer implements ScorerInterface
 {
 
     const SINGLE_GUESS = 0.010; // Lower bound assumption of time to hash based on bcrypt/scrypt/PBKDF2.
     const NUM_ATTACKERS = 100; // Assumed number of cores guessing in parallel.
 
-    /**
-    * Get average time to crack based on entropy.
-    *
-    * @param $entropy
-    * @return float
-    */
-    public static function crackTime($entropy)
-    {
-        return (0.5 * pow(2, $entropy)) * (Scorer::SINGLE_GUESS / Scorer::NUM_ATTACKERS);
-    }
+    protected $crackTime;
 
     /**
-     * Get score based on seconds to crack.
      *
-     * @param $seconds
-     * @return int
      */
-    public static function score($seconds)
+    public function score($entropy)
     {
+        $seconds = $this->calcCrackTime($entropy);
+
         if ($seconds < pow(10, 2)) {
             return 0;
         }
@@ -41,5 +31,28 @@ class Scorer
         }
         return 4;
     }
+
+    /**
+     *
+     */
+    public function getMetrics()
+    {
+        return array(
+            'crack_time' => $this->crackTime
+        );
+    }
+
+    /**
+     * Get average time to crack based on entropy.
+     *
+     * @param $entropy
+     * @return float
+     */
+    protected function calcCrackTime($entropy)
+    {
+        $this->crackTime = (0.5 * pow(2, $entropy)) * (Scorer::SINGLE_GUESS / Scorer::NUM_ATTACKERS);
+        return $this->crackTime;
+    }
+
 
 }

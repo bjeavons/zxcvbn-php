@@ -4,6 +4,27 @@ namespace ZxcvbnPhp;
 
 class Zxcvbn
 {
+    /**
+     * @var
+     */
+    protected $scorer;
+
+    /**
+     * @var
+     */
+    protected $searcher;
+
+    /**
+     * @var
+     */
+    protected $matcher;
+
+    public function __construct()
+    {
+        $this->scorer = new \ZxcvbnPhp\Scorer();
+        $this->searcher = new \ZxcvbnPhp\Searcher();
+        $this->matcher = new \ZxcvbnPhp\Matcher();
+    }
 
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
@@ -18,29 +39,31 @@ class Zxcvbn
      *     password
      *     entropy
      *     match_sequence
-     *     crack_time
      *     score
      */
-    public static function passwordStrength($password, array $userInputs = array())
+    public function passwordStrength($password, array $userInputs = array())
     {
         $timeStart = microtime(TRUE);
         if (strlen($password) === 0) {
             $timeStop = microtime(TRUE) - $timeStart;
-            return self::result($password, 0, array(), 0, 0, array('calc_time' => $timeStop));
+            return $this->result($password, 0, array(), 0, array('calc_time' => $timeStop));
         }
 
         // Get matches for $password.
-        $matches = Matcher::getMatches($password);
+        $matches = $this->matcher->getMatches($password);
 
-        // Calcuate minimum entropy and best match sequence.
-        list($entropy, $bestMatches) = Searcher::getMinimumEntropyMatchSequence($password, $matches);
+        // Calcuate minimum entropy and get best match sequence.
+        $entropy = $this->searcher->getMinimumEntropy($password, $matches);
+        $bestMatches = $this->searcher->matchSequence;
 
-        // Calculate score and crack time.
-        $crackTime = Scorer::crackTime($entropy);
-        $score = Scorer::score($crackTime);
+        // Calculate score and get crack time.
+        $score = $this->scorer->score($entropy);
+        $metrics = $this->scorer->getMetrics();
 
         $timeStop = microtime(TRUE) - $timeStart;
-        return self::result($password, $entropy, $bestMatches, $crackTime, $score, array('calc_time' => $timeStop));
+        // Include metrics and calculation time.
+        $params = array_merge($metrics, array('calc_time' => $timeStop));
+        return $this->result($password, $entropy, $bestMatches, $score, $params);
     }
 
     /**
@@ -49,21 +72,19 @@ class Zxcvbn
      * @param string $password
      * @param float $entropy
      * @param array $matches
-     * @param float $crackTime
      * @param int $score
      * @param array $params
      *
      * @return array
      */
-    protected static function result($password, $entropy, $matches, $crackTime, $score, $params = array()) {
+    protected function result($password, $entropy, $matches, $score, $params = array()) {
         $r = array(
             'password'       => $password,
             'entropy'        => $entropy,
             'match_sequence' => $matches,
-            'crack_time'     => $crackTime,
             'score'          => $score
         );
-        return array_merge($r, $params);
+        return array_merge($params, $r);
     }
 
 }

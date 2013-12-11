@@ -2,15 +2,39 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Matchers\MatchInterface;
+
 class Matcher
 {
+
+    /**
+     * Get matches for a password.
+     *
+     * @param string $password
+     *   Password string to match.
+     * @return array
+     *   Array of Match objects.
+     */
+    public function getMatches($password)
+    {
+        $matches = array();
+        foreach ($this->getMatchers() as $matcher) {
+            if ($matcher instanceof MatchInterface) {
+                $matched = $matcher::match($password);
+                if (is_array($matched) && !empty($matched)) {
+                    $matches = array_merge($matches, $matched);
+                }
+            }
+        }
+        return $matches;
+    }
 
     /**
      * Load available Match objects to match against a password.
      *
      * @return array
      */
-    protected static function getMatchers()
+    protected function getMatchers()
     {
         // @todo change to dynamic
         return array(
@@ -21,29 +45,7 @@ class Matcher
             'ZxcvbnPhp\Matchers\SequenceMatch',
             'ZxcvbnPhp\Matchers\SpatialMatch',
             'ZxcvbnPhp\Matchers\YearMatch',
-            //'ZxcvbnPhp\Matchers\DictionaryMatch',
+            'ZxcvbnPhp\Matchers\DictionaryMatch',
         );
-    }
-
-    /**
-     * Get matches for a password.
-     *
-     * @param string $password
-     *   Password string to match.
-     * @return array
-     *   Array of Match objects.
-     */
-    public static function getMatches($password)
-    {
-        $matches = array();
-        foreach (self::getMatchers() as $matcher) {
-            if (method_exists($matcher, 'match')) {
-                $matched = $matcher::match($password);
-                if (is_array($matched) && !empty($matched)) {
-                    $matches = array_merge($matches, $matched);
-                }
-            }
-        }
-        return $matches;
     }
 }

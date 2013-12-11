@@ -35,17 +35,17 @@ class L33tMatch extends DictionaryMatch
     public static function match($password)
     {
         // Translate l33t password and dictionary match the translated password.
-        $map = self::getSubstitutions($password);
+        $map = static::getSubstitutions($password);
         $indexSubs = array_filter($map);
         if (empty($indexSubs)) {
             return array();
         }
-        $translatedWord = self::translate($password, $map);
+        $translatedWord = static::translate($password, $map);
 
         $matches = array();
-        $dicts = self::getRankedDictionaries();
+        $dicts = static::getRankedDictionaries();
         foreach ($dicts as $name => $dict) {
-            $results = self::dictionaryMatch($translatedWord, $dict);
+            $results = static::dictionaryMatch($translatedWord, $dict);
             foreach ($results as $result) {
                 // Set substituted elements.
                 $result['sub'] = array();
@@ -58,7 +58,7 @@ class L33tMatch extends DictionaryMatch
                 $result['dictionary_name'] = $name;
                 // Replace translated token with orignal password token.
                 $token = substr($password, $result['begin'], $result['end'] - $result['begin'] + 1);
-                $matches[] = new self($password, $result['begin'], $result['end'], $token, $result);
+                $matches[] = new static($password, $result['begin'], $result['end'], $token, $result);
             }
         }
         return $matches;

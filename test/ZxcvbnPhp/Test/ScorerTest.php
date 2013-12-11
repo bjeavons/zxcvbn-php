@@ -7,13 +7,17 @@ use ZxcvbnPhp\Scorer;
 class ScorerTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testCrackTime()
-    {
-        $this->assertEquals(0.0128, Scorer::crackTime(8), 'Crack time incorrect');
-    }
-
     public function testScore()
     {
-        $this->assertEquals(0, Scorer::score(0), 'Score incorrect');
+        $scorer = new Scorer();
+        $this->assertEquals(0, $scorer->score(0), 'Score incorrect');
+    }
+
+    public function testCrackTime()
+    {
+        $scorer = new Scorer();
+        $scorer->score(8);
+        $metrics = $scorer->getMetrics();
+        $this->assertEquals(0.0128, $metrics['crack_time'], 'Crack time incorrect');
     }
 }

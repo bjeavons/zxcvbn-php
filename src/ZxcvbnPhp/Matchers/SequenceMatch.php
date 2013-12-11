@@ -46,14 +46,14 @@ class SequenceMatch extends Match
             if ($pattern && ($pos = strpos($sequences, $pattern)) !== FALSE) {
                 // Match only remainding password characters.
                 $remainder = substr($password, $i);
-                $token = self::intersect($sequences, $remainder, $pos);
+                $token = static::intersect($sequences, $remainder, $pos);
                 if (!empty($token)) {
                     $params = array(
                         'ascending' => true,
-                        'sequenceName' => self::getSequenceName($pos),
-                        'sequenceSpace' => self::getSequenceSpace($pos),
+                        'sequenceName' => static::getSequenceName($pos),
+                        'sequenceSpace' => static::getSequenceSpace($pos),
                     );
-                    $matches[] = new self($password, $i, $i + strlen($token) - 1, $token, $params);
+                    $matches[] = new static($password, $i, $i + strlen($token) - 1, $token, $params);
                     // Skip intersecting characters on next loop.
                     $i += strlen($token) - 1;
                 }
@@ -62,14 +62,14 @@ class SequenceMatch extends Match
             // Search the reverse sequence for pattern.
             elseif ($pattern && ($pos = strpos($revSequences, $pattern)) !== FALSE) {
                 $remainder = substr($password, $i);
-                $token = self::intersect($revSequences, $remainder, $pos);
+                $token = static::intersect($revSequences, $remainder, $pos);
                 if (!empty($token)) {
                     $params = array(
                         'ascending' => false,
-                        'sequenceName' => self::getSequenceName($pos),
-                        'sequenceSpace' => self::getSequenceSpace($pos),
+                        'sequenceName' => static::getSequenceName($pos),
+                        'sequenceSpace' => static::getSequenceSpace($pos),
                     );
-                    $matches[] = new self($password, $i, $i + strlen($token) - 1, $token, $params);
+                    $matches[] = new static($password, $i, $i + strlen($token) - 1, $token, $params);
                     $i += strlen($token) - 1;
                 }
             }
@@ -149,7 +149,7 @@ class SequenceMatch extends Match
      */
     protected static function getSequenceSpace($pos, $reverse = false)
     {
-        $name = self::getSequenceName($pos, $reverse);
+        $name = static::getSequenceName($pos, $reverse);
         switch ($name) {
             case 'lower':
                 return strlen(self::LOWER);

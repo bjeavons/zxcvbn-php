@@ -26,13 +26,16 @@ class SpatialMatch extends Match
      */
     public static function match($password)
     {
+        // @todo
+        return array();
+
         $matches = array();
-        $graphs = self::getAdjacencyGraphs();
+        $graphs = static::getAdjacencyGraphs();
         foreach ($graphs as $name => $graph) {
-            $results = self::graphMatch($password, $graph);
+            $results = static::graphMatch($password, $graph);
             foreach ($results as $result) {
                 $result['graph'] = $name;
-                $matches[] = new self($password, $result['begin'], $result['end'], $result['token'], $result);
+                $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
         return $matches;

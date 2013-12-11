@@ -28,12 +28,12 @@ class DictionaryMatch extends Match
     public static function match($password)
     {
         $matches = array();
-        $dicts = self::getRankedDictionaries();
+        $dicts = static::getRankedDictionaries();
         foreach ($dicts as $name => $dict) {
-            $results = self::dictionaryMatch($password, $dict);
+            $results = static::dictionaryMatch($password, $dict);
             foreach ($results as $result) {
                 $result['dictionary_name'] = $name;
-                $matches[] = new self($password, $result['begin'], $result['end'], $result['token'], $result);
+                $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
         return $matches;
