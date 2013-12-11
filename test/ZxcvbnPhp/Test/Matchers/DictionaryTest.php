@@ -10,18 +10,18 @@ class DictionaryTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'kdncpqw';
         $matches = DictionaryMatch::match($password);
-        $this->assertTrue(empty($matches), "No dictionary matches for '$password'");
+        $this->assertEmpty($matches);
 
         $password = 'password';
         $matches = DictionaryMatch::match($password);
         // 11 matches for "password" in english and password dictionaries.
-        $this->assertEquals(11, count($matches), "Dictionary match found '$password'");
-        $this->assertEquals('pass', $matches[0]->token);
-        $this->assertEquals('passwords', $matches[0]->dictionaryName);
+        $this->assertCount(11, $matches);
+        $this->assertSame('pass', $matches[0]->token, "Token incorrect");
+        $this->assertSame('passwords', $matches[0]->dictionaryName, "Dictionary name incorrect");
 
         $password = '8dll20BEN3lld0';
         $matches = DictionaryMatch::match($password);
-        $this->assertEquals(2, count($matches), "Dictionary match found '$password'");
+        $this->assertCount(2, $matches);
   }
 
     public function testEntropy()

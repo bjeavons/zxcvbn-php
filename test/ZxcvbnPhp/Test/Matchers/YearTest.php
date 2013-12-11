@@ -10,13 +10,13 @@ class YearTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $matches = YearMatch::match($password);
-        $this->assertTrue(empty($matches), "Year does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = '1900';
         $matches = YearMatch::match($password);
-        $this->assertEquals(1, count($matches), "Year does match '$password'");
-        $this->assertEquals($password, $matches[0]->token, "Year matches password");
-        $this->assertEquals($password, $matches[0]->password, "Match password matches password");
+        $this->assertCount(1, $matches);
+        $this->assertSame($password, $matches[0]->token, "Token incorrect");
+        $this->assertSame($password, $matches[0]->password, "Password incorrect");
   }
 
     public function testEntropy()

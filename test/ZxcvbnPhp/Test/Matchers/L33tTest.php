@@ -11,20 +11,20 @@ class L33tTest extends \PHPUnit_Framework_TestCase
         // Test non-translated dictionary word.
         $password = 'pass';
         $matches = L33tMatch::match($password);
-        $this->assertTrue(empty($matches), "L33t deos not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = 'p4ss';
         $matches = L33tMatch::match($password);
-        $this->assertEquals(5, count($matches), "L33t match for '$password'");
+        $this->assertCount(5, $matches);
 
         $password = 'p4ssw0rd';
         $matches = L33tMatch::match($password);
-        $this->assertEquals(11, count($matches), "L33t match for '$password'");
+        $this->assertCount(11, $matches);
 
         // Test translated characters that are not a dictionary word.
         $password = '76+(';
         $matches = L33tMatch::match($password);
-        $this->assertTrue(empty($matches), "L33t deos not match '$password'");
+        $this->assertEmpty($matches);
     }
 
     public function testEntropy()

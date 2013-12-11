@@ -10,23 +10,23 @@ class DigitTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $matches = DigitMatch::match($password);
-        $this->assertTrue(empty($matches), "Digit does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = '123';
         $matches = DigitMatch::match($password);
-        $this->assertEquals(1, count($matches), "Digit does match '$password'");
-        $this->assertEquals($password, $matches[0]->token, "Token matches password");
-        $this->assertEquals($password, $matches[0]->password, "Match password matches password");
+        $this->assertCount(1, $matches);
+        $this->assertSame($password, $matches[0]->token, "Token incorrect");
+        $this->assertSame($password, $matches[0]->password, "Password incorrect");
 
         $password = 'password123';
         $matches = DigitMatch::match($password);
-        $this->assertEquals(1, count($matches), "1 match in '$password'");
-        $this->assertEquals(strpos($password, '1'), $matches[0]->begin, "Beginning token position is correct");
-        $this->assertEquals(strlen($password), $matches[0]->end, "End token position is correct");
+        $this->assertCount(1, $matches);
+        $this->assertEquals(strpos($password, '1'), $matches[0]->begin);
+        $this->assertEquals(strlen($password), $matches[0]->end);
 
         $password = '123 456546';
         $matches = DigitMatch::match($password);
-        $this->assertEquals(2, count($matches), "2 matches in '$password'");
+        $this->assertCount(2, $matches);
   }
 
     public function testEntropy()

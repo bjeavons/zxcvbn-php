@@ -10,29 +10,29 @@ class RepeatTest extends \PHPUnit_Framework_TestCase
     {
         $password = '123';
         $matches = RepeatMatch::match($password);
-        $this->assertTrue(empty($matches), "Repeat does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = 'aa';
         $matches = RepeatMatch::match($password);
-        $this->assertTrue(empty($matches), "Repeat does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = 'aaa';
         $matches = RepeatMatch::match($password);
-        $this->assertEquals(1, count($matches), "Repeat does match '$password'");
-        $this->assertEquals('aaa', $matches[0]->token, "Repeat matched 'aaa'");
-        $this->assertEquals('a', $matches[0]->repeatedChar, "Repeat repeated char is 'a'");
+        $this->assertCount(1, $matches);
+        $this->assertEquals('aaa', $matches[0]->token, "Token incorrect");
+        $this->assertEquals('a', $matches[0]->repeatedChar, "Repeated character incorrect");
 
         $password = 'aaa1bbb';
         $matches = RepeatMatch::match($password);
-        $this->assertEquals(2, count($matches), "Repeat does match '$password'");
-        $this->assertEquals('bbb', $matches[1]->token, "Repeat matched 'bbb'");
-        $this->assertEquals('b', $matches[1]->repeatedChar, "Repeat repeated char is 'b'");
+        $this->assertCount(2, $matches);
+        $this->assertEquals('bbb', $matches[1]->token, "Token incorrect");
+        $this->assertEquals('b', $matches[1]->repeatedChar, "Repeated character incorrect");
 
         $password = 'taaaaaa';
         $matches = RepeatMatch::match($password);
-        $this->assertEquals(1, count($matches), "Repeat does match '$password'");
-        $this->assertEquals('aaaaaa', $matches[0]->token, "Repeat matched token");
-        $this->assertEquals('a', $matches[0]->repeatedChar, "Repeat repeated char is 'a'");
+        $this->assertCount(1, $matches);
+        $this->assertSame('aaaaaa', $matches[0]->token, "Token incorrect");
+        $this->assertSame('a', $matches[0]->repeatedChar, "Repeated character incorrect");
     }
 
     public function testEntropy()

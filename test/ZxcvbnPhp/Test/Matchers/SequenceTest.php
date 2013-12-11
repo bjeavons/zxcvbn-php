@@ -10,33 +10,33 @@ class SequenceTest extends \PHPUnit_Framework_TestCase
     {
         $password = 'password';
         $matches = SequenceMatch::match($password);
-        $this->assertTrue(empty($matches), "Sequence does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = '12ab78UV';
         $matches = SequenceMatch::match($password);
-        $this->assertTrue(empty($matches), "Sequence does not match '$password'");
+        $this->assertEmpty($matches);
 
         $password = '12345';
         $matches = SequenceMatch::match($password);
-        $this->assertEquals(1, count($matches), "Sequence does match '$password'");
-        $this->assertEquals($password, $matches[0]->token, "Token matches password");
-        $this->assertEquals($password, $matches[0]->password, "Match password matches password");
+        $this->assertCount(1, $matches);
+        $this->assertSame($password, $matches[0]->token, "Token incorrect");
+        $this->assertSame($password, $matches[0]->password, "Password incorrect");
 
         $password = 'ZYX';
         $matches = SequenceMatch::match($password);
-        $this->assertEquals(1, count($matches), "Sequence does match '$password'");
-        $this->assertEquals($password, $matches[0]->token, "Token matches password");
-        $this->assertEquals($password, $matches[0]->password, "Match password matches password");
+        $this->assertCount(1, $matches);
+        $this->assertSame($password, $matches[0]->token, "Token incorrect");
+        $this->assertSame($password, $matches[0]->password, "Password incorrect");
 
         $password = 'pass123wordZYX';
         $matches = SequenceMatch::match($password);
-        $this->assertEquals(2, count($matches), "Found 2 sequences in '$password'");
-        $this->assertEquals('123', $matches[0]->token, "First token is correct");
-        $this->assertEquals('ZYX', $matches[1]->token, "Second token is correct");
+        $this->assertCount(2, $matches);
+        $this->assertSame('123', $matches[0]->token, "First match token incorrect");
+        $this->assertSame('ZYX', $matches[1]->token, "Second match token incorrect");
 
         $password = 'wordZYX ';
         $matches = SequenceMatch::match($password);
-        $this->assertEquals('ZYX', $matches[0]->token, "First token is correct");
+        $this->assertEquals('ZYX', $matches[0]->token, "First match token incorrect");
     }
 
     public function testEntropy()
