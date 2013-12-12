@@ -19,11 +19,9 @@ class Matcher
     {
         $matches = array();
         foreach ($this->getMatchers() as $matcher) {
-            if ($matcher instanceof MatchInterface) {
-                $matched = $matcher::match($password);
-                if (is_array($matched) && !empty($matched)) {
-                    $matches = array_merge($matches, $matched);
-                }
+            $matched = $matcher::match($password);
+            if (is_array($matched) && !empty($matched)) {
+                $matches = array_merge($matches, $matched);
             }
         }
         return $matches;
@@ -33,6 +31,7 @@ class Matcher
      * Load available Match objects to match against a password.
      *
      * @return array
+     *   Array of classes implementing MatchInterface
      */
     protected function getMatchers()
     {
