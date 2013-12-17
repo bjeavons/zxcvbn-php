@@ -37,6 +37,7 @@ class Matcher
     {
         // @todo change to dynamic
         return array(
+            'ZxcvbnPhp\Matchers\LengthMatch',
             'ZxcvbnPhp\Matchers\DateMatch',
             'ZxcvbnPhp\Matchers\DigitMatch',
             'ZxcvbnPhp\Matchers\L33tMatch',
