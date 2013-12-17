@@ -21,7 +21,7 @@ class SearcherTest extends \PHPUnit_Framework_TestCase
         $password = 'aaa';
         $match = new RepeatMatch($password, 0, 2, 'aaa', 'a');
         $entropy = $searcher->getMinimumEntropy($password, array($match));
-        $this->assertEquals(log(pow(26, 3), 2), $entropy, "Entropy incorrect correct for '$password'");
+        $this->assertEquals(log(26 * 3, 2), $entropy, "Entropy incorrect for '$password'");
         $sequence = $searcher->matchSequence;
         $this->assertSame($match, $sequence[0], "Best match incorrect");
     }

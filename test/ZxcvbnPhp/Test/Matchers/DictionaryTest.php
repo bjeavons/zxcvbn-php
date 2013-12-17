@@ -12,6 +12,10 @@ class DictionaryTest extends \PHPUnit_Framework_TestCase
         $matches = DictionaryMatch::match($password);
         $this->assertEmpty($matches);
 
+        $password = 'jjj';
+        $matches = DictionaryMatch::match($password);
+        $this->assertEmpty($matches);
+
         $password = 'password';
         $matches = DictionaryMatch::match($password);
         // 11 matches for "password" in english and password dictionaries.

@@ -17,5 +17,8 @@ class ZxcvbnTest extends \PHPUnit_Framework_TestCase
         $result = $zxcvbn->passwordStrength("password");
         $this->assertEquals(0, $result['entropy'], "Entropy incorrect");
         $this->assertEquals(0, $result['score'], "Score incorrect");
+
+        $result = $zxcvbn->passwordStrength("jjjjj");
+        $this->assertSame('repeat', $result['match_sequence'][0]->pattern, "Pattern incorrect");
     }
 }

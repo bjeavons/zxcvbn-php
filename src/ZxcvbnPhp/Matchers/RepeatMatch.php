@@ -55,7 +55,7 @@ class RepeatMatch extends Match
     public function getEntropy()
     {
         if (is_null($this->entropy)) {
-           $this->entropy = $this->log(pow($this->getCardinality(), strlen($this->token)));
+           $this->entropy = $this->log($this->getCardinality() * strlen($this->token));
         }
         return $this->entropy;
     }
