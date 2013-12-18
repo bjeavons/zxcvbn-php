@@ -43,9 +43,9 @@ class Zxcvbn
      */
     public function passwordStrength($password, array $userInputs = array())
     {
-        $timeStart = microtime(TRUE);
+        $timeStart = microtime(true);
         if (strlen($password) === 0) {
-            $timeStop = microtime(TRUE) - $timeStart;
+            $timeStop = microtime(true) - $timeStart;
             return $this->result($password, 0, array(), 0, array('calc_time' => $timeStop));
         }
 
@@ -60,7 +60,7 @@ class Zxcvbn
         $score = $this->scorer->score($entropy);
         $metrics = $this->scorer->getMetrics();
 
-        $timeStop = microtime(TRUE) - $timeStart;
+        $timeStop = microtime(true) - $timeStart;
         // Include metrics and calculation time.
         $params = array_merge($metrics, array('calc_time' => $timeStop));
         return $this->result($password, $entropy, $bestMatches, $score, $params);

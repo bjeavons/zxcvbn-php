@@ -43,7 +43,7 @@ class SequenceMatch extends Match
                 $pattern = $password[$i] . $password[$i + 1] . $password[$i + 2];
             }
             // Find beginning of pattern and then extract full sequences intersection.
-            if ($pattern && ($pos = strpos($sequences, $pattern)) !== FALSE) {
+            if ($pattern && ($pos = strpos($sequences, $pattern)) !== false) {
                 // Match only remainding password characters.
                 $remainder = substr($password, $i);
                 $token = static::intersect($sequences, $remainder, $pos);
@@ -60,7 +60,7 @@ class SequenceMatch extends Match
 
             }
             // Search the reverse sequence for pattern.
-            elseif ($pattern && ($pos = strpos($revSequences, $pattern)) !== FALSE) {
+            elseif ($pattern && ($pos = strpos($revSequences, $pattern)) !== false) {
                 $remainder = substr($password, $i);
                 $token = static::intersect($revSequences, $remainder, $pos);
                 if (!empty($token)) {

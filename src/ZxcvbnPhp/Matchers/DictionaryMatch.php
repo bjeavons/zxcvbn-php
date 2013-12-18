@@ -153,6 +153,6 @@ class DictionaryMatch extends Match
     protected static function getRankedDictionaries()
     {
         $data = file_get_contents(dirname(__FILE__) . '/ranked_frequency_lists.json');
-        return json_decode($data, $assoc = TRUE);
+        return json_decode($data, true);
     }
 }
