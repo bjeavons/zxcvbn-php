@@ -30,10 +30,10 @@ class Searcher
         // for the optimal sequence of matches up to k, holds the final match (match.end == k).
         // null means the sequence ends without a brute-force character.
         $backpointers = array();
-        $bruteforceMatch = new Bruteforce($password, 0, $passwordLength, $password);
+        $bruteforceMatch = new Bruteforce($password, 0, $passwordLength - 1, $password);
         $charEntropy = log($bruteforceMatch->getCardinality(), 2);
 
-        foreach (range(0, $passwordLength - 1) as $k ) {
+        foreach (range(0, $passwordLength - 1) as $k) {
             // starting scenario to try and beat: adding a brute-force character to the minimum entropy sequence at k-1.
             $entropyStack[$k] = $this->prevValue($entropyStack, $k) + $charEntropy;
             $backpointers[$k] = null;
@@ -74,7 +74,7 @@ class Searcher
         // Handle subtrings that weren't matched as bruteforce match.
         foreach ($matchSequence as $match) {
             if ($match->begin - $s > 0) {
-                $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $match->begin - 1);
+                $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $match->begin - 1, $bruteforceMatch->getCardinality());
             };
 
             $s = $match->end + 1;
@@ -82,7 +82,7 @@ class Searcher
         }
 
         if ($s < $passwordLength) {
-            $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $passwordLength - 1);
+            $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $passwordLength - 1, $bruteforceMatch->getCardinality());
         }
 
         $this->matchSequence = $matchSequenceCopy;
@@ -113,12 +113,13 @@ class Searcher
      * @param string $password
      * @param int $begin
      * @param int $end
+     * @param int $cardinality optional
      *
      * @return Bruteforce match
      */
-    protected function makeBruteforceMatch($password, $begin, $end)
+    protected function makeBruteforceMatch($password, $begin, $end, $cardinality = null)
     {
-        $match = new Bruteforce($password, $begin, $end, substr($password, $begin, $end + 1));
+        $match = new Bruteforce($password, $begin, $end, substr($password, $begin, $end + 1), $cardinality);
         // Set entropy in match.
         $match->getEntropy();
         return $match;

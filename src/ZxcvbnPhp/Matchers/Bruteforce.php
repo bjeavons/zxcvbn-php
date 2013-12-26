@@ -31,11 +31,14 @@ class Bruteforce extends Match
      * @param $begin
      * @param $end
      * @param $token
+     * @param $cardinality
      */
-    public function __construct($password, $begin, $end, $token)
+    public function __construct($password, $begin, $end, $token, $cardinality = null)
     {
         parent::__construct($password, $begin, $end, $token);
         $this->pattern = 'bruteforce';
+        // Cardinality can be injected to support full password cardinality instead of token.
+        $this->cardinality = $cardinality;
     }
 
     /**

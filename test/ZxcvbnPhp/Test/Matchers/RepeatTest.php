@@ -40,6 +40,10 @@ class RepeatTest extends \PHPUnit_Framework_TestCase
         $password = 'aaa';
         $matches = RepeatMatch::match($password);
         $this->assertEquals(log(26 * 3, 2), $matches[0]->getEntropy());
+
+        $password = '..................';
+        $matches = RepeatMatch::match($password);
+        $this->assertEquals(log(33 * strlen($password), 2), $matches[0]->getEntropy());
     }
 
 }

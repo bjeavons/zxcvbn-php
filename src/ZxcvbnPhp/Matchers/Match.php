@@ -77,24 +77,52 @@ abstract class Match implements MatchInterface
       * @param string $regex
       *   Regular expression with captures.
       * @return array
-      *   Array of captures with named indexes.
+      *   Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
+      *     e.g. fishfish /(fish)/
+      *     array(
+      *       array(
+      *         array('begin' => 0, 'end' => 3, 'token' => 'fish'),
+      *         array('begin' => 0, 'end' => 3, 'token' => 'fish')
+      *       ),
+      *       array(
+      *         array('begin' => 4, 'end' => 7, 'token' => 'fish'),
+      *         array('begin' => 4, 'end' => 7, 'token' => 'fish')
+      *       )
+      *     )
+      *
       */
     public static function findAll($string, $regex)
     {
-        $captures = array();
-        preg_match_all($regex, $string, $matches, PREG_OFFSET_CAPTURE);
+        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER);
+        if (!$count) {
+            return array();
+        }
 
-        if (isset($matches[1])) {
-            foreach ($matches[1] as $capture) {
-                list($token, $begin) = $capture;
+        $pos = 0;
+        $groups = array();
+        foreach ($matches as $group) {
+            $captureBegin = 0;
+            $match = array_shift($group);
+            $matchBegin = strpos($string, $match, $pos);
+            $captures = array(
+                array(
+                    'begin' => $matchBegin,
+                    'end' => $matchBegin + strlen($match) - 1,
+                    'token' => $match,
+                ),
+            );
+            foreach ($group as $capture) {
+                $captureBegin =  strpos($match, $capture, $captureBegin);
                 $captures[] = array(
-                    'begin' => $begin,
-                    'end' => $begin + strlen($token),
-                    'token' => $token,
+                    'begin' => $matchBegin + $captureBegin,
+                    'end' => $matchBegin + $captureBegin + strlen($capture) - 1,
+                    'token' => $capture,
                 );
             }
+            $groups[] = $captures;
+            $pos += strlen($match) - 1;
         }
-        return $captures;
+        return $groups;
     }
 
     /**
@@ -124,7 +152,7 @@ abstract class Match implements MatchInterface
             elseif ($this->isLower($ord)) {
                 $lower = 26;
             }
-            elseif ($this->isLower($ord)) {
+            elseif ($this->isSymbol($ord)) {
                 $symbols = 33;
             }
             else {

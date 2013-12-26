@@ -21,8 +21,9 @@ class DigitTest extends \PHPUnit_Framework_TestCase
         $password = 'password123';
         $matches = DigitMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertEquals(strpos($password, '1'), $matches[0]->begin);
-        $this->assertEquals(strlen($password), $matches[0]->end);
+        $this->assertEquals(strpos($password, '1'), $matches[0]->begin, "Match begin character incorrect");
+        $this->assertEquals(strlen($password) - 1, $matches[0]->end, "Match end character incorrect");
+        $this->assertEquals(3, strlen($matches[0]->token), "Token length incorrect");
 
         $password = '123 456546';
         $matches = DigitMatch::match($password);

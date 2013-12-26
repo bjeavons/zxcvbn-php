@@ -15,9 +15,9 @@ class YearMatch extends Match
     public static function match($password)
     {
         $matches = array();
-        $captures = parent::findAll($password, "/(19\d\d|200\d|201\d)/");
-        foreach ($captures as $capture) {
-            $matches[] = new static($password, $capture['begin'], $capture['end'], $capture['token']);
+        $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/");
+        foreach ($groups as $captures) {
+            $matches[] = new static($password, $captures[1]['begin'], $captures[1]['end'], $captures[1]['token']);
         }
         return $matches;
     }
