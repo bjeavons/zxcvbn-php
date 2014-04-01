@@ -18,6 +18,11 @@ class Zxcvbn
      * @var
      */
     protected $matcher;
+	
+	/**
+     * @var
+     */
+	public static $userInputs = array();
 
     public function __construct()
     {
@@ -48,7 +53,19 @@ class Zxcvbn
             $timeStop = microtime(true) - $timeStart;
             return $this->result($password, 0, array(), 0, array('calc_time' => $timeStop));
         }
-
+		
+		//construct ranked user dictionary
+		if(!empty($userInputs)){
+			$userDict = array();
+			$i=1;
+			foreach($userInputs as $word){
+				$userDict[strtolower($word)] = $i;
+				$i++;
+			}
+			self::$userInputs = $userDict;
+		}
+		
+		
         // Get matches for $password.
         $matches = $this->matcher->getMatches($password);
 

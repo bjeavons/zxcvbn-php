@@ -1,6 +1,7 @@
 <?php
 
 namespace ZxcvbnPhp\Matchers;
+use ZxcvbnPhp\Zxcvbn;
 
 class DictionaryMatch extends Match
 {
@@ -153,6 +154,11 @@ class DictionaryMatch extends Match
     protected static function getRankedDictionaries()
     {
         $data = file_get_contents(dirname(__FILE__) . '/ranked_frequency_lists.json');
-        return json_decode($data, true);
+        $data = json_decode($data, true);
+		
+		if(!empty( Zxcvbn::$userInputs))
+			$data['user_inputs'] = Zxcvbn::$userInputs;
+			
+		return $data;
     }
 }
