@@ -25,10 +25,13 @@ class DictionaryMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $matches = array();
         $dicts = static::getRankedDictionaries();
+        if (!empty($userInputs)) {
+            $dicts['user_inputs'] = $userInputs;
+        }
         foreach ($dicts as $name => $dict) {
             $results = static::dictionaryMatch($password, $dict);
             foreach ($results as $result) {

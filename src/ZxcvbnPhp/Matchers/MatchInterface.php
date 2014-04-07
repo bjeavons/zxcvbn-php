@@ -10,10 +10,15 @@ interface MatchInterface
      *
      * @param string $password
      *   Password to check for match.
+     * @param array $userInputs
+     *   Array of values related to the user (optional).
+     * @code
+     *   array('Alice Smith')
+     * @endcode
      * @return array
      *   Array of Match objects
      */
-    public static function match($password);
+    public static function match($password, array $userInputs = array());
 
     /**
      * Get entropy for this match's token.

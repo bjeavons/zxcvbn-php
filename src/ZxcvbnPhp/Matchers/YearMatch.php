@@ -12,7 +12,7 @@ class YearMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $matches = array();
         $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/");

@@ -10,7 +10,7 @@ class DigitMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $matches = array();
         $groups = static::findAll($password, "/(\d{3,})/");

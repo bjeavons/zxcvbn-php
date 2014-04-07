@@ -32,7 +32,7 @@ class L33tMatch extends DictionaryMatch
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         // Translate l33t password and dictionary match the translated password.
         $map = static::getSubstitutions($password);

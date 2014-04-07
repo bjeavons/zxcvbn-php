@@ -37,7 +37,7 @@ class DateMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $matches = array();
         $dates = static::datesWithoutSeparators($password) + static::datesWithSeparators($password);

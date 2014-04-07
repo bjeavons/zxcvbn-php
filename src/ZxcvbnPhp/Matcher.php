@@ -12,14 +12,19 @@ class Matcher
      *
      * @param string $password
      *   Password string to match.
+     * @param array $userInputs
+     *   Array of values related to the user (optional).
+     * @code
+     *   array('Alice Smith')
+     * @endcode
      * @return array
      *   Array of Match objects.
      */
-    public function getMatches($password)
+    public function getMatches($password, array $userInputs = array())
     {
         $matches = array();
         foreach ($this->getMatchers() as $matcher) {
-            $matched = $matcher::match($password);
+            $matched = $matcher::match($password, $userInputs);
             if (is_array($matched) && !empty($matched)) {
                 $matches = array_merge($matches, $matched);
             }

@@ -16,10 +16,9 @@ class Bruteforce extends Match
 {
 
     /**
-     * @param string $password
-     * @return array
+     * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         // Matches entire string.
         $match = new static($password, 0, strlen($password) - 1, $password);

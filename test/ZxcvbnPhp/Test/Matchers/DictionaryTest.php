@@ -26,6 +26,11 @@ class DictionaryTest extends \PHPUnit_Framework_TestCase
         $password = '8dll20BEN3lld0';
         $matches = DictionaryMatch::match($password);
         $this->assertCount(2, $matches);
+
+        $password = '39Kx9.1x0!3n6';
+        $matches = DictionaryMatch::match($password, array($password));
+        $this->assertCount(1, $matches);
+        $this->assertSame('user_inputs', $matches[0]->dictionaryName, "Dictionary name incorrect");
   }
 
     public function testEntropy()

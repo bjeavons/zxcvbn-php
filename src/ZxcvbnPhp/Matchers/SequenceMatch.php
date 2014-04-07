@@ -25,10 +25,11 @@ class SequenceMatch extends Match
     public $ascending;
 
     /**
-     * @param string $password
-     * @return array|void
+     * Match sequences of three or more characters.
+     *
+     * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $matches = array();
         $passwordLength = strlen($password);

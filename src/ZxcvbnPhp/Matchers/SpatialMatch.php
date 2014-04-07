@@ -49,7 +49,7 @@ class SpatialMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
 
         $matches = array();

@@ -13,10 +13,9 @@ class RepeatMatch extends Match
     /**
      * Match 3 or more repeated characters.
      *
-     * @param string $password
-     * @return array
+     * @copydoc Match::match()
      */
-    public static function match($password)
+    public static function match($password, array $userInputs = array())
     {
         $groups = static::group($password);
         $matches = array();

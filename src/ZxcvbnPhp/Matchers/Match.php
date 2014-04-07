@@ -58,10 +58,13 @@ abstract class Match implements MatchInterface
 
     /**
      * @param string $password
+     *   Password to check for match.
+     * @param array $userInputs
+     *   Array of values related to the user (optional).
      * @return array
      *   Array of Match objects
      */
-    public static function match($password) {}
+    public static function match($password, array $userInputs = array()) {}
 
     /**
      * @return float
