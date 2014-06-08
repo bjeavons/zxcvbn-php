@@ -37,6 +37,16 @@ class SequenceTest extends \PHPUnit_Framework_TestCase
         $password = 'wordZYX ';
         $matches = SequenceMatch::match($password);
         $this->assertEquals('ZYX', $matches[0]->token, "First match token incorrect");
+
+        $password = 'XYZ123 ';
+        $matches = SequenceMatch::match($password);
+        $this->assertEquals('XYZ', $matches[0]->token, "First match token incorrect");
+        $this->assertEquals('123', $matches[1]->token, "Second match token incorrect");
+
+        $password = 'abc213456de';
+        $matches = SequenceMatch::match($password);
+        $this->assertEquals('abc', $matches[0]->token, "First match token incorrect");
+        $this->assertEquals('3456', $matches[1]->token, "Second match token incorrect");
     }
 
     public function testEntropy()

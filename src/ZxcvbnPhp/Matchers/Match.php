@@ -57,6 +57,8 @@ abstract class Match implements MatchInterface
     }
 
     /**
+     * Find matches in a password.
+     *
      * @param string $password
      *   Password to check for match.
      * @param array $userInputs
@@ -67,6 +69,8 @@ abstract class Match implements MatchInterface
     public static function match($password, array $userInputs = array()) {}
 
     /**
+     * Calculate entropy for match token of a password.
+     *
      * @return float
      *   Entropy of the matched token in the password.
      */

@@ -39,40 +39,36 @@ class SequenceMatch extends Match
 
         for ($i = 0; $i < $passwordLength; $i++) {
             $pattern = false;
+            $j = $i + 2;
             // Check for sequence sizes of 3 or more.
-            if ($i + 2 < $passwordLength) {
-                $pattern = $password[$i] . $password[$i + 1] . $password[$i + 2];
+            if ($j < $passwordLength) {
+                $pattern = substr($password, $i, 3);
             }
             // Find beginning of pattern and then extract full sequences intersection.
             if ($pattern && ($pos = strpos($sequences, $pattern)) !== false) {
-                // Match only remainding password characters.
-                $remainder = substr($password, $i);
-                $token = static::intersect($sequences, $remainder, $pos);
-                if (!empty($token)) {
-                    $params = array(
-                        'ascending' => true,
-                        'sequenceName' => static::getSequenceName($pos),
-                        'sequenceSpace' => static::getSequenceSpace($pos),
-                    );
-                    $matches[] = new static($password, $i, $i + strlen($token) - 1, $token, $params);
-                    // Skip intersecting characters on next loop.
-                    $i += strlen($token) - 1;
-                }
-
+                // Match only remaining password characters.
+                $remainder = substr($password, $j + 1);
+                $pattern .= static::intersect($sequences, $remainder, $pos + 3);
+                $params = array(
+                    'ascending' => true,
+                    'sequenceName' => static::getSequenceName($pos),
+                    'sequenceSpace' => static::getSequenceSpace($pos),
+                );
+                $matches[] = new static($password, $i, $i + strlen($pattern) - 1, $pattern, $params);
+                // Skip intersecting characters on next loop.
+                $i += strlen($pattern) - 1;
             }
             // Search the reverse sequence for pattern.
             elseif ($pattern && ($pos = strpos($revSequences, $pattern)) !== false) {
-                $remainder = substr($password, $i);
-                $token = static::intersect($revSequences, $remainder, $pos);
-                if (!empty($token)) {
-                    $params = array(
-                        'ascending' => false,
-                        'sequenceName' => static::getSequenceName($pos),
-                        'sequenceSpace' => static::getSequenceSpace($pos),
-                    );
-                    $matches[] = new static($password, $i, $i + strlen($token) - 1, $token, $params);
-                    $i += strlen($token) - 1;
-                }
+                $remainder = substr($password, $j + 1);
+                $pattern .= static::intersect($revSequences, $remainder, $pos + 3);
+                $params = array(
+                    'ascending' => false,
+                    'sequenceName' => static::getSequenceName($pos),
+                    'sequenceSpace' => static::getSequenceSpace($pos),
+                );
+                $matches[] = new static($password, $i, $i + strlen($pattern) - 1, $pattern, $params);
+                $i += strlen($pattern) - 1;
             }
         }
         return $matches;
@@ -97,7 +93,7 @@ class SequenceMatch extends Match
     }
 
     /**
-     *
+     * @copydoc Match::getEntropy()
      */
     public function getEntropy()
     {
@@ -127,6 +123,8 @@ class SequenceMatch extends Match
     }
 
     /**
+     * Find sub-string intersection in a string.
+     *
      * @param string $string
      * @param string $subString
      * @param int $start
@@ -136,7 +134,14 @@ class SequenceMatch extends Match
     protected static function intersect($string, $subString, $start) {
         $cut = str_split(substr($string, $start, strlen($subString)));
         $comp = str_split($subString);
-        $intersect = array_intersect($comp, $cut);
+        foreach ($cut as $i => $c) {
+            if ($comp[$i] === $c) {
+                $intersect[] = $c;
+            }
+            else {
+                break; // Stop loop since intersection ends.
+            }
+        }
         if (!empty($intersect)) {
             return implode('', $intersect);
         }
@@ -162,8 +167,11 @@ class SequenceMatch extends Match
     }
 
     /**
-     * @param $pos
+     * Name of sequence a sequences position belongs to.
+     *
+     * @param int $pos
      * @param bool $reverse
+     * @return string
      */
     protected static function getSequenceName($pos, $reverse = false)
     {

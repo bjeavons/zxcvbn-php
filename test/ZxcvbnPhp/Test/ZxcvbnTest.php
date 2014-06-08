@@ -21,8 +21,12 @@ class ZxcvbnTest extends \PHPUnit_Framework_TestCase
         $result = $zxcvbn->passwordStrength("jjjjj");
         $this->assertSame('repeat', $result['match_sequence'][0]->pattern, "Pattern incorrect");
 
-        /*$password = '123abcdefgh334123abcdefgh334123abcdefgh334';
+        $password = 'abc213456de';
         $result = $zxcvbn->passwordStrength($password);
-        $this->assertEquals(4, $result['score'], "Score incorrect");*/
+        $this->assertEquals(1, $result['score'], "Score incorrect");
+
+        $password = '123abcdefgh334123abcdefgh334123abcdefgh334';
+        $result = $zxcvbn->passwordStrength($password);
+        $this->assertEquals(4, $result['score'], "Score incorrect");
     }
 }
