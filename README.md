@@ -29,7 +29,7 @@ require_once 'vendor/autoload.php';
 use ZxcvbnPhp\Zxcvbn;
 
 $zxcvbn = new Zxcvbn();
-$strength = $zxcvbn->passwordStrength('password);
+$strength = $zxcvbn->passwordStrength('password');
 echo $strength['score'];
 ```
 
