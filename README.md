@@ -32,7 +32,18 @@ use ZxcvbnPhp\Zxcvbn;
 
 $zxcvbn = new Zxcvbn();
 $strength = $zxcvbn->passwordStrength('password');
-echo $strength['score'];
+```
+
+```php
+use ZxcvbnPhp\Zxcvbn;
+
+$userData = array(
+    'Marco' => 1,
+    'marco@gmail.com' => 2,
+);
+
+$zxcvbn = new Zxcvbn();
+$strength = $zxcvbn->passwordStrength('password', $userData);
 ```
 
 ### Acknowledgements
