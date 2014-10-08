@@ -30,7 +30,11 @@ class DictionaryMatch extends Match
         $matches = array();
         $dicts = static::getRankedDictionaries();
         if (!empty($userInputs)) {
-            $dicts['user_inputs'] = $userInputs;
+            $dicts['user_inputs'] = array();
+            foreach ($userInputs as $rank => $input) {
+                $input_lower = strtolower($input);
+                $dicts['user_inputs'][$input_lower] = $rank;
+            }
         }
         foreach ($dicts as $name => $dict) {
             $results = static::dictionaryMatch($password, $dict);

@@ -30,8 +30,13 @@ require_once 'vendor/autoload.php';
 ```php
 use ZxcvbnPhp\Zxcvbn;
 
+$userData = array(
+  'Marco',
+  'marco@example.com'
+);
+
 $zxcvbn = new Zxcvbn();
-$strength = $zxcvbn->passwordStrength('password');
+$strength = $zxcvbn->passwordStrength('password', $userData);
 echo $strength['score'];
 ```
 
