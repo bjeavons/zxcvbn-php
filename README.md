@@ -38,6 +38,11 @@ $userData = array(
 $zxcvbn = new Zxcvbn();
 $strength = $zxcvbn->passwordStrength('password', $userData);
 echo $strength['score'];
+// will print 0
+
+$strength = $zxcvbn->passwordStrength('correct horse battery staple');
+echo $strength['score'];
+// will print 4
 ```
 
 ### Acknowledgements
