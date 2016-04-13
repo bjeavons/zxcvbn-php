@@ -52,7 +52,7 @@ class Zxcvbn
         // Get matches for $password.
         $matches = $this->matcher->getMatches($password, $userInputs);
 
-        // Calcuate minimum entropy and get best match sequence.
+        // Calculate minimum entropy and get best match sequence.
         $entropy = $this->searcher->getMinimumEntropy($password, $matches);
         $bestMatches = $this->searcher->matchSequence;
 
