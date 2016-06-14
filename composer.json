@@ -19,7 +19,7 @@
         "satooshi/php-coveralls": "*"
     },
     "autoload": {
-        "psr-0": { "ZxcvbnPhp\\": "src/" }
+        "psr-4": { "ZxcvbnPhp\\": "src/" }
     },
     "autoload-dev": {
         "psr-4": { "ZxcvbnPhp\\Test\\": "test/" }
