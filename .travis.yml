@@ -5,7 +5,7 @@ php:
   - 5.3
 
 before_script:
-  - composer install --prefer-dist --dev
+  - composer update --prefer-dist
 
 after_script:
   - php vendor/bin/coveralls -v
