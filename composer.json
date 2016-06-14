@@ -16,12 +16,12 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~3.0",
-			  "satooshi/php-coveralls": "*"
+        "satooshi/php-coveralls": "*"
     },
     "autoload": {
-        "psr-0": {
-            "ZxcvbnPhp": "src/"
-        }
+        "psr-0": { "ZxcvbnPhp\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-0": { "ZxcvbnPhp\\Test\\": "test/ZxvbnPhp/Test" }
     }
 }
-
