@@ -11,7 +11,7 @@
 
     <testsuites>
        <testsuite name="Zxcvbn-PHP">
-         <directory suffix="Test.php">test/ZxcvbnPhp/Test</directory>
+         <directory suffix="Test.php">test/</directory>
        </testsuite>
     </testsuites>
 

@@ -22,6 +22,6 @@
         "psr-0": { "ZxcvbnPhp\\": "src/" }
     },
     "autoload-dev": {
-        "psr-0": { "ZxcvbnPhp\\Test\\": "test/ZxvbnPhp/Test" }
+        "psr-4": { "ZxcvbnPhp\\Test\\": "test/" }
     }
 }
