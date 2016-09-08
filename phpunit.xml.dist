@@ -7,11 +7,11 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="test/bootstrap.php">
+         bootstrap="test/config/bootstrap.php">
 
     <testsuites>
        <testsuite name="Zxcvbn-PHP">
-         <directory suffix="Test.php">test/ZxcvbnPhp/Test</directory>
+         <directory suffix="Test.php">test/</directory>
        </testsuite>
     </testsuites>
 
