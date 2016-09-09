@@ -13,7 +13,7 @@ The library can be installed with [Composer](http://getcomposer.org) by adding i
 ```json
 {
     "require": {
-        "bjeavons/zxcvbn-php": "^0.1"
+        "bjeavons/zxcvbn-php": "^0.2"
     }
 }
 ```
