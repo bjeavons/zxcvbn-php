@@ -32,5 +32,13 @@ class ZxcvbnTest extends \PHPUnit_Framework_TestCase
         $password = '3m8dlD.3Y@example.c0m';
         $result = $zxcvbn->passwordStrength($password, array($password));
         $this->assertEquals(0, $result['score'], "Score incorrect");
+
+        $password = 'bob123';
+        $result = $zxcvbn->passwordStrength($password, ['name' => 'bob']);
+        $this->assertEquals(0, $result['score'], 'Score incorrect');
+
+        $password = 'BrFaF$kMlxKv7sGoyApAr,nS09M-bDgm;OE2kFyiENbzAgZzXs';
+        $result = $zxcvbn->passwordStrength($password, ['B']);
+        $this->assertEquals(4, $result['score'], 'Score incorrect');
     }
 }
