@@ -49,7 +49,7 @@ class L33tMatch extends DictionaryMatch
             foreach ($results as $result) {
                 // Set substituted elements.
                 $result['sub'] = array();
-                $result['sub_display'] = [];
+                $result['sub_display'] = array();
                 foreach ($indexSubs as $i => $t) {
                     $result['sub'][$password[$i]] = $t;
                     $result['sub_display'][] = "$password[$i] -> $t";
