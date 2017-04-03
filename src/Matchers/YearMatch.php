@@ -10,7 +10,6 @@ class YearMatch extends Match
     /**
      * Match occurences of years in a password
      *
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {

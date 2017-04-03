@@ -16,7 +16,6 @@ class Bruteforce extends Match
 {
 
     /**
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {

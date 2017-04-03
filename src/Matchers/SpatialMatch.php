@@ -47,7 +47,6 @@ class SpatialMatch extends Match
     /**
      * Match spatial patterns based on keyboard layouts (e.g. qwerty, dvorak, keypad).
      *
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {

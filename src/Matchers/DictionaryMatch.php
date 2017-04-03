@@ -23,7 +23,6 @@ class DictionaryMatch extends Match
     /**
      * Match occurences of dictionary words in password.
      *
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {
