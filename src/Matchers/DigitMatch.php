@@ -8,7 +8,6 @@ class DigitMatch extends Match
     /**
      * Match occurences of 3 or more digits in a password
      *
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {

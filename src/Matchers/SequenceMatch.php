@@ -27,7 +27,6 @@ class SequenceMatch extends Match
     /**
      * Match sequences of three or more characters.
      *
-     * @copydoc Match::match()
      */
     public static function match($password, array $userInputs = array())
     {
@@ -93,7 +92,6 @@ class SequenceMatch extends Match
     }
 
     /**
-     * @copydoc Match::getEntropy()
      */
     public function getEntropy()
     {
