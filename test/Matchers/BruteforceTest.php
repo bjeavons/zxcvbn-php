@@ -2,9 +2,13 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\Bruteforce;
 
-class BruteforceTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \ZxcvbnPhp\Matchers\Bruteforce
+ */
+class BruteforceTest extends TestCase
 {
     public function testCardinality()
     {
@@ -24,11 +28,11 @@ class BruteforceTest extends \PHPUnit_Framework_TestCase
     public function testEntropy()
     {
         $match = new Bruteforce('99', 0, 1, '99');
-        $this->assertSame(log(pow(10, 2), 2), $match->getEntropy());
+        $this->assertSame(log(10 ** 2, 2), $match->getEntropy());
 
         $password = 'aB1*';
         $match = new Bruteforce($password, 0, 3, $password);
         $this->assertSame(95, $match->getCardinality());
-        $this->assertSame(log(pow(95, 4), 2), $match->getEntropy());
+        $this->assertSame(log(95 ** 4, 2), $match->getEntropy());
     }
 }

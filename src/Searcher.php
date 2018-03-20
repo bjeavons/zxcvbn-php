@@ -6,7 +6,6 @@ use ZxcvbnPhp\Matchers\Bruteforce;
 
 class Searcher
 {
-
     /**
      * @var
      */
@@ -15,21 +14,18 @@ class Searcher
     /**
      * Calculate the minimum entropy for a password and its matches.
      *
-     * @param string $password
-     *   Password.
-     * @param array $matches
-     *   Array of Match objects on the password.
+     * @param string $password Password
+     * @param array  $matches  Array of Match objects on the password
      *
-     * @return float
-     *   Minimum entropy for non-overlapping best matches of a password.
+     * @return float Minimum entropy for non-overlapping best matches of a password
      */
     public function getMinimumEntropy($password, $matches)
     {
         $passwordLength = strlen($password);
-        $entropyStack = array();
+        $entropyStack = [];
         // for the optimal sequence of matches up to k, holds the final match (match.end == k).
         // null means the sequence ends without a brute-force character.
-        $backpointers = array();
+        $backpointers = [];
         $bruteforceMatch = new Bruteforce($password, 0, $passwordLength - 1, $password);
         $charEntropy = log($bruteforceMatch->getCardinality(), 2);
 
@@ -38,7 +34,7 @@ class Searcher
             $entropyStack[$k] = $this->prevValue($entropyStack, $k) + $charEntropy;
             $backpointers[$k] = null;
             foreach ($matches as $match) {
-                if (!isset($match->begin) || $match->end != $k ) {
+                if (!isset($match->begin) || $match->end !== $k) {
                     continue;
                 }
 
@@ -53,7 +49,7 @@ class Searcher
         }
 
         // Walk backwards and decode the best sequence
-        $matchSequence = array();
+        $matchSequence = [];
         $k = $passwordLength - 1;
         while ($k >= 0) {
             $match = $backpointers[$k];
@@ -62,20 +58,19 @@ class Searcher
                 $matchSequence[] = $match;
 
                 $k = $match->begin - 1;
-            }
-            else {
-                $k -= 1;
+            } else {
+                --$k;
             }
         }
         $matchSequence = array_reverse($matchSequence);
 
         $s = 0;
-        $matchSequenceCopy = array();
+        $matchSequenceCopy = [];
         // Handle subtrings that weren't matched as bruteforce match.
         foreach ($matchSequence as $match) {
             if ($match->begin - $s > 0) {
                 $matchSequenceCopy[] = $this->makeBruteforceMatch($password, $s, $match->begin - 1, $bruteforceMatch->getCardinality());
-            };
+            }
 
             $s = $match->end + 1;
             $matchSequenceCopy[] = $match;
@@ -86,24 +81,22 @@ class Searcher
         }
 
         $this->matchSequence = $matchSequenceCopy;
-        $minEntropy = $entropyStack[$passwordLength - 1];
 
-        return $minEntropy;
+        return $entropyStack[$passwordLength - 1];
     }
 
     /**
      * Get previous value in an array if set otherwise 0.
      *
-     * @param array $array
-     *   Array to search.
-     * @param $index
-     *   Index to get previous value from.
+     * @param array $array Array to search
+     * @param $index Index to get previous value from
      *
      * @return mixed
      */
     protected function prevValue($array, $index)
     {
-        $index = $index - 1;
+        --$index;
+
         return ($index < 0 || $index >= count($array)) ? 0 : $array[$index];
     }
 
@@ -111,9 +104,9 @@ class Searcher
      * Make a bruteforce match object for substring of password.
      *
      * @param string $password
-     * @param int $begin
-     * @param int $end
-     * @param int $cardinality optional
+     * @param int    $begin
+     * @param int    $end
+     * @param int    $cardinality optional
      *
      * @return Bruteforce match
      */
@@ -122,6 +115,7 @@ class Searcher
         $match = new Bruteforce($password, $begin, $end, substr($password, $begin, $end + 1), $cardinality);
         // Set entropy in match.
         $match->getEntropy();
+
         return $match;
     }
 }

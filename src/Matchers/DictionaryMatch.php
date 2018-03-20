@@ -4,7 +4,6 @@ namespace ZxcvbnPhp\Matchers;
 
 class DictionaryMatch extends Match
 {
-
     /**
      * @var
      */
@@ -21,16 +20,39 @@ class DictionaryMatch extends Match
     public $matchedWord;
 
     /**
+     * @param $password
+     * @param $begin
+     * @param $end
+     * @param $token
+     * @param array $params
+     */
+    public function __construct($password, $begin, $end, $token, $params = [])
+    {
+        parent::__construct($password, $begin, $end, $token);
+        $this->pattern = 'dictionary';
+        if (!empty($params)) {
+            $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
+            $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
+            $this->rank = isset($params['rank']) ? $params['rank'] : null;
+        }
+    }
+
+    /**
      * Match occurences of dictionary words in password.
      *
      * @copydoc Match::match()
+     *
+     * @param       $password
+     * @param array $userInputs
+     *
+     * @return array
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         $dicts = static::getRankedDictionaries();
         if (!empty($userInputs)) {
-            $dicts['user_inputs'] = array();
+            $dicts['user_inputs'] = [];
             foreach ($userInputs as $rank => $input) {
                 $input_lower = strtolower($input);
                 $dicts['user_inputs'][$input_lower] = $rank;
@@ -43,25 +65,8 @@ class DictionaryMatch extends Match
                 $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
-        return $matches;
-    }
 
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
-     */
-    public function __construct($password, $begin, $end, $token, $params = array())
-    {
-        parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'dictionary';
-        if (!empty($params)) {
-            $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
-            $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
-            $this->rank = isset($params['rank']) ? $params['rank'] : null;
-        }
+        return $matches;
     }
 
     /**
@@ -79,7 +84,7 @@ class DictionaryMatch extends Match
     {
         $token = $this->token;
         // Return if token is all lowercase.
-        if ($token === strtolower($token)){
+        if ($token === strtolower($token)) {
             return 0;
         }
 
@@ -89,7 +94,7 @@ class DictionaryMatch extends Match
         // a capitalized word is the most common capitalization scheme, so it only doubles the search space
         // (uncapitalized + capitalized): 1 extra bit of entropy. allcaps and end-capitalized are common enough to
         // underestimate as 1 extra bit to be safe.
-        foreach (array($startUpper, $endUpper, $allUpper) as $regex) {
+        foreach ([$startUpper, $endUpper, $allUpper] as $regex) {
             if (preg_match($regex, $token)) {
                 return 1;
             }
@@ -105,16 +110,16 @@ class DictionaryMatch extends Match
             $ord = ord($x);
 
             if ($this->isUpper($ord)) {
-                $uLen += 1;
+                ++$uLen;
             }
             if ($this->isLower($ord)) {
-                $lLen += 1;
+                ++$lLen;
             }
         }
 
         $possibilities = 0;
-        foreach (range(0, min($uLen, $lLen ) + 1) as $i) {
-            $possibilities += $this->binom($uLen + $lLen,  $i);
+        foreach (range(0, min($uLen, $lLen) + 1) as $i) {
+            $possibilities += $this->binom($uLen + $lLen, $i);
         }
 
         return $this->log($possibilities);
@@ -124,11 +129,13 @@ class DictionaryMatch extends Match
      * Match password in a dictionary.
      *
      * @param string $password
-     * @param array $dict
+     * @param array  $dict
+     *
+     * @return array
      */
     protected static function dictionaryMatch($password, $dict)
     {
-        $result = array();
+        $result = [];
         $length = strlen($password);
 
         $pw_lower = strtolower($password);
@@ -138,13 +145,13 @@ class DictionaryMatch extends Match
                 $word = substr($pw_lower, $i, $j - $i + 1);
 
                 if (isset($dict[$word])) {
-                    $result[] = array(
+                    $result[] = [
                         'begin' => $i,
                         'end' => $j,
                         'token' => substr($password, $i, $j - $i + 1),
                         'matched_word' => $word,
                         'rank' => $dict[$word],
-                    );
+                    ];
                 }
             }
         }
@@ -159,7 +166,8 @@ class DictionaryMatch extends Match
      */
     protected static function getRankedDictionaries()
     {
-        $data = file_get_contents(dirname(__FILE__) . '/ranked_frequency_lists.json');
+        $data = file_get_contents(__DIR__.'/ranked_frequency_lists.json');
+
         return json_decode($data, true);
     }
 }
