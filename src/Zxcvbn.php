@@ -2,8 +2,18 @@
 
 namespace ZxcvbnPhp;
 
+/**
+ * The main entry point.
+ *
+ * @see  zxcvbn/src/main.coffee
+ */
 class Zxcvbn
 {
+    /**
+     * @var
+     */
+    protected $matcher;
+
     /**
      * @var
      */
@@ -12,18 +22,19 @@ class Zxcvbn
     /**
      * @var
      */
-    protected $searcher;
+    protected $timeEstimator;
 
     /**
      * @var
      */
-    protected $matcher;
+    protected $feedback;
 
     public function __construct()
     {
-        $this->scorer = new \ZxcvbnPhp\Scorer();
-        $this->searcher = new \ZxcvbnPhp\Searcher();
         $this->matcher = new \ZxcvbnPhp\Matcher();
+        $this->scorer = new \ZxcvbnPhp\Scorer();
+        $this->timeEstimator = new \ZxcvbnPhp\TimeEstimator();
+        $this->feedback = new \ZxcvbnPhp\Feedback();
     }
 
     /**
@@ -44,47 +55,33 @@ class Zxcvbn
     public function passwordStrength($password, array $userInputs = array())
     {
         $timeStart = microtime(true);
-        if (strlen($password) === 0) {
-            $timeStop = microtime(true) - $timeStart;
-            return $this->result($password, 0, array(), 0, array('calc_time' => $timeStop));
-        }
+
+        $sanitizedInputs = array_map(
+            function($input) {
+                return strtolower((string) $input);
+            },
+            $userInputs
+        );
 
         // Get matches for $password.
-        $matches = $this->matcher->getMatches($password, $userInputs);
+        // Although the coffeescript upstream sets $sanitizedInputs as a property,
+        // doing this immutably makes more sense and is a bit easier
+        $matches = $this->matcher->getMatches($password, $sanitizedInputs);
 
-        // Calcuate minimum entropy and get best match sequence.
-        $entropy = $this->searcher->getMinimumEntropy($password, $matches);
-        $bestMatches = $this->searcher->matchSequence;
+        // 1.0 rewrite: Although upstream has a single variable for $result,
+        // this is opaque and I'd rather do it a clearer, more transparent way
+        $result = $this->scorer->mostGuessableMatchSequence($password, $matches);
+        $attackTimes = $this->timeEstimates->estimateAttackTimes($result['guesses']);
 
-        // Calculate score and get crack time.
-        $score = $this->scorer->score($entropy);
-        $metrics = $this->scorer->getMetrics();
+        $feedback = $this->feedback->getFeedback($result['score'], $result['sequence']);
 
-        $timeStop = microtime(true) - $timeStart;
-        // Include metrics and calculation time.
-        $params = array_merge($metrics, array('calc_time' => $timeStop));
-        return $this->result($password, $entropy, $bestMatches, $score, $params);
-    }
-
-    /**
-     * Result array.
-     *
-     * @param string $password
-     * @param float $entropy
-     * @param array $matches
-     * @param int $score
-     * @param array $params
-     *
-     * @return array
-     */
-    protected function result($password, $entropy, $matches, $score, $params = array()) {
-        $r = array(
-            'password'       => $password,
-            'entropy'        => $entropy,
-            'match_sequence' => $matches,
-            'score'          => $score
+        return array_merge(
+            $result,
+            $attackTimes,
+            array(
+                'feedback'  => $feedback,
+                'calc_time' => microtime(true) - $timeStart
+            )
         );
-        return array_merge($params, $r);
     }
-
 }
