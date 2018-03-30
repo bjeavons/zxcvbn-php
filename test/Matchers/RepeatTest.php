@@ -4,46 +4,37 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\RepeatMatch;
 
-class RepeatTest extends \PHPUnit_Framework_TestCase
+class RepeatTest extends AbstractMatchTest
 {
-    public function testMatch()
+    public function testEmpty()
     {
-        $password = '123';
-        $matches = RepeatMatch::match($password);
-        $this->assertEmpty($matches);
-
-        $password = 'aa';
-        $matches = RepeatMatch::match($password);
-        $this->assertEmpty($matches);
-
-        $password = 'aaa';
-        $matches = RepeatMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertEquals('aaa', $matches[0]->token, "Token incorrect");
-        $this->assertEquals('a', $matches[0]->repeatedChar, "Repeated character incorrect");
-
-        $password = 'aaa1bbb';
-        $matches = RepeatMatch::match($password);
-        $this->assertCount(2, $matches);
-        $this->assertEquals('bbb', $matches[1]->token, "Token incorrect");
-        $this->assertEquals('b', $matches[1]->repeatedChar, "Repeated character incorrect");
-
-        $password = 'taaaaaa';
-        $matches = RepeatMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame('aaaaaa', $matches[0]->token, "Token incorrect");
-        $this->assertSame('a', $matches[0]->repeatedChar, "Repeated character incorrect");
+        foreach(['', '#'] as $password) {
+            $this->assertEmpty(
+                RepeatMatch::match($password),
+                "doesn't match length-".strlen($password)." repeat patterns"
+            );
+        }
     }
-
-    public function testEntropy()
+    
+    public function testSingleCharacterRepeats()
     {
-        $password = 'aaa';
-        $matches = RepeatMatch::match($password);
-        $this->assertEquals(log(26 * 3, 2), $matches[0]->getEntropy());
+        $prefixes = ['@', 'y4@'];
+        $suffixes = ['u', 'u%7'];
+        $pattern = '&&&&&';
 
-        $password = '..................';
-        $matches = RepeatMatch::match($password);
-        $this->assertEquals(log(33 * strlen($password), 2), $matches[0]->getEntropy());
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as $variant) {
+            list($password, $i, $j) = $variant;
+
+            $this->checkMatches(
+                "matches embedded repeat patterns",
+                RepeatMatch::match($password),
+                'repeat',
+                [$pattern],
+                [[$i, $j]],
+                [
+                    'repeatedChar' => ['&']
+                ]
+            );
+        }
     }
-
 }
