@@ -9,7 +9,7 @@ Planned Changes:
 * Feedback: Added.
   * [ ] Need to flesh out based on upstream. Should be pretty straightforward.
 * Time estimator: added.
-  * [ ] Just need to flesh out `displayTime()` based on upstream. Should be straightforward.
+  * [x] Just need to flesh out `displayTime()` based on upstream. Should be straightforward.
 * Matchers: 
   * The structure here is the same as upstream. :-)
   * Individual matchers might or might not match; the best way to find out is with unit tests.
