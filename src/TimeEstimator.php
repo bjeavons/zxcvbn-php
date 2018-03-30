@@ -99,7 +99,7 @@ class TimeEstimator
             else {
                 return [null, 'centuries'];
             }
-        })();
+        })($seconds);
 
         if ($display_num > 1) {
             $display_str .= "s";
