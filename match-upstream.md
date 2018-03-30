@@ -20,10 +20,10 @@ Planned Changes:
   * Some of the other language ports e.g. https://github.com/rianhunter/zxcvbn-cpp/blob/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp may also be useful references when porting.
 * :question: `ScorerInterface`: In upstream, `scoring.most_guessable_match_sequence` returns a hash with password/guesses/guesses_log10/sequence. Our current `ScorerInterface` has methods for `getScore()` and `getMetrics()`. Our interface is clearly "cleaner", but it might make more sense to just mirror upstream. :neutral_face:
 * [ ] `Searcher`: Once we're done using it as a reference when porting `Scorer`, it should probably be deleted.
-* [ ] Data files: We have 3 files at `src/Matchers/*.json` which at least approximately correspond to their data files. We should copy their `data/` directory verbatim, and lightly modify their `data-scripts/*.py` to output JSON instead of coffee script.
-  * `src/Matchers/adjacency_graphs.json` Based on file size and structure, this looks similar to upstream
-  * `src/Matchers/frequency_lists.json` This is structured similarly, but has different datasets.
-  * `src/Matchers/ranked_frequency_lists.json` upstream builds this dynamically (see `matching.coffee:5`). Given how PHP handles arrays/dicts I'd be surprised if we need this pre-generated.
+* [x] Data files: We have 3 files at `src/Matchers/*.json` which at least approximately correspond to their data files. Their `data/` directory has been copied verbatim, and the `data-scripts/*.py` scripts which were generating coffeescript have been modified to output JSON instead. Some of upstream's `data-scripts` are used to build `data/*.txt` files based on wikipedia/wiktionary/etc exports. Those haven't been copied over; instead, if the upstream data files change, we should recopy the data files.
+  * `src/Matchers/adjacency_graphs.json` This is identical to upstream.
+  * `src/Matchers/frequency_lists.json` This had different datasets, but has now been updated.
+  * [ ] `src/Matchers/ranked_frequency_lists.json` upstream builds this dynamically (see `matching.coffee:5`). Given how PHP handles arrays/dicts I'd be surprised if we need this pre-generated.
 * Documentation:
   * [ ] Add phpdoc @see or @link references to upstream methods
 * Tests
