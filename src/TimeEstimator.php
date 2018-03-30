@@ -67,39 +67,39 @@ class TimeEstimator
         $year = $month * 12;
         $century = $year * 100;
 
-
-        list($display_num, $display_str) = (function($seconds) {
+        $callback = function($seconds) {
             if ($seconds < 1) {
-                return [null, 'less than a second'];
+                return array(null, 'less than a second');
             }
             else if ($seconds < $minute) {
                 $base = round($seconds);
-                return [$base, "$base second"];
+                return array($base, "$base second");
             }
             else if ($seconds < $hour) {
                 $base = round($seconds) / $minute;
-                return [$base, "$base minute"];
+                return array($base, "$base minute");
             }
             else if ($seconds < $day) {
                 $base = round($seconds) / $hour;
-                return [$base, "$base hour"];
+                return array($base, "$base hour");
             }
             else if ($seconds < $month) {
                 $base = round($seconds) / $day;
-                return [$base, "$base day"];
+                return array($base, "$base day");
             }
             else if ($seconds < $year) {
                 $base = round($seconds) / $month;
-                return [$base, "$base month"];
+                return array($base, "$base month");
             }
             else if ($seconds < $century) {
                 $base = round($seconds) / $year;
-                return [$base, "$base year"];
+                return array($base, "$base year");
             }
             else {
-                return [null, 'centuries'];
+                return array(null, 'centuries');
             }
-        })($seconds);
+        };
+        list($display_num, $display_str) = $callback($seconds);
 
         if ($display_num > 1) {
             $display_str .= "s";
