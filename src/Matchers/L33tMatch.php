@@ -81,6 +81,15 @@ class L33tMatch extends DictionaryMatch
         }
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        $feedback = parent::getFeedback($isSoleMatch);
+
+        $feedback['suggestions'][] = "Predictable substitutions like '@' instead of 'a' don't help very much";
+
+        return $feedback;
+    }
+
     /**
      * @return float
      */

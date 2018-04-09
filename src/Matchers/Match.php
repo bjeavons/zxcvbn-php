@@ -77,6 +77,16 @@ abstract class Match implements MatchInterface
     public function getEntropy() {}
 
     /**
+     * Get feedback to a user based on the match.
+     * 
+     * @param  bool $isSoleMatch
+     *   Whether this is the only match in the password
+     * @return array
+     *   Associative array with warning (string) and suggestions (array of strings)
+     */
+    public function getFeedback($isSoleMatch);
+
+    /**
       * Find all occurences of regular expression in a string.
       *
       * @param string $string

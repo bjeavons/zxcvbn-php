@@ -64,6 +64,60 @@ class DictionaryMatch extends Match
         }
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        $startUpper = '/^[A-Z][^A-Z]+$/';
+        $allUpper = '/^[A-Z]+$/';
+
+        $feedback = array(
+            'warning' => $this->getFeedbackWarning($isSoleMatch),
+            'suggestions' => array()
+        );
+
+        if (preg_match($startUpper, $this->token)) {
+            $feedback['suggestions'][] = "Capitalization doesn't help very much";
+        } elseif (preg_match($allUpper, $this->token) && strtolower($this->token) != $this->token) {
+            $feedback['suggestions'][] = "All-uppercase is almost as easy to guess as all-lowercase";
+        }
+
+        return $feedback;
+    }
+
+    public function getFeedbackWarning($isSoleMatch)
+    {
+        switch ($this->dictionaryName) {
+            case 'passwords':
+                if ($isSoleMatch /*and not match.l33t and not match.reversed */ ) { // This will be handled better in PHP because l33t and reverse will be subclasses
+                    if ($this->rank <= 10) {
+                        return 'This is a top-10 common password';
+                    } else if ($this->rank <= 10) {
+                        return 'This is a top-100 common password';
+                    } else {
+                        return 'This is a very common password';
+                    }
+                } else if ($this->guesses_log10 <= 4) { // guesses_log10 isn't a concept yet in PHP-land
+                    return 'This is similar to a commonly used password';
+                }
+                break;
+            case 'english_wikipedia':
+                if ($isSoleMatch) {
+                    return 'A word by itself is easy to guess';
+                }
+                break;
+            case 'surnames':
+            case 'male_names':
+            case 'female_names':
+                if ($isSoleMatch) {
+                    return 'Names and surnames by themselves are easy to guess';
+                } else {
+                    return 'Common names and surnames are easy to guess';
+                }
+                break;
+        }
+
+        return '';
+    }
+
     /**
      * @return float
      */
