@@ -27,7 +27,7 @@ class RepeatMatch extends Match
 
             if ($length > 2) {
                 $end = $k + $length - 1;
-                $token = substr($password, $k, $end + 1);
+                $token = substr($password, $k, $length);
                 $matches[] = new static($password, $k, $end, $token, $char);
             }
             $k += $length;
