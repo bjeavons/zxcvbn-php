@@ -86,4 +86,55 @@ class RepeatTest extends AbstractMatchTest
             ]
         );
     }
+
+    public function testMultiCharacterRepeats()
+    {
+        $this->markTestSkipped('Not yet implemented');
+        
+        $pattern = 'abab';
+        $this->checkMatches(
+            'matches multi-character repeat pattern',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, strlen($pattern) - 1]],
+            [
+                'repeatedChar' => ['ab']
+            ]
+        );
+    }
+
+    public function testGreedyMultiCharacterRepeats()
+    {
+        $this->markTestSkipped('Not yet implemented');
+
+        $pattern = 'aabaab';
+        $this->checkMatches(
+            'matches aabaab as a repeat instead of the aa prefix',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, strlen($pattern) - 1]],
+            [
+                'repeatedChar' => ['aab']
+            ]
+        );
+    }
+
+    public function testFrequentlyRepeatedMultiCharacterRepeats()
+    {
+        $this->markTestSkipped('Not yet implemented');
+
+        $pattern = 'abababab';
+        $this->checkMatches(
+            'identifies ab as repeat string, even though abab is also repeated',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, strlen($pattern) - 1]],
+            [
+                'repeatedChar' => ['ab']
+            ]
+        );
+    }
 }
