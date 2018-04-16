@@ -77,8 +77,8 @@ class AbstractMatchTest extends \PHPUnit_Framework_TestCase
         // throw 'unequal argument lists to check_matches' unless is_equal_len_args
 
         $this->assertEquals(
-            count($matches),
             count($patterns),
+            count($matches),
             $prefix . ": matches.length == ".count($patterns)
         );
 
@@ -89,18 +89,18 @@ class AbstractMatchTest extends \PHPUnit_Framework_TestCase
             list($i, $j) = $ijs[$k];
 
             $this->assertEquals(
-                $match->pattern,
                 $patternName,
+                $match->pattern,
                 "$prefix matches[$k].pattern == '$patternName'"
             );
             $this->assertEquals(
-                [$match->begin, $match->end],
                 [$i, $j],
+                [$match->begin, $match->end],
                 "$prefix matches[$k] should have [i, j] of [$i, $j]"
             );
             $this->assertEquals(
-                $match->token,
                 $pattern,
+                $match->token,
                 "$prefix matches[$k].token == '$pattern'"
             );
 
@@ -108,8 +108,8 @@ class AbstractMatchTest extends \PHPUnit_Framework_TestCase
                 $propMessage = $propList[$k];
                 // prop_msg = "'$prop_msg'" if typeof(prop_msg) == 'string'
                 $this->assertEquals(
-                    $match->$propName,
                     $propList[$k],
+                    $match->$propName,
                     "$prefix matches[$k].$prop_name == $propMessage"
                 );
             }
