@@ -142,15 +142,9 @@ class L33tMatch extends DictionaryMatch
         return $out;
     }
 
-    /**
-     * @param string $password
-     * @return array
-     */
-    protected static function getSubstitutions($password)
+    protected static function getL33tTable()
     {
-        $map = array();
-
-        $l33t = array(
+        return array(
             'a' => array('4', '@'),
             'b' => array('8'),
             'c' => array('(', '{', '[', '<'),
@@ -164,21 +158,17 @@ class L33tMatch extends DictionaryMatch
             'x' => array('%'),
             'z' => array('2'),
         );
-        // Simplified l33t table to reduce duplicates.
-        $l33t = array(
-            'a' => array('4', '@'),
-            'b' => array('8'),
-            'c' => array('(', '{', '[', '<'),
-            'e' => array('3'),
-            'g' => array('6', '9'),
-            'i' => array('1', '!'),
-            'l' => array('|', '7'),
-            'o' => array('0'),
-            's' => array('$', '5'),
-            't' => array('+', '7'),
-            'x' => array('%'),
-            'z' => array('2'),
-        );
+    }
+
+    /**
+     * @param string $password
+     * @return array
+     */
+    protected static function getSubstitutions($password)
+    {
+        $map = array();
+
+        $l33t = static::getL33tTable();
 
         /*$chars = array_unique(str_split($password));
         foreach ($l33t as $letter => $subs) {
@@ -187,6 +177,10 @@ class L33tMatch extends DictionaryMatch
                 $map[] = $relevent_subs;
             }
         }*/
+
+        if (strlen($password) == 0) {
+            return $map;
+        }
 
         foreach (range(0, strlen($password) - 1) as $i) {
             $map[$i] = null;

@@ -105,7 +105,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
             );
 
             foreach ($props as $propName => $propList) {
-                $propMessage = $propList[$k];
+                $propMessage = var_export($propList[$k], true);
                 // prop_msg = "'$prop_msg'" if typeof(prop_msg) == 'string'
                 $this->assertEquals(
                     $propList[$k],
