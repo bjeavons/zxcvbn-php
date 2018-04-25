@@ -18,7 +18,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
      * @param  array  $suffixes
      * @return a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
      */
-    protected function generatePasswords(string $pattern, array $prefixes, array $suffixes)
+    protected function generatePasswords($pattern, $prefixes, $suffixes)
     {
         $output = [];
 
