@@ -45,7 +45,6 @@ class Matcher
         // @todo change to dynamic
         return array(
             'ZxcvbnPhp\Matchers\DateMatch',
-            'ZxcvbnPhp\Matchers\DigitMatch',
             'ZxcvbnPhp\Matchers\L33tMatch',
             'ZxcvbnPhp\Matchers\RepeatMatch',
             'ZxcvbnPhp\Matchers\SequenceMatch',
