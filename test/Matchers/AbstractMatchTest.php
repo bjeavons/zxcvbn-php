@@ -47,18 +47,18 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
 
     /**
      * [checkMatches description]
-     * @param  string $prefix       This is prepended to the message of any checks that are run
-     * @param  array  $matches      [description]
-     * @param  [type] $patternNames array of pattern names, or a single pattern which will be repeated
-     * @param  [type] $patterns     [description]
-     * @param  [type] $ijs          [description]
-     * @param  [type] $props        [description]
+     * @param  string       $prefix       This is prepended to the message of any checks that are run
+     * @param  array        $matches      [description]
+     * @param  array|string $patternNames array of pattern names, or a single pattern which will be repeated
+     * @param  array        $patterns     [description]
+     * @param  array        $ijs          [description]
+     * @param  array        $props        [description]
      */
     protected function checkMatches(
-        string $prefix,
-        array $matches,
+        $prefix,
+        $matches,
         $patternNames,
-        array $patterns,
+        $patterns,
         $ijs,
         $props
     ) {
