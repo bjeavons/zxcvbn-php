@@ -110,7 +110,7 @@ class AbstractMatchTest extends \PHPUnit_Framework_TestCase
                 $this->assertEquals(
                     $propList[$k],
                     $match->$propName,
-                    "$prefix matches[$k].$prop_name == $propMessage"
+                    "$prefix matches[$k].$propName == $propMessage"
                 );
             }
         }

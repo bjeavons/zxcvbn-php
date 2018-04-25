@@ -22,10 +22,10 @@ class RepeatMatch extends Match
 
         $k = 0;
         foreach ($groups as $group) {
-            $char = $group[0];
             $length = strlen($group);
 
             if ($length > 2) {
+                $char = $group[0];
                 $end = $k + $length - 1;
                 $token = substr($password, $k, $length);
                 $matches[] = new static($password, $k, $end, $token, $char);
