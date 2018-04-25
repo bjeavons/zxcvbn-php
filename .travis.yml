@@ -17,6 +17,13 @@ matrix:
         - php: 5.3
         - php: hhvm
 
+
+
+matrix:
+  include:
+    - php: 5.3
+      dist: precise
+
 before_script:
   - composer update --prefer-dist
 
