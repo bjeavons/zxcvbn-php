@@ -64,6 +64,20 @@ class SpatialMatch extends Match
         return $matches;
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        $warning = $this->turns == 1
+            ? 'Straight rows of keys are easy to guess'
+            : 'Short keyboard patterns are easy to guess';
+
+        return array(
+            'warning' => $warning,
+            'suggestions' => array(
+                'Use a longer keyboard pattern with more turns'
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin

@@ -84,7 +84,7 @@ abstract class Match implements MatchInterface
      * @return array
      *   Associative array with warning (string) and suggestions (array of strings)
      */
-    public function getFeedback($isSoleMatch);
+    abstract public function getFeedback($isSoleMatch);
 
     /**
       * Find all occurences of regular expression in a string.

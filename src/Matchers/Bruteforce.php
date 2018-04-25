@@ -25,6 +25,16 @@ class Bruteforce extends Match
         return array($match);
     }
 
+
+    public function getFeedback($isSoleMatch)
+    {
+        return array(
+            'warning' => "",
+            'suggestions' => array(
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin

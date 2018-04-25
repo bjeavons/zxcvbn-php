@@ -35,6 +35,20 @@ class RepeatMatch extends Match
         return $matches;
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        $warning = strlen($this->repeatedChar) == 1 
+            ? 'Repeats like "aaa" are easy to guess'
+            : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
+
+        return array(
+            'warning' => $warning,
+            'suggestions' => array(
+                'Avoid repeated words and characters'
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin

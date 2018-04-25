@@ -47,6 +47,16 @@ class DateMatch extends Match
         return $matches;
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        return array(
+            'warning' => "Dates are often easy to guess",
+            'suggestions' => array(
+                'Avoid dates and years that are associated with you'
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin

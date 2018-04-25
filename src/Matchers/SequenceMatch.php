@@ -74,6 +74,16 @@ class SequenceMatch extends Match
         return $matches;
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        return array(
+            'warning' => "Sequences like abc or 6543 are easy to guess",
+            'suggestions' => array(
+                'Avoid sequences'
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin

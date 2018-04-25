@@ -22,6 +22,17 @@ class YearMatch extends Match
         return $matches;
     }
 
+    public function getFeedback($isSoleMatch)
+    {
+        return array(
+            'warning' => "Recent years are easy to guess",
+            'suggestions' => array(
+                'Avoid recent years',
+                'Avoid years that are associated with you',
+            )
+        );
+    }
+
     /**
      * @param $password
      * @param $begin
