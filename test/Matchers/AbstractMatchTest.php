@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\RepeatMatch;
 
-class AbstractMatchTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * takes a pattern and list of prefixes/suffixes
