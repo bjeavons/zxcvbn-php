@@ -6,7 +6,11 @@ use ZxcvbnPhp\Scorer;
 
 class ScorerTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $this->markTestIncomplete('This test has not been implemented yet.');
 
+    }
     public function testScore()
     {
         $scorer = new Scorer();

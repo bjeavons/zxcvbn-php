@@ -13,7 +13,7 @@ interface ScorerInterface
      * @return float
      *   Score.
      */
-    public function score($entropy);
+    // public function score($entropy);
 
     /**
      * Get metrics used to determine score.
@@ -21,5 +21,5 @@ interface ScorerInterface
      * @return array
      *   Key value array of metrics.
      */
-    public function getMetrics();
+    // public function getMetrics();
 }
