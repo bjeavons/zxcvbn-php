@@ -145,7 +145,7 @@ class DateTest extends AbstractMatchTest
             $this->checkMatches(
                 "matches embedded dates",
                 DateMatch::match($password),
-                'repeat',
+                'date',
                 [$pattern],
                 [[$i, $j]],
                 [
