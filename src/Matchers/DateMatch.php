@@ -9,8 +9,17 @@ class DateMatch extends Match
     const NUM_MONTHS = 12;
     const NUM_DAYS = 31;
 
-    const DATE_RX_YEAR_SUFFIX = '/(\d{1,2})(\s|-|\/|\\|_|\.)(\d{1,2})\2(19\d{2}|200\d|201\d|\d{2})/';
-    const DATE_RX_YEAR_PREFIX = '/(19\d{2}|200\d|201\d|\d{2})(\s|-|\/|\\|_|\.)(\d{1,2})\2(\d{1,2})/';
+    const MIN_YEAR = 1000;
+    const MAX_YEAR = 2050;
+
+    const DATE_NO_SEPARATOR = '/^\d{4,8}$/';
+    const DATE_WITH_SEPARATOR = '/^'.
+      '(\d{1,4})'.     # day, month, year
+      '([\s\/\\_.-])'. # separator
+      '(\d{1,2})'.     # day, month
+      '\2'.            # same separator
+      '(\d{1,4})'.     # day, month, year
+      '$/';
 
     /**
      * @var
@@ -39,8 +48,27 @@ class DateMatch extends Match
      */
     public static function match($password, array $userInputs = array())
     {
+        # a "date" is recognized as:
+        #   any 3-tuple that starts or ends with a 2- or 4-digit year,
+        #   with 2 or 0 separator chars (1.1.91 or 1191),
+        #   maybe zero-padded (01-01-91 vs 1-1-91),
+        #   a month between 1 and 12,
+        #   a day between 1 and 31.
+        #
+        # note: this isn't true date parsing in that "feb 31st" is allowed,
+        # this doesn't check for leap years, etc.
+        #
+        # recipe:
+        # start with regex to find maybe-dates, then attempt to map the integers
+        # onto month-day-year to filter the maybe-dates into dates.
+        # finally, remove matches that are substrings of other matches to reduce noise.
+        #
+        # note: instead of using a lazy or greedy regex to find many dates over the full string,
+        # this uses a ^...$ regex against every substring of the password -- less performant but leads
+        # to every possible date match.
         $matches = array();
-        $dates = static::datesWithoutSeparators($password) + static::datesWithSeparators($password);
+        // $dates = static::datesWithoutSeparators($password) + static::datesWithSeparators($password);
+        $dates = static::datesWithSeparators($password);
         foreach ($dates as $date) {
             $matches[] = new static($password, $date['begin'], $date['end'], $date['token'], $date);
         }
@@ -105,48 +133,26 @@ class DateMatch extends Match
      */
     protected static function datesWithSeparators($password)
     {
-        $dates = array();
-        foreach (static::findAll($password, static::DATE_RX_YEAR_SUFFIX) as $captures) {
-            $date = array(
-                'day'   => (integer) $captures[1]['token'],
-                'month' => (integer) $captures[3]['token'],
-                'year'  => (integer) $captures[4]['token'],
-                'sep'   => $captures[2]['token'],
-                'begin' => $captures[0]['begin'],
-                'end'   => $captures[0]['end'],
-            );
-            $dates[] = $date;
-        }
-        foreach (static::findAll($password, static::DATE_RX_YEAR_PREFIX) as $captures) {
-            $date = array(
-                'day'   => (integer) $captures[4]['token'],
-                'month' => (integer) $captures[3]['token'],
-                'year'  => (integer) $captures[1]['token'],
-                'sep'   => $captures[2]['token'],
-                'begin' => $captures[0]['begin'],
-                'end'   => $captures[0]['end'],
-            );
-            $dates[] = $date;
-        }
-
         $results = array();
-        foreach ($dates as $candidate) {
-            $date = static::checkDate($candidate['day'], $candidate['month'], $candidate['year']);
-
+        foreach (static::findAll($password, static::DATE_WITH_SEPARATOR) as $captures) {
+            $date = static::checkDate(array(
+                (integer) $captures[1]['token'],
+                (integer) $captures[3]['token'],
+                (integer) $captures[4]['token']             
+            ));
             if ($date === false) {
                 continue;
             }
-            list($day, $month, $year) = $date;
 
             $results[] = array(
-                'pattern' => 'date',
-                'begin' => $candidate['begin'],
-                'end' => $candidate['end'],
-                'token' => substr($password, $candidate['begin'], $candidate['begin'] + $candidate['end'] - 1),
-                'separator' => $candidate['sep'],
-                'day' => $day,
-                'month' => $month,
-                'year' => $year
+                'pattern'   => 'date',
+                'token'     => $captures[0]['token'],
+                'begin'     => $captures[0]['begin'],
+                'end'       => $captures[0]['end'],
+                'separator' => $captures[2]['token'],
+                'year'      => $date['year'],
+                'month'     => $date['month'],
+                'day'       => $date['day'],
             );
         }
 
@@ -272,29 +278,103 @@ class DateMatch extends Match
         return $dateMatches;
     }
 
-    /**
-     * Validate date.
-     *
-     * @param int $day
-     * @param int $month
-     * @param int $year
-     *
-     * @return array|false
-     */
-    protected static function checkDate($day, $month, $year)
+    protected static function checkDate($ints)
     {
-        // Tolerate both day-month and month-day order
-        if ((12 <= $month && $month <= 31) && $day <= 12) {
-            $m = $month;
-            $month = $day;
-            $day = $m;
-        }
-        if ($day > 31 || $month > 12) {
+        // var_dump($ints);die();
+        # given a 3-tuple, discard if:
+        #   middle int is over 31 (for all dmy formats, years are never allowed in the middle)
+        #   middle int is zero
+        #   any int is over the max allowable year
+        #   any int is over two digits but under the min allowable year
+        #   2 ints are over 31, the max allowable day
+        #   2 ints are zero
+        #   all ints are over 12, the max allowable month
+        if ($ints[1] > 31 || $ints[1] <= 0) {
             return false;
         }
-        if (!((1900 <= $year && $year <= 2019))) {
+
+        $invalidYear = count(array_filter($ints, function($int) {
+            return ($int >= 100 && $int < static::MIN_YEAR)
+                || ($int > static::MAX_YEAR);
+        }));
+        if ($invalidYear > 0) {
             return false;
         }
-        return array($day, $month, $year);
+
+        $over12 = count(array_filter($ints, function($int) {
+            return $int > 12;
+        }));
+        $over31 = count(array_filter($ints, function($int) {
+            return $int > 31;
+        }));
+        $under1 = count(array_filter($ints, function($int) {
+            return $int <= 0;
+        }));
+
+        if ($over31 >= 2 || $over12 == 3 || $under1 >= 2) {
+            return false;
+        }
+
+        # first look for a four digit year: yyyy + daymonth or daymonth + yyyy
+        $possibleYearSplits = array(
+            array($ints[2], array($ints[0], $ints[1])), // year last
+            array($ints[0], array($ints[1], $ints[2])), // year first
+        );
+        // var_dump($possibleYearSplits);die();
+        foreach ($possibleYearSplits as list($year, $rest)) {
+            if ($year >= static::MIN_YEAR && $year <= static::MAX_YEAR) {
+                if ($dm = static::mapIntsToDayMonth($rest)) {
+                    return array(
+                        'year'  => $year,
+                        'month' => $dm['month'],
+                        'day'   => $dm['day'],
+                    );
+                }
+                # for a candidate that includes a four-digit year,
+                # when the remaining ints don't match to a day and month,
+                # it is not a date.
+                return false;
+            }
+        }
+
+        foreach ($possibleYearSplits as list($year, $rest)) {
+            if ($dm = static::mapIntsToDayMonth($rest)) {
+                return array(
+                    'year'  => static::twoToFourDigitYear($year),
+                    'month' => $dm['month'],
+                    'day'   => $dm['day'],
+                );
+            }
+        }
+
+        return false;
+    }
+
+    protected static function mapIntsToDayMonth($ints)
+    {
+        foreach(array($ints, array_reverse($ints)) as list($d, $m)) {
+            if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
+                return array(
+                    'day'   => $d,
+                    'month' => $m
+                );
+            }
+        }
+
+        return false;
+    }
+
+    protected static function twoToFourDigitYear($year)
+    {
+        if ($year > 99) {
+            return $year;
+        } elseif ($year > 50) {
+            // 87 -> 1987
+            return $year + 1900;
+        } else {
+            // 15 -> 2015
+            return $year + 2000;
+        }
+
     }
 }
