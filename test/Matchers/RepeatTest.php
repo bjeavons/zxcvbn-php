@@ -22,9 +22,7 @@ class RepeatTest extends AbstractMatchTest
         $suffixes = ['u', 'u%7'];
         $pattern = '&&&&&';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as $variant) {
-            list($password, $i, $j) = $variant;
-
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
             $this->checkMatches(
                 "matches embedded repeat patterns",
                 RepeatMatch::match($password),

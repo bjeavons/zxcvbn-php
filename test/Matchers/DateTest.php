@@ -88,8 +88,7 @@ class DateTest extends AbstractMatchTest
             array(22, 11, 1551),
         );
 
-        foreach ($dates as $date) {
-            list($day, $month, $year) = $date;
+        foreach ($dates as list($day, $month, $year)) {
             $password = "{$year}{$month}{$day}";
             $this->checkMatches(
                 "matches $password",
@@ -142,9 +141,7 @@ class DateTest extends AbstractMatchTest
         $suffixes = array('!');
         $pattern = '1/1/91';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as $variant) {
-            list($password, $i, $j) = $variant;
-
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
             $this->checkMatches(
                 "matches embedded dates",
                 DateMatch::match($password),
