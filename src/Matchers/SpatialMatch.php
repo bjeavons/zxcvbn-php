@@ -49,11 +49,13 @@ class SpatialMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = array(), array $graphs = null)
     {
 
         $matches = array();
-        $graphs = static::getAdjacencyGraphs();
+        if (!$graphs) {
+            $graphs = static::getAdjacencyGraphs();
+        }
         foreach ($graphs as $name => $graph) {
             $results = static::graphMatch($password, $graph);
             foreach ($results as $result) {
@@ -259,7 +261,7 @@ class SpatialMatch extends Match
      *
      * @return array
      */
-    protected static function getAdjacencyGraphs()
+    public static function getAdjacencyGraphs()
     {
         $data = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
         return json_decode($data, true);

@@ -4,8 +4,106 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\SpatialMatch;
 
-class SpatialTest extends \PHPUnit_Framework_TestCase
+class SpatialTest extends AbstractMatchTest
 {
+    public function shortPatternDataProvider()
+    {
+        return array(
+            array(''),
+            array('/'),
+            array('qw'),
+            array('*/'),
+        );
+    }
+
+    /**
+     * @dataProvider shortPatternDataProvider
+     * @param $password
+     */
+    public function testShortPatterns($password)
+    {
+        $this->assertEquals(
+            [],
+            SpatialMatch::match($password),
+            "doesn't match 1- and 2-character spatial patterns"
+        );
+    }
+
+    public function testNoPattern()
+    {
+        $this->assertEquals(
+            [],
+            SpatialMatch::match('qzpm'),
+            "doesn't match non-pattern"
+        );
+    }
+
+    public function testSurroundedPattern()
+    {
+        $password = '6tfGHJ';
+
+        // for testing, make a subgraph that contains a single keyboard
+        $graphs = array('qwerty' => SpatialMatch::getAdjacencyGraphs()['qwerty']);
+
+        $this->checkMatches(
+            "matches against spatial patterns surrounded by non-spatial patterns",
+            SpatialMatch::match($password, array(), $graphs),
+            'spatial',
+            [$password],
+            [[3, 7]],
+            [
+                'graph' => ['qwerty'],
+                'turns' => [2],
+                'shiftedCount' => [3],
+            ]
+        );
+    }
+
+    public function spatialDataProvider()
+    {
+        return [
+            ['12345',        'qwerty',     1, 0],
+            ['@WSX',         'qwerty',     1, 4],
+            ['6tfGHJ',       'qwerty',     2, 3],
+            ['hGFd',         'qwerty',     1, 2],
+            ['/;p09876yhn',  'qwerty',     3, 0],
+            ['Xdr%',         'qwerty',     1, 2],
+            ['159-',         'keypad',     1, 0],
+            ['*84',          'keypad',     1, 0],
+            ['/8520',        'keypad',     1, 0],
+            ['369',          'keypad',     1, 0],
+            ['/963.',        'mac_keypad', 1, 0],
+            ['*-632.0214',   'mac_keypad', 9, 0],
+            ['aoEP%yIxkjq:', 'dvorak',     4, 5],
+            [';qoaOQ:Aoq;a', 'dvorak',    11, 4],
+        ];
+    }
+
+    /**
+     * @dataProvider spatialDataProvider
+     * @param $password
+     * @param $keyboard
+     * @param $turns
+     * @param $shifts
+     */
+    public function testSpatialPatterns($password, $keyboard, $turns, $shifts)
+    {
+        $graphs = array($keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]);
+
+        $this->checkMatches(
+            "matches '$password' as a $keyboard pattern",
+            SpatialMatch::match($password, array(), $graphs),
+            'spatial',
+            [$password],
+            [[0, strlen($password) - 1]],
+            [
+                'graph' => [$keyboard],
+                'turns' => [$turns],
+                'shiftedCount' => [$shifts],
+            ]
+        );
+    }
+
     public function testMatch()
     {
         $password = 'qzpm';
