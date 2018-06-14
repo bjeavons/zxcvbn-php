@@ -108,9 +108,9 @@ abstract class Match implements MatchInterface
       *     )
       *
       */
-    public static function findAll($string, $regex)
+    public static function findAll($string, $regex, $offset = 0)
     {
-        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER);
+        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER, $offset);
         if (!$count) {
             return array();
         }
