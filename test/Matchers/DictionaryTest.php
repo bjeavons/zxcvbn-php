@@ -210,7 +210,8 @@ class DictionaryTest extends AbstractMatchTest
     {
         $password = 'password';
         $matches = DictionaryMatch::match($password);
-        // Match 0 is "pass" with rank 35.
-        $this->assertEquals(log(35, 2), $matches[0]->getEntropy());
+
+        // Match 0 is "pass" with rank 61.
+        $this->assertEquals(log(61, 2), $matches[0]->getEntropy());
     }
 }

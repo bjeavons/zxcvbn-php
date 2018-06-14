@@ -143,6 +143,8 @@ class RepeatTest extends AbstractMatchTest
 
     public function testBaseGuesses()
     {
+        $this->markTestSkipped('Base guesses have not yet been implemented.');
+
         $pattern = 'abcabc';
         $this->checkMatches(
             'calculates the correct number of guesses for the base token',
@@ -160,6 +162,8 @@ class RepeatTest extends AbstractMatchTest
 
     public function testBaseMatches()
     {
+        $this->markTestSkipped('Base matches have not yet been implemented.');
+
         $pattern = 'abcabc';
         $match = RepeatMatch::match($pattern)[0];
 
