@@ -6,33 +6,40 @@ use ZxcvbnPhp\Matchers\DateMatch;
 
 class DateTest extends AbstractMatchTest
 {
-    public function testSeparators()
+    public function separatorProvider()
     {
-        $separators = array(
-            '',
-            ' ',
-            '-',
-            '/',
-            '\\',
-            '_',
-            '.'
+        return array(
+            array(''),
+            array(' '),
+            array('-'),
+            array('/'),
+            array('\\'),
+            array('_'),
+            array('.'),
         );
-        foreach ($separators as $sep) {
-            $password = "13{$sep}2{$sep}1921";
-            $this->checkMatches(
-                "matches dates that use '$sep' as a separator",
-                DateMatch::match($password),
-                'date',
-                [ $password ],
-                [[ 0, strlen($password) - 1 ]],
-                [
-                    'separator' => [$sep],
-                    'year'      => [1921],
-                    'month'     => [2],
-                    'day'       => [13],
-                ]
-            );
-        }
+    }
+
+    /**
+     * @dataProvider separatorProvider
+     * @param string $sep
+     */
+    public function testSeparators($sep)
+    {
+        $password = "13{$sep}2{$sep}1921";
+
+        $this->checkMatches(
+            "matches dates that use '$sep' as a separator",
+            DateMatch::match($password),
+            'date',
+            [$password],
+            [[0, strlen($password) - 1]],
+            [
+                'separator' => [$sep],
+                'year' => [1921],
+                'month' => [2],
+                'day' => [13],
+            ]
+        );
     }
 
     public function testDateOrders()
@@ -79,42 +86,49 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testMatch()
+    public function dateProvider()
     {
-        $dates = array(
+        return array(
             array(1,  1,  1999),
             array(11, 8,  2000),
             array(9,  12, 2005),
-            array(22, 11, 1551),
+            array(22, 11, 1551)
+        );
+    }
+
+    /**
+     * @dataProvider dateProvider
+     * @param int $day
+     * @param int $month
+     * @param int $year
+     */
+    public function testMatch($day, $month, $year)
+    {
+        $password = "{$year}{$month}{$day}";
+        $this->checkMatches(
+            "matches $password",
+            DateMatch::match($password),
+            'date',
+            [$password],
+            [[0, strlen($password) - 1]],
+            [
+                'separator' => [''],
+                'year' => [$year],
+            ]
         );
 
-        foreach ($dates as list($day, $month, $year)) {
-            $password = "{$year}{$month}{$day}";
-            $this->checkMatches(
-                "matches $password",
-                DateMatch::match($password),
-                'date',
-                [ $password ],
-                [[ 0, strlen($password) - 1 ]],
-                [
-                    'separator' => [''],
-                    'year'      => [$year],
-                ]
-            );
-
-            $password = "{$year}.{$month}.{$day}";
-            $this->checkMatches(
-                "matches $password",
-                DateMatch::match($password),
-                'date',
-                [ $password ],
-                [[ 0, strlen($password) - 1 ]],
-                [
-                    'separator' => ['.'],
-                    'year'      => [$year],
-                ]
-            );
-        }
+        $password = "{$year}.{$month}.{$day}";
+        $this->checkMatches(
+            "matches $password",
+            DateMatch::match($password),
+            'date',
+            [$password],
+            [[0, strlen($password) - 1]],
+            [
+                'separator' => ['.'],
+                'year' => [$year],
+            ]
+        );
     }
 
     public function testMatchesZeroPaddedDates()
@@ -135,6 +149,24 @@ class DateTest extends AbstractMatchTest
         );
     }
 
+    public function testFullDateMatched()
+    {
+        $password = "2018-01-20";
+        $this->checkMatches(
+            "matches full date and not just year",
+            DateMatch::match($password),
+            'date',
+            [ $password ],
+            [[ 0, strlen($password) - 1 ]],
+            [
+                'separator' => ['-'],
+                'year'      => [2018],
+                'month'     => [1],
+                'day'       => [20],
+            ]
+        );
+    }
+
     public function testMatchesEmbeddedDates()
     {
         $prefixes = array('a', 'ab');
@@ -149,9 +181,9 @@ class DateTest extends AbstractMatchTest
                 [$pattern],
                 [[$i, $j]],
                 [
-                    'year'  => 1991,
-                    'month' => 1,
-                    'day'   => 1
+                    'year'  => [1991],
+                    'month' => [1],
+                    'day'   => [1]
                 ]
             );
         }
