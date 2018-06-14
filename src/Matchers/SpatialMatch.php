@@ -8,6 +8,7 @@ namespace ZxcvbnPhp\Matchers;
  */
 class SpatialMatch extends Match
 {
+    const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
 
     /**
      * @var
@@ -57,7 +58,7 @@ class SpatialMatch extends Match
             $graphs = static::getAdjacencyGraphs();
         }
         foreach ($graphs as $name => $graph) {
-            $results = static::graphMatch($password, $graph);
+            $results = static::graphMatch($password, $graph, $name);
             foreach ($results as $result) {
                 $result['graph'] = $name;
                 $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
@@ -146,11 +147,12 @@ class SpatialMatch extends Match
 
     /**
      * Match spatial patterns in a adjacency graph.
-     *
      * @param string $password
-     * @param array $graph
+     * @param array  $graph
+     * @param string $graphName
+     * @return array
      */
-    protected static function graphMatch($password, $graph)
+    protected static function graphMatch($password, $graph, $graphName)
     {
         $result = array();
         $i = 0;
@@ -162,6 +164,13 @@ class SpatialMatch extends Match
             $lastDirection = null;
             $turns = 0;
             $shiftedCount = 0;
+
+            // Check if the initial character is shifted
+            if ($graphName === 'qwerty' || $graphName === 'dvorak') {
+                if (strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
+                    $shiftedCount++;
+                }
+            }
 
             while (true) {
                 $prevChar = $password[$j - 1];
