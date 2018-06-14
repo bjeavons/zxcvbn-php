@@ -109,10 +109,10 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
-    public function testCommonL33tSubstitutions()
+    public function commonCaseProvider()
     {
-        $cases = [
-            [
+        return array(
+            array(
                 'password'        => 'p4ssword',
                 'pattern'         => 'p4ssword',
                 'word'            => 'password',
@@ -120,8 +120,8 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 3,
                 'ij'              => [0, 7],
                 'sub'             => ['4' => 'a']
-            ],
-            [
+            ),
+            array(
                 'password'        => 'p@ssw0rd',
                 'pattern'         => 'p@ssw0rd',
                 'word'            => 'password',
@@ -129,8 +129,8 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 3,
                 'ij'              => [0, 7],
                 'sub'             => ['@' => 'a', '0' => 'o']
-            ],
-            [
+            ),
+            array(
                 'password'        => 'aSdfO{G0asDfO',
                 'pattern'         => '{G0',
                 'word'            => 'cgo',
@@ -138,25 +138,36 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 1,
                 'ij'              => [5, 7],
                 'sub'             => ['{' => 'c', '0' => 'o']
-            ],
-        ];
+            ),
+        );
+    }
 
-        foreach ($cases as $case) {
-            $this->checkMatches(
-                "matches against common l33t substitutions",
-                MockL33tMatch::match($case['password']),
-                'dictionary',
-                [ $case['pattern'] ],
-                [ $case['ij'] ],
-                [
-                    'l33t'           => [ true ],
-                    'sub'            => [ $case['sub'] ],
-                    'matchedWord'    => [ $case['word'] ],
-                    'rank'           => [ $case['rank'] ],
-                    'dictionaryName' => [ $case['dictionary_name'] ]
-                ]
-            );
-        }
+    /**
+     * @dataProvider commonCaseProvider
+     * @param string $password
+     * @param string $pattern
+     * @param string $word
+     * @param string $dictionary
+     * @param int $rank
+     * @param int[] $ij
+     * @param array $substitutions
+     */
+    public function testCommonL33tSubstitutions($password, $pattern, $word, $dictionary, $rank, $ij, $substitutions)
+    {
+        $this->checkMatches(
+            "matches against common l33t substitutions",
+            MockL33tMatch::match($password),
+            'dictionary',
+            [$pattern],
+            [$ij],
+            [
+                'l33t' => [true],
+                'sub' => [$substitutions],
+                'matchedWord' => [$word],
+                'rank' => [$rank],
+                'dictionaryName' => [$dictionary]
+            ]
+        );
     }
 
     public function testOverlappingL33tPatterns()

@@ -32,7 +32,7 @@ class L33tMatch extends DictionaryMatch
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
     {
         // Translate l33t password and dictionary match the translated password.
         $map = static::getSubstitutions($password);
@@ -43,7 +43,11 @@ class L33tMatch extends DictionaryMatch
         $translatedWord = static::translate($password, $map);
 
         $matches = array();
-        $dicts = static::getRankedDictionaries();
+        if ($rankedDictionaries) {
+            $dicts = $rankedDictionaries;
+        } else {
+            $dicts = static::getRankedDictionaries();
+        }
         foreach ($dicts as $name => $dict) {
             $results = static::dictionaryMatch($translatedWord, $dict);
             foreach ($results as $result) {
