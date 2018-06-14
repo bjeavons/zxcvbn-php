@@ -383,9 +383,6 @@ class DateMatch extends Match
      */
     protected static function removeRedundantMatches($matches)
     {
-        dump($matches);
-        dump('end');
-
         return array_filter($matches, function ($match) use ($matches) {
             foreach ($matches as $otherMatch) {
                 if ($match === $otherMatch) {
