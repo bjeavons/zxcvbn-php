@@ -4,8 +4,52 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\YearMatch;
 
-class YearTest extends \PHPUnit_Framework_TestCase
+class YearTest extends AbstractMatchTest
 {
+    public function recentYearProvider()
+    {
+        return array(
+            array('1922'),
+            array('2001'),
+            array('2017')
+        );
+    }
+
+    public function nonRecentYearProvider()
+    {
+        return array(
+            array('1420'),
+            array('1899'),
+            array('2020')
+        );
+    }
+
+    /**
+     * @dataProvider recentYearProvider
+     * @param $password
+     */
+    public function testRecentYears($password)
+    {
+        $this->checkMatches(
+            "matches recent year",
+            YearMatch::match($password),
+            'year',
+            [$password],
+            [[0, strlen($password) - 1]],
+            []
+        );
+    }
+
+    /**
+     * @dataProvider nonRecentYearProvider
+     * @param $password
+     */
+    public function testNonRecentYears($password)
+    {
+        $matches = YearMatch::match($password);
+        $this->assertEmpty($matches, "does not match non-recent year");
+    }
+
     public function testMatch()
     {
         $password = 'password';
