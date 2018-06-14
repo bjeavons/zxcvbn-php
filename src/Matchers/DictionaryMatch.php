@@ -20,20 +20,27 @@ class DictionaryMatch extends Match
      */
     public $matchedWord;
 
+    public $reversed = false;
+
     /**
      * Match occurences of dictionary words in password.
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
     {
         $matches = array();
-        $dicts = static::getRankedDictionaries();
+        if ($rankedDictionaries) {
+            $dicts = $rankedDictionaries;
+        } else {
+            $dicts = static::getRankedDictionaries();
+        }
+
         if (!empty($userInputs)) {
             $dicts['user_inputs'] = array();
             foreach ($userInputs as $rank => $input) {
                 $input_lower = strtolower($input);
-                $dicts['user_inputs'][$input_lower] = $rank;
+                $dicts['user_inputs'][$input_lower] = $rank + 1; // rank starts at 1, not 0
             }
         }
         foreach ($dicts as $name => $dict) {

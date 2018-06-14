@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
@@ -32,6 +33,19 @@ class Matcher
             }
         }
         return $matches;
+    }
+
+    /**
+     * @param Match $a
+     * @param Match $b
+     */
+    public static function sortMatches($a, $b)
+    {
+        if ($a->begin != $b->begin) {
+            return $a->begin - $b->begin;
+        } else {
+            return $a->end - $b->end;
+        }
     }
 
     /**
