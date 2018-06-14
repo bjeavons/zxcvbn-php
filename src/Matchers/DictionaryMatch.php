@@ -220,7 +220,14 @@ class DictionaryMatch extends Match
      */
     protected static function getRankedDictionaries()
     {
-        $data = file_get_contents(dirname(__FILE__) . '/ranked_frequency_lists.json');
-        return json_decode($data, true);
+        $json = file_get_contents(dirname(__FILE__) . '/frequency_lists.json');
+        $data = json_decode($json, true);
+
+        $rankedLists = array();
+        foreach ($data as $name => $words) {
+            $rankedLists[$name] = array_combine($words, range(1, count($words)));
+        }
+
+        return $rankedLists;
     }
 }
