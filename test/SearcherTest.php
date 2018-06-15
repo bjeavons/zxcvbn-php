@@ -4,7 +4,6 @@ namespace ZxcvbnPhp\Test;
 
 use ZxcvbnPhp\Matchers\RepeatMatch;
 use ZxcvbnPhp\Searcher;
-use ZxcvbnPhp\Matchers\Repeat;
 
 class SearcherTest extends \PHPUnit_Framework_TestCase
 {

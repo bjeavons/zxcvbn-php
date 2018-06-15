@@ -12,7 +12,7 @@ class DateMatch extends Match
     const MIN_YEAR = 1000;
     const MAX_YEAR = 2050;
 
-    const DATE_SPLITS = array(
+    private static $DATE_SPLITS = array(
         4 => array(         # For length-4 strings, eg 1191 or 9111, two ways to split:
             array(1, 2),    # 1 1 91 (2nd split starts at index 1, 3rd at index 2)
             array(2, 3),    # 91 1 1
@@ -39,13 +39,15 @@ class DateMatch extends Match
     );
 
     const DATE_NO_SEPARATOR = '/^\d{4,8}$/';
-    const DATE_WITH_SEPARATOR = '/^'.
-      '(\d{1,4})'.       # day, month, year
-      '([\s\/\\\\_.-])'. # separator
-      '(\d{1,2})'.       # day, month
-      '\2'.              # same separator
-      '(\d{1,4})'.       # day, month, year
-      '$/';
+
+    /**
+     * (\d{1,4})        # day, month, year
+     * ([\s\/\\\\_.-])  # separator
+     * (\d{1,2})        # day, month
+     * \2               # same separator
+     * (\d{1,4})        # day, month, year
+     */
+    const DATE_WITH_SEPARATOR = '/^(\d{1,4})([\s\/\\\\_.-])(\d{1,2})\2(\d{1,4})$/';
 
     /**
      * @var
@@ -220,7 +222,7 @@ class DateMatch extends Match
 
                 $candidates = array();
 
-                $possibleSplits = self::DATE_SPLITS[strlen($token)];
+                $possibleSplits = static::$DATE_SPLITS[strlen($token)];
                 foreach ($possibleSplits as $splitPositions) {
                     $day = substr($token, 0, $splitPositions[0]);
                     $month = substr($token, $splitPositions[0], $splitPositions[1] - $splitPositions[0]);

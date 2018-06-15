@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-use ZxcvbnPhp\Matcher;
-
 class ReverseDictionaryMatch extends DictionaryMatch
 {
     public $reversed = true;
@@ -27,7 +25,7 @@ class ReverseDictionaryMatch extends DictionaryMatch
             $match->end = strlen($password) - 1 - $tempBegin;
         }
 
-        usort($matches, [Matcher::class, 'sortMatches']);
+        usort($matches, ['ZxcvbnPhp\Matcher', 'sortMatches']);
         return $matches;
     }
 }
