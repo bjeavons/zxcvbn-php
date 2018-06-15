@@ -3,21 +3,21 @@ language: php
 matrix:
   fast_finish: true
   include:
+    - php: 7.2
     - php: 7.1
     - php: 7.0
     - php: 5.6
     - php: 5.5
     - php: 5.4
-    - php: hhvm
     - {php: 5.3, dist: precise}
+    - php: hhvm
   allow_failures:
-    - php: 5.5
     - php: 5.4
     - php: 5.3
     - php: hhvm
 
 before_script:
-  - composer update --prefer-dist
+  - composer install --prefer-dist
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - php vendor/bin/php-coveralls -v
