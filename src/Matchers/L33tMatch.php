@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-use ZxcvbnPhp\Matchers\DictionaryMatch;
-
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
  * @package ZxcvbnPhp\Matchers
@@ -12,20 +10,19 @@ class L33tMatch extends DictionaryMatch
 {
 
     /**
-     * @var
+     * @var array
      */
-    public $sub;
+    public $sub = array();
 
     /**
-     * @var
+     * @var string
      */
     public $subDisplay;
 
-
     /**
-     * @var
+     * @var boolean
      */
-    public $l33t;
+    public $l33t = true;
 
     /**
      * Match occurences of l33t words in password to dictionary words.
@@ -35,36 +32,41 @@ class L33tMatch extends DictionaryMatch
     public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
     {
         // Translate l33t password and dictionary match the translated password.
-        $map = static::getSubstitutions($password);
-        $indexSubs = array_filter($map);
-        if (empty($indexSubs)) {
+        $maps = array_filter(static::getL33tSubstitutions(static::getL33tSubtable($password)));
+        if (empty($maps)) {
             return array();
         }
-        $translatedWord = static::translate($password, $map);
 
         $matches = array();
-        if ($rankedDictionaries) {
-            $dicts = $rankedDictionaries;
-        } else {
-            $dicts = static::getRankedDictionaries();
+        if (!$rankedDictionaries) {
+            $rankedDictionaries = static::getRankedDictionaries();
         }
-        foreach ($dicts as $name => $dict) {
-            $results = static::dictionaryMatch($translatedWord, $dict);
-            foreach ($results as $result) {
-                // Set substituted elements.
-                $result['sub'] = array();
-                $result['sub_display'] = array();
-                foreach ($indexSubs as $i => $t) {
-                    $result['sub'][$password[$i]] = $t;
-                    $result['sub_display'][] = "$password[$i] -> $t";
+
+        foreach ($maps as $map) {
+            $translatedWord = static::translate($password, $map);
+
+            /** @var L33tMatch[] $results */
+            $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
+            foreach ($results as $match) {
+                $token = substr($password, $match->begin, $match->end - $match->begin + 1);
+                if (strtolower($token) === $match->token) {
+                    continue;
                 }
-                $result['sub_display'] = implode(', ', $result['sub_display']);
-                $result['dictionary_name'] = $name;
-                // Replace translated token with orignal password token.
-                $token = substr($password, $result['begin'], $result['end'] - $result['begin'] + 1);
-                $matches[] = new static($password, $result['begin'], $result['end'], $token, $result);
+
+                $display = array();
+                foreach ($map as $i => $t) {
+                    if (strpos($token, (string)$i) !== false) {
+                        $match->sub[$i] = $t;
+                        $display[] = "$i -> $t";
+                    }
+                }
+                $match->token = $token;
+                $match->subDisplay = implode(', ', $display);
+
+                $matches[] = $match;
             }
         }
+
         return $matches;
     }
 
@@ -139,11 +141,7 @@ class L33tMatch extends DictionaryMatch
      */
     protected static function translate($string, $map)
     {
-        $out = '';
-        foreach (range(0, strlen($string) - 1) as $i) {
-            $out .= !empty($map[$i]) ? $map[$i] : $string[$i];
-        }
-        return $out;
+        return str_replace(array_keys($map), array_values($map), $string);
     }
 
     protected static function getL33tTable()
@@ -164,37 +162,35 @@ class L33tMatch extends DictionaryMatch
         );
     }
 
-    /**
-     * @param string $password
-     * @return array
-     */
-    protected static function getSubstitutions($password)
-    {
-        $map = array();
+    protected static function getL33tSubtable($password){
+        $passwordChars = array_unique(str_split($password));
 
-        $l33t = static::getL33tTable();
+        $subTable = array();
 
-        /*$chars = array_unique(str_split($password));
-        foreach ($l33t as $letter => $subs) {
-            $relevent_subs = array_intersect($subs, $chars);
-            if (!empty($relevent_subs)) {
-                $map[] = $relevent_subs;
-            }
-        }*/
-
-        if (strlen($password) == 0) {
-            return $map;
-        }
-
-        foreach (range(0, strlen($password) - 1) as $i) {
-            $map[$i] = null;
-            foreach ($l33t as $char => $subs) {
-                if (in_array($password[$i], $subs)) {
-                    $map[$i] = $char;
+        $table = static::getL33tTable();
+        foreach ($table as $letter => $substitutions) {
+            foreach ($substitutions as $sub) {
+                if (in_array($sub, $passwordChars)) {
+                    $subTable[$letter][] = $sub;
                 }
             }
         }
 
-        return $map;
+        return $subTable;
+    }
+
+    protected static function getL33tSubstitutions($subtable)
+    {
+        $result = array(array());
+        foreach ($subtable as $letter => $substitutions) {
+            $tmp = array();
+            foreach ($result as $result_item) {
+                foreach ($substitutions as $substitutedCharacter) {
+                    $tmp[] = $result_item + array($substitutedCharacter => $letter);
+                }
+            }
+            $result = $tmp;
+        }
+        return $result;
     }
 }

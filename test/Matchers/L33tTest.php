@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ReflectionClass;
 use ZxcvbnPhp\Matchers\L33tMatch;
 
 class MockL33tMatch extends L33tMatch
@@ -41,12 +42,17 @@ class L33tTest extends AbstractMatchTest
         'o' => ['0'],
     ];
 
+    // Generally we only need to test the public interface of the matchers, but it can be useful
+    // to occasionally test protected methods to ensure consistency with upstream.
+    protected static function callProtectedMethod($name, $args) {
+        $class = new ReflectionClass(MockL33tMatch::class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs(null, $args);
+    }
+
     public function testReducesL33tTable()
     {
-        // As this is truly a unit test testing the internals, I'm OK with not implementing
-        // it unless it's helpful for resolving discrepancies between the libraries
-        $this->markTestSkipped('Not implemented');
-
         $cases = [
             ''      => [] ,
             'abcdefgo123578!#$&*)]}>' => [] ,
@@ -68,7 +74,7 @@ class L33tTest extends AbstractMatchTest
         foreach ($cases as $pw => $expected) {
             $this->assertEquals(
                 $expected,
-                L33tMatch::getRelevantL33tSubtable($pw, self::$testTable),
+                static::callProtectedMethod('getL33tSubtable', array($pw)),
                 "reduces l33t table to only the substitutions that a password might be employing"
             );
         }
@@ -76,19 +82,30 @@ class L33tTest extends AbstractMatchTest
 
     public function testEnumeratesL33tSubstitutions()
     {
-        // As this is truly a unit test testing the internals, I'm OK with not implementing
-        // it unless it's helpful for resolving discrepancies between the libraries
-        $this->markTestSkipped('Not implemented');
+        $cases = [
+            [
+                [],
+                [[]]
+            ],
+            [
+                ['a' => ['@']],     // subtable
+                [['@' => 'a']] ],   // expected result
+            [
+                ['a' => ['@', '4']],
+                [['@' => 'a'], ['4' => 'a']] ],
+            [
+                ['a' => ['@', '4'], 'c' => ['(']],
+                [['@' => 'a', '(' => 'c'], ['4' => 'a', '(' => 'c']]
+            ]
+        ];
 
-        // CoffeeScript source: 
-        // for [table, subs] in [
-        //   [ {},                        [{}] ]
-        //   [ {a: ['@']},                [{'@': 'a'}] ]
-        //   [ {a: ['@','4']},            [{'@': 'a'}, {'4': 'a'}] ]
-        //   [ {a: ['@','4'], c: ['(']},  [{'@': 'a', '(': 'c' }, {'4': 'a', '(': 'c'}] ]
-        //   ]
-        //   msg = "enumerates the different sets of l33t substitutions a password might be using"
-        //   t.deepEquals matching.enumerate_l33t_subs(table), subs, msg
+        foreach ($cases as $case) {
+            $this->assertEquals(
+                $case[1],
+                static::callProtectedMethod('getL33tSubstitutions', array($case[0])),
+                "enumerates the different sets of l33t substitutions a password might be using"
+            );
+        }
     }
 
     public function testEmptyString()
@@ -106,6 +123,15 @@ class L33tTest extends AbstractMatchTest
             [],
             MockL33tMatch::match('password'),
             "doesn't match pure dictionary words"
+        );
+    }
+
+    public function testPureDictionaryWordsWithL33tCharactersAfter()
+    {
+        $this->assertEquals(
+            [],
+            MockL33tMatch::match('password4'),
+            "doesn't match pure dictionary word with l33t characters after"
         );
     }
 

@@ -21,11 +21,12 @@ class DictionaryMatch extends Match
     public $matchedWord;
 
     public $reversed = false;
+    public $l33t = false;
 
     /**
      * Match occurences of dictionary words in password.
      *
-     * @copydoc Match::match()
+     * @return DictionaryMatch[]
      */
     public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
     {
