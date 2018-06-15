@@ -40,7 +40,8 @@ class SpatialTest extends AbstractMatchTest
 
     public function testSurroundedPattern()
     {
-        $password = '6tfGHJ';
+        $pattern = "6tfGHJ";
+        $password = "rz!{$pattern}%z";
 
         // for testing, make a subgraph that contains a single keyboard
         $graphs = array('qwerty' => SpatialMatch::getAdjacencyGraphs()['qwerty']);
@@ -49,8 +50,8 @@ class SpatialTest extends AbstractMatchTest
             "matches against spatial patterns surrounded by non-spatial patterns",
             SpatialMatch::match($password, array(), $graphs),
             'spatial',
-            [$password],
-            [[3, 7]],
+            [$pattern],
+            [[3, 8]],
             [
                 'graph' => ['qwerty'],
                 'turns' => [2],

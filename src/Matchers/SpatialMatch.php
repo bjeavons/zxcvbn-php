@@ -177,13 +177,14 @@ class SpatialMatch extends Match
                 $found = false;
                 $curDirection = -1;
                 $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : array();
+
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
                     $curChar = $password[$j];
                     foreach ($adjacents as $adj ) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
-                        if ($adj && $curCharPos !== -1) {
+                        if ($adj !== null && $curCharPos !== -1) {
                             $found = true;
                             $foundDirection = $curDirection;
 
@@ -240,7 +241,7 @@ class SpatialMatch extends Match
      */
     protected static function indexOf($string, $char)
     {
-        $pos = @strpos($string, $char);
+        $pos = strpos($string, $char);
         return ($pos === false ? -1 : $pos);
     }
 
