@@ -17,7 +17,7 @@ matrix:
     - php: hhvm
 
 before_script:
-  - composer install --prefer-dist
+  - composer update --prefer-dist
 
 after_script:
   - php vendor/bin/php-coveralls -v
