@@ -20,7 +20,7 @@ class Matcher
      * @code
      *   array('Alice Smith')
      * @endcode
-     * @return array
+     * @return Match[]
      *   Array of Match objects.
      */
     public function getMatches($password, array $userInputs = array())
@@ -65,6 +65,7 @@ class Matcher
             'ZxcvbnPhp\Matchers\SpatialMatch',
             'ZxcvbnPhp\Matchers\YearMatch',
             'ZxcvbnPhp\Matchers\DictionaryMatch',
+            'ZxcvbnPhp\Matchers\ReverseDictionaryMatch',
         );
     }
 }
