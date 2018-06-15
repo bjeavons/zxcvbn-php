@@ -8,12 +8,8 @@ matrix:
     - php: 7.0
     - php: 5.6
     - php: 5.5
-    - php: 5.4
-    - {php: 5.3, dist: precise}
     - php: hhvm
   allow_failures:
-    - php: 5.4
-    - php: 5.3
     - php: hhvm
 
 before_script:
