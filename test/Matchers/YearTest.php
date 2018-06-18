@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ZxcvbnPhp\Matchers\DateMatch;
 use ZxcvbnPhp\Matchers\YearMatch;
 
 class YearTest extends AbstractMatchTest
@@ -97,5 +98,41 @@ class YearTest extends AbstractMatchTest
         $password = '1900';
         $matches = YearMatch::match($password);
         $this->assertEquals(log(119, 2), $matches[0]->getEntropy());
+    }
+
+    public function testGuessesPast()
+    {
+        $token = '1972';
+        $match = new YearMatch($token, 0, 3, $token);
+
+        $this->assertEquals(
+            DateMatch::getReferenceYear() - (int)$token,
+            $match->getGuesses(),
+            "guesses of |year - REFERENCE_YEAR| for past year matches"
+        );
+    }
+
+    public function testGuessesFuture()
+    {
+        $token = '2050';
+        $match = new YearMatch($token, 0, 3, $token);
+
+        $this->assertEquals(
+            (int)$token - DateMatch::getReferenceYear(),
+            $match->getGuesses(),
+            "guesses of |year - REFERENCE_YEAR| for future year matches"
+        );
+    }
+
+    public function testGuessesUnderMinimumYearSpace()
+    {
+        $token = '2005';
+        $match = new YearMatch($token, 0, 3, $token);
+
+        $this->assertEquals(
+            20, // DateMatch::MIN_YEAR_SPACE
+            $match->getGuesses(),
+            "guesses of MIN_YEAR_SPACE for a year close to REFERENCE_YEAR"
+        );
     }
 }

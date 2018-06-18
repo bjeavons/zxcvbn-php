@@ -60,4 +60,10 @@ class Bruteforce extends Match
         }
         return $this->entropy;
     }
+
+    public function getGuesses()
+    {
+        // TODO: Implement getGuesses() method.
+        return 0;
+    }
 }

@@ -27,4 +27,14 @@ interface MatchInterface
      *   Entropy of the matched token in the password.
      */
     public function getEntropy();
+
+    /**
+     * @return integer
+     */
+    public function getGuesses();
+
+    /**
+     * @return float
+     */
+    public function getGuessesLog10();
 }

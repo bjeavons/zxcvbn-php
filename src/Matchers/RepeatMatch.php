@@ -123,4 +123,9 @@ class RepeatMatch extends Match
         }
         return $this->entropy;
     }
+
+    public function getGuesses()
+    {
+        return $this->baseGuesses * $this->repeatCount;
+    }
 }

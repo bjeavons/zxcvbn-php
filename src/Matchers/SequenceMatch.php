@@ -140,4 +140,28 @@ class SequenceMatch extends Match
 
         return $entropy + $this->log(strlen($this->token));
     }
+
+    public function getGuesses()
+    {
+        $firstCharacter = $this->token[0];
+        $guesses = 0;
+
+        if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
+            $guesses += 4;  // lower guesses for obvious starting points
+        } elseif (ctype_digit($firstCharacter)) {
+            $guesses += 10; // digits
+        } else {
+            // could give a higher base for uppercase,
+            // assigning 26 to both upper and lower sequences is more conservative
+            $guesses += 26;
+        }
+
+        if (!$this->ascending) {
+            // need to try a descending sequence in addition to every ascending sequence ->
+            // 2x guesses
+            $guesses *= 2;
+        }
+
+        return $guesses * strlen($this->token);
+    }
 }

@@ -119,7 +119,7 @@ class L33tMatch extends DictionaryMatch
                 }
             }
             foreach (range(0, min($uLen, $sLen)) as $i) {
-                $possibilities += $this->binom($uLen + $sLen,  $i);
+                $possibilities += static::binom($uLen + $sLen,  $i);
             }
         }
 
@@ -188,5 +188,40 @@ class L33tMatch extends DictionaryMatch
             $result = $tmp;
         }
         return $result;
+    }
+
+    public function getGuesses()
+    {
+        return parent::getGuesses() * $this->getL33tVariations();
+    }
+
+    protected function getL33tVariations()
+    {
+        $variations = 1;
+
+        foreach ($this->sub as $substitution => $letter) {
+            $characters = str_split(strtolower($this->token));
+
+            $subbed = count(array_filter($characters, function ($character) use ($substitution) {
+                return (string)$character === (string)$substitution;
+            }));
+            $unsubbed = count(array_filter($characters, function ($character) use ($letter) {
+                return (string)$character === (string)$letter;
+            }));
+
+            if ($subbed === 0 || $unsubbed === 0) {
+                // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
+                // treat that as doubling the space (attacker needs to try fully subbed chars in addition to
+                // unsubbed.)
+                $variations *= 2;
+            } else {
+                $possibilities = 0;
+                for ($i = 1; $i <= min($subbed, $unsubbed); $i++) {
+                    $possibilities += static::binom($subbed + $unsubbed, $i);
+                }
+                $variations *= $possibilities;
+            }
+        }
+        return $variations;
     }
 }

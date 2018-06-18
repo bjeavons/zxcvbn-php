@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Matchers\Match;
+
 /**
  * scorer - takes a list of potential matches, ranks and evaluates them,
  * and figures out how many guesses it would take to crack the password

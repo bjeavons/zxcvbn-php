@@ -220,7 +220,7 @@ abstract class Match implements MatchInterface
      * @param $k
      * @return int
      */
-    protected function binom($n, $k) {
+    public static function binom($n, $k) {
         $j = $res = 1;
 
         if($k < 0 || $k > $n) {
@@ -235,5 +235,10 @@ abstract class Match implements MatchInterface
         }
 
         return $res;
+    }
+
+    public function getGuessesLog10()
+    {
+        return log10($this->getGuesses());
     }
 }

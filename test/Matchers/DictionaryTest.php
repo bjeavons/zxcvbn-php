@@ -2,7 +2,9 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ReflectionClass;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
+use ZxcvbnPhp\Matchers\Match;
 
 class DictionaryTest extends AbstractMatchTest
 {
@@ -224,5 +226,51 @@ class DictionaryTest extends AbstractMatchTest
 
         // Match 0 is "pass" with rank 61.
         $this->assertEquals(log(61, 2), $matches[0]->getEntropy());
+    }
+
+    public function testGuessesBaseRank()
+    {
+        $match = new DictionaryMatch('aaaaa', 0, 5, 'aaaaaa', ['rank' => 32]);
+        $this->assertEquals(32, $match->getGuesses(), "base guesses == the rank");
+    }
+
+    public function testGuessesCapitalization()
+    {
+        $match = new DictionaryMatch('AAAaaa', 0, 5, 'AAAaaa', ['rank' => 32]);
+        $expected = 32 * 41;    // rank * uppercase variations
+        $this->assertEquals($expected, $match->getGuesses(), "extra guesses are added for capitalization");
+    }
+
+    public function uppercaseVariationProvider()
+    {
+        return array(
+            [ '',       1 ],
+            [ 'a',      1 ],
+            [ 'A',      2 ],
+            [ 'abcdef', 1 ],
+            [ 'Abcdef', 2 ],
+            [ 'abcdeF', 2 ],
+            [ 'ABCDEF', 2 ],
+            [ 'aBcdef', 6 ],    // 6 choose 1
+            [ 'aBcDef', 21 ],   // 6 choose 1 + 6 choose 2
+            [ 'ABCDEf', 6 ],    // 6 choose 1
+            [ 'aBCDEf', 21 ],   // 6 choose 1 + 6 choose 2
+            [ 'ABCdef', 41 ],   // 6 choose 1 + 6 choose 2 + 6 choose 3
+        );
+    }
+
+    /**
+     * @dataProvider uppercaseVariationProvider
+     * @param $token
+     * @param $expectedGuesses
+     */
+    public function testGuessesUppercaseVariations($token, $expectedGuesses)
+    {
+        $match = new DictionaryMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1]);
+        $this->assertEquals(
+            $expectedGuesses,
+            $match->getGuesses(),
+            "guess multiplier of $token is $expectedGuesses"
+        );
     }
 }
