@@ -105,36 +105,6 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    public function testMatch()
-    {
-        $password = 'qzpm';
-        $matches = SpatialMatch::match($password);
-        $this->assertEmpty($matches);
-
-        $password = 'reds';
-        $matches = SpatialMatch::match($password);
-        $this->assertCount(1, $matches);
-
-        $password = 'qwerty';
-        $matches = SpatialMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame(1, $matches[0]->turns, "Turns incorrect");
-
-        $password = '8qwerty_';
-        $matches = SpatialMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame('qwerty', $matches[0]->token, "Token incorrect");
-
-        $password = 'qwER43@!';
-        $matches = SpatialMatch::match($password);
-        $this->assertCount(2, $matches);
-        $this->assertSame('dvorak', $matches[1]->graph, "Graph incorrect");
-
-        $password = 'AOEUIDHG&*()LS_';
-        $matches = SpatialMatch::match($password);
-        $this->assertCount(2, $matches);
-    }
-
     public function testEntropy()
     {
         $password = 'reds';

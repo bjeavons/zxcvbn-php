@@ -86,7 +86,7 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function dateProvider()
+    public function normalDateProvider()
     {
         return [
             [1,  1,  1999],
@@ -97,16 +97,16 @@ class DateTest extends AbstractMatchTest
     }
 
     /**
-     * @dataProvider dateProvider
+     * @dataProvider normalDateProvider
      * @param int $day
      * @param int $month
      * @param int $year
      */
-    public function testMatch($day, $month, $year)
+    public function testNormalDatesWithoutSeparator($day, $month, $year)
     {
         $password = "{$year}{$month}{$day}";
         $this->checkMatches(
-            "matches $password",
+            "matches $password without a separator",
             DateMatch::match($password),
             'date',
             [$password],
@@ -116,10 +116,19 @@ class DateTest extends AbstractMatchTest
                 'year' => [$year],
             ]
         );
+    }
 
+    /**
+     * @dataProvider normalDateProvider
+     * @param int $day
+     * @param int $month
+     * @param int $year
+     */
+    public function testNormalDatesWithSeparator($day, $month, $year)
+    {
         $password = "{$year}.{$month}.{$day}";
         $this->checkMatches(
-            "matches $password",
+            "matches $password with a separator",
             DateMatch::match($password),
             'date',
             [$password],

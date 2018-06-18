@@ -6,21 +6,18 @@ use ZxcvbnPhp\Matchers\YearMatch;
 
 class YearTest extends AbstractMatchTest
 {
+    public function testNoMatchForNonYear()
+    {
+        $password = 'password';
+        $this->assertEmpty(YearMatch::match($password));
+    }
+
     public function recentYearProvider()
     {
         return [
             ['1922'],
             ['2001'],
             ['2017']
-        ];
-    }
-
-    public function nonRecentYearProvider()
-    {
-        return [
-            ['1420'],
-            ['1899'],
-            ['2020']
         ];
     }
 
@@ -40,6 +37,15 @@ class YearTest extends AbstractMatchTest
         );
     }
 
+    public function nonRecentYearProvider()
+    {
+        return [
+            ['1420'],
+            ['1899'],
+            ['2020']
+        ];
+    }
+
     /**
      * @dataProvider nonRecentYearProvider
      * @param $password
@@ -50,22 +56,40 @@ class YearTest extends AbstractMatchTest
         $this->assertEmpty($matches, "does not match non-recent year");
     }
 
-    public function testMatch()
+    public function testYearSurroundedByWords()
     {
-        $password = 'password';
-        $matches = YearMatch::match($password);
-        $this->assertEmpty($matches);
+        $prefixes = ['car', 'dog'];
+        $suffixes = ['car', 'dog'];
+        $pattern = '1900';
 
-        $password = '1900';
-        $matches = YearMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame($password, $matches[0]->token, "Token incorrect");
-        $this->assertSame($password, $matches[0]->password, "Password incorrect");
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+            $this->checkMatches(
+                "identifies years surrounded by words",
+                YearMatch::match($password),
+                'year',
+                [$pattern],
+                [[$i, $j]],
+                []
+            );
+        }
 
         $password = 'password1900';
         $matches = YearMatch::match($password);
         $this->assertCount(1, $matches);
         $this->assertSame("1900", $matches[0]->token, "Token incorrect");
+    }
+
+    public function testYearWithinOtherNumbers()
+    {
+        $password = '419004';
+        $this->checkMatches(
+            "matches year within other numbers",
+            YearMatch::match($password),
+            'year',
+            ['1900'],
+            [[1, 4]],
+            []
+        );
     }
 
     public function testEntropy()

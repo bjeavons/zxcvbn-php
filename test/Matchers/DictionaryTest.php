@@ -187,24 +187,36 @@ class DictionaryTest extends AbstractMatchTest
         );
     }
 
-    public function testMatch()
+    public function testUserProvidedInputInNoOtherDictionary()
     {
-        $password = 'password';
-        $matches = DictionaryMatch::match($password);
-        // 11 matches for "password" in english and password dictionaries.
-        $this->assertCount(11, $matches);
-        $this->assertSame('pass', $matches[0]->token, "Token incorrect");
-        $this->assertSame('passwords', $matches[0]->dictionaryName, "Dictionary name incorrect");
+        $password = '39kx9.1x0!3n6';
+        $this->checkMatches(
+            "matches with provided user input dictionary",
+            DictionaryMatch::match($password, [$password]),
+            'dictionary',
+            [$password],
+            [[0, 12]],
+            [
+                'matchedWord' => [$password],
+                'rank' => [1],
+            ]
+        );
+    }
 
-        $password = '8dll20BEN3lld0';
-        $matches = DictionaryMatch::match($password);
-        $this->assertCount(2, $matches);
-
-        $password = '39Kx9.1x0!3n6';
-        $matches = DictionaryMatch::match($password, [$password]);
-        $this->assertCount(1, $matches);
-        $this->assertSame('user_inputs', $matches[0]->dictionaryName, "Dictionary name incorrect");
-  }
+    public function testMatchesInMultipleDictionaries()
+    {
+        $password = 'pass';
+        $this->checkMatches(
+            "matches words in multiple dictionaries",
+            DictionaryMatch::match($password),
+            'dictionary',
+            ['pass', 'as', 'ass'],
+            [[0, 3], [1, 2], [1, 3]],
+            [
+                'dictionaryName' => ['passwords', 'english_wikipedia', 'us_tv_and_film']
+            ]
+        );
+    }
 
     public function testEntropy()
     {
