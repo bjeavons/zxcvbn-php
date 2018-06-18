@@ -6,26 +6,29 @@ Public API: the main public API of zxcvbn-php does not need to change with this 
 
 Planned Changes:
 * Zxcvbn: I updated `passwordStrength()` to more closely mimic upstream's `main.coffee`. I arguably went too far, and might walk that back a bit.
-* Feedback: Added.
+* Feedback: added.
   * [ ] Need to flesh out based on upstream. Should be pretty straightforward.
+  * [ ] Write tests for the feedback.
 * Time estimator: added.
   * [x] Just need to flesh out `displayTime()` based on upstream. Should be straightforward.
-* Matchers: 
-  * The structure here is the same as upstream. :-)
-  * Individual matchers might or might not match; the best way to find out is with unit tests.
-  * [ ] They have a `reverse_dictionary_match` which we don't have. Should be somewhat straightforward as a subclass of `DictionaryMatch`.
-  * They have a `regex_match` which seems to be a pure equivalent of `YearMatch`
-  * We have `DigitMatch` which they don't. I guess we should get rid of it.
-* [ ] `Scorer`:  This is vastly different between upstream and this port. Upstream's algorithm is complicated and hard to follow. I think this will be the hardest thing to bring up to parity. *Some* of this may be similar to `Searcher::getMinimumEntropy()` but I really can't tell.
-  * Some of the other language ports e.g. https://github.com/rianhunter/zxcvbn-cpp/blob/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp may also be useful references when porting.
-* :question: `ScorerInterface`: In upstream, `scoring.most_guessable_match_sequence` returns a hash with password/guesses/guesses_log10/sequence. Our current `ScorerInterface` has methods for `getScore()` and `getMetrics()`. Our interface is clearly "cleaner", but it might make more sense to just mirror upstream. :neutral_face:
+  * [ ] Write tests for the time estimator.
+* Matchers: added.
+  * [x] The majority of the matchers have now been ported.
+  * [x] Port the tests for the matchers.
+  * [ ] RepeatMatch: `base_guesses` and `base_matches` are still missing, but this will require the `Scorer` to be up and running before we can implement them.
+* Entropy: this is a feature unique to the PHP library.
+  * [ ] Some changes will be needed since we've added new matches.
+  * [ ] Some new tests will also likely need to be written.
+* `Scorer`:  This is vastly different between upstream and this port. Upstream's algorithm is complicated and hard to follow. I think this will be the hardest thing to bring up to parity. *Some* of this may be similar to `Searcher::getMinimumEntropy()` but I really can't tell.
+  * Some of the other language ports e.g. https://github.com/rianhunter/zxcvbn-cpp/blob/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp may also be useful references when porting. 
+  * :question: `ScorerInterface`: In upstream, `scoring.most_guessable_match_sequence` returns a hash with password/guesses/guesses_log10/sequence. Our current `ScorerInterface` has methods for `getScore()` and `getMetrics()`. Our interface is clearly "cleaner", but it might make more sense to just mirror upstream. :neutral_face:
+  * [ ] Port or rewrite the scorer - this includes returning `guesses`, `guesses_log10` and `score`.
+  * [ ] Write tests for the scorer.
 * [ ] `Searcher`: Once we're done using it as a reference when porting `Scorer`, it should probably be deleted.
 * [x] Data files: We have 3 files at `src/Matchers/*.json` which at least approximately correspond to their data files. Their `data/` directory has been copied verbatim, and the `data-scripts/*.py` scripts which were generating coffeescript have been modified to output JSON instead. Some of upstream's `data-scripts` are used to build `data/*.txt` files based on wikipedia/wiktionary/etc exports. Those haven't been copied over; instead, if the upstream data files change, we should recopy the data files.
-  * `src/Matchers/adjacency_graphs.json` This is identical to upstream.
-  * `src/Matchers/frequency_lists.json` This had different datasets, but has now been updated.
-  * [ ] `src/Matchers/ranked_frequency_lists.json` upstream builds this dynamically (see `matching.coffee:5`). Given how PHP handles arrays/dicts I'd be surprised if we need this pre-generated.
+  * [x] `src/Matchers/adjacency_graphs.json` This is identical to upstream.
+  * [x] `src/Matchers/frequency_lists.json` This had different datasets, but has now been updated.
+  * [x] `src/Matchers/ranked_frequency_lists.json` upstream builds this dynamically (see `matching.coffee:5`), but we don't need it as we're able to use `frequency_lists.json` instead. 
 * Documentation:
   * [ ] Add phpdoc @see or @link references to upstream methods
-* Tests
-  * [ ] Upstream's tests are poorly organized, but they're pretty comprehensive. We should find a way to use their test cases, but structure them well like the current tests.
 
