@@ -7,14 +7,14 @@ use ZxcvbnPhp\Matchers\ReverseDictionaryMatch;
 
 class RerverseDictionaryTest extends AbstractMatchTest
 {
-    protected static $testDicts = array(
-        'd1' => array(
+    protected static $testDicts = [
+        'd1' => [
             '123' => 1,
             '321' => 2,
             '456' => 3,
             '654' => 4,
-        ),
-    );
+        ],
+    ];
 
     public function testReversedDictionaryWordWithCustomDictionary()
     {

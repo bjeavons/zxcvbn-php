@@ -12,9 +12,9 @@ class YearMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/");
         foreach ($groups as $captures) {
             $matches[] = new static($password, $captures[1]['begin'], $captures[1]['end'], $captures[1]['token']);
@@ -24,13 +24,13 @@ class YearMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        return array(
+        return [
             'warning' => "Recent years are easy to guess",
-            'suggestions' => array(
+            'suggestions' => [
                 'Avoid recent years',
                 'Avoid years that are associated with you',
-            )
-        );
+            ]
+        ];
     }
 
     /**

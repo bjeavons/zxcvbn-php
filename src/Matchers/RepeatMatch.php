@@ -22,9 +22,9 @@ class RepeatMatch extends Match
      *
      * @return RepeatMatch[]
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         $lastIndex = 0;
 
         while ($lastIndex < strlen($password)) {
@@ -62,7 +62,7 @@ class RepeatMatch extends Match
                 $match[0]['token'],
                 $repeatedChar,
                 null,
-                array(),
+                [],
                 $repeatCount
             );
 
@@ -78,12 +78,12 @@ class RepeatMatch extends Match
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
-        return array(
+        return [
             'warning' => $warning,
-            'suggestions' => array(
+            'suggestions' => [
                 'Avoid repeated words and characters'
-            )
-        );
+            ]
+        ];
     }
 
     /**

@@ -50,10 +50,10 @@ class SpatialMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array(), array $graphs = null)
+    public static function match($password, array $userInputs = [], array $graphs = null)
     {
 
-        $matches = array();
+        $matches = [];
         if (!$graphs) {
             $graphs = static::getAdjacencyGraphs();
         }
@@ -73,12 +73,12 @@ class SpatialMatch extends Match
             ? 'Straight rows of keys are easy to guess'
             : 'Short keyboard patterns are easy to guess';
 
-        return array(
+        return [
             'warning' => $warning,
-            'suggestions' => array(
+            'suggestions' => [
                 'Use a longer keyboard pattern with more turns'
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -88,7 +88,7 @@ class SpatialMatch extends Match
      * @param $token
      * @param array $params
      */
-    public function __construct($password, $begin, $end, $token, $params = array())
+    public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         $this->pattern = 'spatial';
@@ -154,7 +154,7 @@ class SpatialMatch extends Match
      */
     protected static function graphMatch($password, $graph, $graphName)
     {
-        $result = array();
+        $result = [];
         $i = 0;
 
         $passwordLength = strlen($password);
@@ -176,7 +176,7 @@ class SpatialMatch extends Match
                 $prevChar = $password[$j - 1];
                 $found = false;
                 $curDirection = -1;
-                $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : array();
+                $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : [];
 
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
@@ -213,13 +213,13 @@ class SpatialMatch extends Match
                 else {
                     // Ignore length 1 or 2 chains.
                     if ($j - $i > 2)  {
-                        $result[] = array(
+                        $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,
                             'token' => substr($password, $i, $j - $i),
                             'turns' => $turns,
                             'shifted_count' => $shiftedCount
-                        );
+                        ];
                     }
                     // ...and then start a new search for the rest of the password.
                     $i = $j;

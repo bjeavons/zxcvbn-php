@@ -8,11 +8,11 @@ class SequenceTest extends AbstractMatchTest
 {
     public function shortPasswordProvider()
     {
-        return array(
-            array(''),
-            array('a'),
-            array('1'),
-        );
+        return [
+            [''],
+            ['a'],
+            ['1'],
+        ];
     }
 
     /**
@@ -50,8 +50,8 @@ class SequenceTest extends AbstractMatchTest
 
     public function testEmbeddedSequencePatterns()
     {
-        $prefixes = array('!', '22');
-        $suffixes = array('!', '22');
+        $prefixes = ['!', '22'];
+        $suffixes = ['!', '22'];
         $pattern = 'jihg';
 
         foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
@@ -71,21 +71,21 @@ class SequenceTest extends AbstractMatchTest
 
     public function sequenceProvider()
     {
-        return array(
-            array('ABC',   'upper',  true),
-            array('CBA',   'upper',  false),
-            array('PQR',   'upper',  true),
-            array('RQP',   'upper',  false),
-            array('XYZ',   'upper',  true),
-            array('ZYX',   'upper',  false),
-            array('abcd',  'lower',  true),
-            array('dcba',  'lower',  false),
-            array('jihg',  'lower',  false),
-            array('wxyz',  'lower',  true),
-            array('zxvt',  'lower',  false),
-            array('0369',  'digits', true),
-            array('97531', 'digits', false)
-        );
+        return [
+            ['ABC',   'upper',  true],
+            ['CBA',   'upper',  false],
+            ['PQR',   'upper',  true],
+            ['RQP',   'upper',  false],
+            ['XYZ',   'upper',  true],
+            ['ZYX',   'upper',  false],
+            ['abcd',  'lower',  true],
+            ['dcba',  'lower',  false],
+            ['jihg',  'lower',  false],
+            ['wxyz',  'lower',  true],
+            ['zxvt',  'lower',  false],
+            ['0369',  'digits', true],
+            ['97531', 'digits', false]
+        ];
     }
 
     /**

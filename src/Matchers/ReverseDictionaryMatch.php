@@ -11,7 +11,7 @@ class ReverseDictionaryMatch extends DictionaryMatch
      *
      * @inheritdoc
      */
-    public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
+    public static function match($password, array $userInputs = [], $rankedDictionaries = null)
     {
         $matches = parent::match(strrev($password), $userInputs, $rankedDictionaries);
         /** @var ReverseDictionaryMatch $match */

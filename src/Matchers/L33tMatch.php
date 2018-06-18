@@ -12,7 +12,7 @@ class L33tMatch extends DictionaryMatch
     /**
      * @var array
      */
-    public $sub = array();
+    public $sub = [];
 
     /**
      * @var string
@@ -29,15 +29,15 @@ class L33tMatch extends DictionaryMatch
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array(), $rankedDictionaries = null)
+    public static function match($password, array $userInputs = [], $rankedDictionaries = null)
     {
         // Translate l33t password and dictionary match the translated password.
         $maps = array_filter(static::getL33tSubstitutions(static::getL33tSubtable($password)));
         if (empty($maps)) {
-            return array();
+            return [];
         }
 
-        $matches = array();
+        $matches = [];
         if (!$rankedDictionaries) {
             $rankedDictionaries = static::getRankedDictionaries();
         }
@@ -53,7 +53,7 @@ class L33tMatch extends DictionaryMatch
                     continue;
                 }
 
-                $display = array();
+                $display = [];
                 foreach ($map as $i => $t) {
                     if (strpos($token, (string)$i) !== false) {
                         $match->sub[$i] = $t;
@@ -77,7 +77,7 @@ class L33tMatch extends DictionaryMatch
      * @param $token
      * @param array $params
      */
-    public function __construct($password, $begin, $end, $token, $params = array())
+    public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token, $params);
         $this->l33t = true;
@@ -146,26 +146,26 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tTable()
     {
-        return array(
-            'a' => array('4', '@'),
-            'b' => array('8'),
-            'c' => array('(', '{', '[', '<'),
-            'e' => array('3'),
-            'g' => array('6', '9'),
-            'i' => array('1', '!', '|'),
-            'l' => array('1', '|', '7'),
-            'o' => array('0'),
-            's' => array('$', '5'),
-            't' => array('+', '7'),
-            'x' => array('%'),
-            'z' => array('2'),
-        );
+        return [
+            'a' => ['4', '@'],
+            'b' => ['8'],
+            'c' => ['(', '{', '[', '<'],
+            'e' => ['3'],
+            'g' => ['6', '9'],
+            'i' => ['1', '!', '|'],
+            'l' => ['1', '|', '7'],
+            'o' => ['0'],
+            's' => ['$', '5'],
+            't' => ['+', '7'],
+            'x' => ['%'],
+            'z' => ['2'],
+        ];
     }
 
     protected static function getL33tSubtable($password){
         $passwordChars = array_unique(str_split($password));
 
-        $subTable = array();
+        $subTable = [];
 
         $table = static::getL33tTable();
         foreach ($table as $letter => $substitutions) {
@@ -181,12 +181,12 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tSubstitutions($subtable)
     {
-        $result = array(array());
+        $result = [[]];
         foreach ($subtable as $letter => $substitutions) {
-            $tmp = array();
+            $tmp = [];
             foreach ($result as $result_item) {
                 foreach ($substitutions as $substitutedCharacter) {
-                    $tmp[] = $result_item + array($substitutedCharacter => $letter);
+                    $tmp[] = $result_item + [$substitutedCharacter => $letter];
                 }
             }
             $result = $tmp;

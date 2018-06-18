@@ -52,7 +52,7 @@ class Zxcvbn
      *     match_sequence
      *     score
      */
-    public function passwordStrength($password, array $userInputs = array())
+    public function passwordStrength($password, array $userInputs = [])
     {
         $timeStart = microtime(true);
 
@@ -78,10 +78,10 @@ class Zxcvbn
         return array_merge(
             $result,
             $attackTimes,
-            array(
+            [
                 'feedback'  => $feedback,
                 'calc_time' => microtime(true) - $timeStart
-            )
+            ]
         );
     }
 }

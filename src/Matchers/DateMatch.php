@@ -12,31 +12,31 @@ class DateMatch extends Match
     const MIN_YEAR = 1000;
     const MAX_YEAR = 2050;
 
-    private static $DATE_SPLITS = array(
-        4 => array(         # For length-4 strings, eg 1191 or 9111, two ways to split:
-            array(1, 2),    # 1 1 91 (2nd split starts at index 1, 3rd at index 2)
-            array(2, 3),    # 91 1 1
-        ),
-        5 => array(
-            array(1, 3),    # 1 11 91
-            array(2, 3)     # 11 1 91
-        ),
-        6 => array(
-            array(1, 2),    # 1 1 1991
-            array(2, 4),    # 11 11 91
-            array(4, 5),    # 1991 1 1
-        ),
-        7 => array(
-            array(1, 3),    # 1 11 1991
-            array(2, 3),    # 11 1 1991
-            array(4, 5),    # 1991 1 11
-            array(4, 6),    # 1991 11 1
-        ),
-        8 => array(
-            array(2, 4),    # 11 11 1991
-            array(4, 6),    # 1991 11 11
-        ),
-    );
+    private static $DATE_SPLITS = [
+        4 => [         # For length-4 strings, eg 1191 or 9111, two ways to split:
+            [1, 2],    # 1 1 91 (2nd split starts at index 1, 3rd at index 2)
+            [2, 3],    # 91 1 1
+        ],
+        5 => [
+            [1, 3],    # 1 11 91
+            [2, 3]     # 11 1 91
+        ],
+        6 => [
+            [1, 2],    # 1 1 1991
+            [2, 4],    # 11 11 91
+            [4, 5],    # 1991 1 1
+        ],
+        7 => [
+            [1, 3],    # 1 11 1991
+            [2, 3],    # 11 1 1991
+            [4, 5],    # 1991 1 11
+            [4, 6],    # 1991 11 1
+        ],
+        8 => [
+            [2, 4],    # 11 11 1991
+            [4, 6],    # 1991 11 11
+        ],
+    ];
 
     const DATE_NO_SEPARATOR = '/^\d{4,8}$/';
 
@@ -74,7 +74,7 @@ class DateMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
         # a "date" is recognized as:
         #   any 3-tuple that starts or ends with a 2- or 4-digit year,
@@ -94,7 +94,7 @@ class DateMatch extends Match
         # note: instead of using a lazy or greedy regex to find many dates over the full string,
         # this uses a ^...$ regex against every substring of the password -- less performant but leads
         # to every possible date match.
-        $matches = array();
+        $matches = [];
         $dates = static::removeRedundantMatches(array_merge(
             static::datesWithoutSeparators($password),
             static::datesWithSeparators($password)
@@ -107,12 +107,12 @@ class DateMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        return array(
+        return [
             'warning' => "Dates are often easy to guess",
-            'suggestions' => array(
+            'suggestions' => [
                 'Avoid dates and years that are associated with you'
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -163,7 +163,7 @@ class DateMatch extends Match
      */
     protected static function datesWithSeparators($password)
     {
-        $matches = array();
+        $matches = [];
         $length = strlen($password);
 
         // dates with separators are between length 6 '1/1/91' and 10 '11/11/1991'
@@ -175,17 +175,17 @@ class DateMatch extends Match
                     continue;
                 }
 
-                $date = static::checkDate(array(
+                $date = static::checkDate([
                     (integer) $captures[1],
                     (integer) $captures[3],
                     (integer) $captures[4]
-                ));
+                ]);
 
                 if ($date === false) {
                     continue;
                 }
 
-                $matches[] = array(
+                $matches[] = [
                     'begin' => $begin,
                     'end' => $end,
                     'token' => $token,
@@ -193,7 +193,7 @@ class DateMatch extends Match
                     'day' => $date['day'],
                     'month' => $date['month'],
                     'year' => $date['year'],
-                );
+                ];
             }
         }
 
@@ -208,7 +208,7 @@ class DateMatch extends Match
      */
     protected static function datesWithoutSeparators($password)
     {
-        $matches = array();
+        $matches = [];
         $length = strlen($password);
 
         // dates without separators are between length 4 '1191' and 8 '11111991'
@@ -220,7 +220,7 @@ class DateMatch extends Match
                     continue;
                 }
 
-                $candidates = array();
+                $candidates = [];
 
                 $possibleSplits = static::$DATE_SPLITS[strlen($token)];
                 foreach ($possibleSplits as $splitPositions) {
@@ -259,7 +259,7 @@ class DateMatch extends Match
                 $month = $bestCandidate['month'];
                 $year = $bestCandidate['year'];
 
-                $matches[] = array(
+                $matches[] = [
                     'begin' => $begin,
                     'end' => $end,
                     'token' => $token,
@@ -267,7 +267,7 @@ class DateMatch extends Match
                     'day' => $day,
                     'month' => $month,
                     'year' => $year
-                );
+                ];
             }
         }
 
@@ -317,19 +317,19 @@ class DateMatch extends Match
         }
 
         # first look for a four digit year: yyyy + daymonth or daymonth + yyyy
-        $possibleYearSplits = array(
-            array($ints[2], array($ints[0], $ints[1])), // year last
-            array($ints[0], array($ints[1], $ints[2])), // year first
-        );
+        $possibleYearSplits = [
+            [$ints[2], [$ints[0], $ints[1]]], // year last
+            [$ints[0], [$ints[1], $ints[2]]], // year first
+        ];
         // var_dump($possibleYearSplits);die();
         foreach ($possibleYearSplits as list($year, $rest)) {
             if ($year >= static::MIN_YEAR && $year <= static::MAX_YEAR) {
                 if ($dm = static::mapIntsToDayMonth($rest)) {
-                    return array(
+                    return [
                         'year'  => $year,
                         'month' => $dm['month'],
                         'day'   => $dm['day'],
-                    );
+                    ];
                 }
                 # for a candidate that includes a four-digit year,
                 # when the remaining ints don't match to a day and month,
@@ -340,11 +340,11 @@ class DateMatch extends Match
 
         foreach ($possibleYearSplits as list($year, $rest)) {
             if ($dm = static::mapIntsToDayMonth($rest)) {
-                return array(
+                return [
                     'year'  => static::twoToFourDigitYear($year),
                     'month' => $dm['month'],
                     'day'   => $dm['day'],
-                );
+                ];
             }
         }
 
@@ -353,12 +353,12 @@ class DateMatch extends Match
 
     protected static function mapIntsToDayMonth($ints)
     {
-        foreach(array($ints, array_reverse($ints)) as list($d, $m)) {
+        foreach([$ints, array_reverse($ints)] as list($d, $m)) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
-                return array(
+                return [
                     'day'   => $d,
                     'month' => $m
-                );
+                ];
             }
         }
 

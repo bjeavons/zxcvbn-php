@@ -7,29 +7,29 @@ use ZxcvbnPhp\Matchers\ReverseDictionaryMatch;
 
 class DictionaryTest extends AbstractMatchTest
 {
-    protected static $testDicts = array(
-        'd1' => array(
+    protected static $testDicts = [
+        'd1' => [
             'motherboard' => 1,
             'mother' => 2,
             'board' => 3,
             'abcd' => 4,
             'cdef' => 5,
-        ),
-        'd2' => array(
+        ],
+        'd2' => [
             'z' => 1,
             '8' => 2,
             '99' => 3,
             '$' => 4,
             'asdf1234&*' => 5
-        )
-    );
+        ]
+    ];
 
     public function madeUpWordsProvider()
     {
-        return array(
-            array('jjj'),
-            array('kdncpqw'),
-        );
+        return [
+            ['jjj'],
+            ['kdncpqw'],
+        ];
     }
 
     /**
@@ -101,8 +101,8 @@ class DictionaryTest extends AbstractMatchTest
 
     public function testWordsSurroundedByNonWords()
     {
-        $prefixes = array('q', '%%');
-        $suffixes = array('%', 'qq');
+        $prefixes = ['q', '%%'];
+        $suffixes = ['%', 'qq'];
         $pattern = 'asdf1234&*';
 
         foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
@@ -201,7 +201,7 @@ class DictionaryTest extends AbstractMatchTest
         $this->assertCount(2, $matches);
 
         $password = '39Kx9.1x0!3n6';
-        $matches = DictionaryMatch::match($password, array($password));
+        $matches = DictionaryMatch::match($password, [$password]);
         $this->assertCount(1, $matches);
         $this->assertSame('user_inputs', $matches[0]->dictionaryName, "Dictionary name incorrect");
   }

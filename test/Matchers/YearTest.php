@@ -8,20 +8,20 @@ class YearTest extends AbstractMatchTest
 {
     public function recentYearProvider()
     {
-        return array(
-            array('1922'),
-            array('2001'),
-            array('2017')
-        );
+        return [
+            ['1922'],
+            ['2001'],
+            ['2017']
+        ];
     }
 
     public function nonRecentYearProvider()
     {
-        return array(
-            array('1420'),
-            array('1899'),
-            array('2020')
-        );
+        return [
+            ['1420'],
+            ['1899'],
+            ['2020']
+        ];
     }
 
     /**

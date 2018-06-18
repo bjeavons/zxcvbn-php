@@ -8,12 +8,12 @@ class SpatialTest extends AbstractMatchTest
 {
     public function shortPatternDataProvider()
     {
-        return array(
-            array(''),
-            array('/'),
-            array('qw'),
-            array('*/'),
-        );
+        return [
+            [''],
+            ['/'],
+            ['qw'],
+            ['*/'],
+        ];
     }
 
     /**
@@ -44,11 +44,11 @@ class SpatialTest extends AbstractMatchTest
         $password = "rz!{$pattern}%z";
 
         // for testing, make a subgraph that contains a single keyboard
-        $graphs = array('qwerty' => SpatialMatch::getAdjacencyGraphs()['qwerty']);
+        $graphs = ['qwerty' => SpatialMatch::getAdjacencyGraphs()['qwerty']];
 
         $this->checkMatches(
             "matches against spatial patterns surrounded by non-spatial patterns",
-            SpatialMatch::match($password, array(), $graphs),
+            SpatialMatch::match($password, [], $graphs),
             'spatial',
             [$pattern],
             [[3, 8]],
@@ -89,11 +89,11 @@ class SpatialTest extends AbstractMatchTest
      */
     public function testSpatialPatterns($password, $keyboard, $turns, $shifts)
     {
-        $graphs = array($keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]);
+        $graphs = [$keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]];
 
         $this->checkMatches(
             "matches '$password' as a $keyboard pattern",
-            SpatialMatch::match($password, array(), $graphs),
+            SpatialMatch::match($password, [], $graphs),
             'spatial',
             [$password],
             [[0, strlen($password) - 1]],

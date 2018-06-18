@@ -23,9 +23,9 @@ class Matcher
      * @return Match[]
      *   Array of Match objects.
      */
-    public function getMatches($password, array $userInputs = array())
+    public function getMatches($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         foreach ($this->getMatchers() as $matcher) {
             $matched = $matcher::match($password, $userInputs);
             if (is_array($matched) && !empty($matched)) {
@@ -57,7 +57,7 @@ class Matcher
     protected function getMatchers()
     {
         // @todo change to dynamic
-        return array(
+        return [
             'ZxcvbnPhp\Matchers\DateMatch',
             'ZxcvbnPhp\Matchers\L33tMatch',
             'ZxcvbnPhp\Matchers\RepeatMatch',
@@ -66,6 +66,6 @@ class Matcher
             'ZxcvbnPhp\Matchers\YearMatch',
             'ZxcvbnPhp\Matchers\DictionaryMatch',
             'ZxcvbnPhp\Matchers\ReverseDictionaryMatch',
-        );
+        ];
     }
 }

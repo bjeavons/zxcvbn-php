@@ -26,13 +26,13 @@ class SequenceMatch extends Match
      *
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         $passwordLength = strlen($password);
 
         if ($passwordLength === 1) {
-            return array();
+            return [];
         }
 
         $begin = 0;
@@ -88,12 +88,12 @@ class SequenceMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        return array(
+        return [
             'warning' => "Sequences like abc or 6543 are easy to guess",
-            'suggestions' => array(
+            'suggestions' => [
                 'Avoid sequences'
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -103,7 +103,7 @@ class SequenceMatch extends Match
      * @param $token
      * @param array $params
      */
-    public function __construct($password, $begin, $end, $token, $params = array())
+    public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         $this->pattern = 'sequence';

@@ -8,15 +8,15 @@ class DateTest extends AbstractMatchTest
 {
     public function separatorProvider()
     {
-        return array(
-            array(''),
-            array(' '),
-            array('-'),
-            array('/'),
-            array('\\'),
-            array('_'),
-            array('.'),
-        );
+        return [
+            [''],
+            [' '],
+            ['-'],
+            ['/'],
+            ['\\'],
+            ['_'],
+            ['.'],
+        ];
     }
 
     /**
@@ -44,8 +44,8 @@ class DateTest extends AbstractMatchTest
 
     public function testDateOrders()
     {
-        list($d, $m, $y) = array(8, 8, 88);
-        $orders = array('mdy', 'dmy', 'ymd', 'ydm');
+        list($d, $m, $y) = [8, 8, 88];
+        $orders = ['mdy', 'dmy', 'ymd', 'ydm'];
         foreach ($orders as $order) {
             $password = str_replace(
                 ['y', 'm', 'd'],
@@ -88,12 +88,12 @@ class DateTest extends AbstractMatchTest
 
     public function dateProvider()
     {
-        return array(
-            array(1,  1,  1999),
-            array(11, 8,  2000),
-            array(9,  12, 2005),
-            array(22, 11, 1551)
-        );
+        return [
+            [1,  1,  1999],
+            [11, 8,  2000],
+            [9,  12, 2005],
+            [22, 11, 1551]
+        ];
     }
 
     /**
@@ -169,8 +169,8 @@ class DateTest extends AbstractMatchTest
 
     public function testMatchesEmbeddedDates()
     {
-        $prefixes = array('a', 'ab');
-        $suffixes = array('!');
+        $prefixes = ['a', 'ab'];
+        $suffixes = ['!'];
         $pattern = '1/1/91';
 
         foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {

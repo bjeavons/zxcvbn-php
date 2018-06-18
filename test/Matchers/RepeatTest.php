@@ -40,8 +40,8 @@ class RepeatTest extends AbstractMatchTest
 
     public function testSingleCharacterRepeats()
     {
-        foreach (array(3, 12) as $length) {
-            foreach (array('a', 'Z', '4', '&') as $chr) {
+        foreach ([3, 12] as $length) {
+            foreach (['a', 'Z', '4', '&'] as $chr) {
                 $pattern = str_repeat($chr, $length);
 
                 $this->checkMatches(

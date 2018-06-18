@@ -24,12 +24,12 @@ class MockL33tMatch extends L33tMatch
 
     protected static function getL33tTable()
     {
-        return array(
+        return [
             'a' => ['4', '@'],
             'c' => ['(', '{', '[', '<'],
             'g' => ['6', '9'],
             'o' => ['0'],
-        );
+        ];
     }
 }
 
@@ -74,7 +74,7 @@ class L33tTest extends AbstractMatchTest
         foreach ($cases as $pw => $expected) {
             $this->assertEquals(
                 $expected,
-                static::callProtectedMethod('getL33tSubtable', array($pw)),
+                static::callProtectedMethod('getL33tSubtable', [$pw]),
                 "reduces l33t table to only the substitutions that a password might be employing"
             );
         }
@@ -102,7 +102,7 @@ class L33tTest extends AbstractMatchTest
         foreach ($cases as $case) {
             $this->assertEquals(
                 $case[1],
-                static::callProtectedMethod('getL33tSubstitutions', array($case[0])),
+                static::callProtectedMethod('getL33tSubstitutions', [$case[0]]),
                 "enumerates the different sets of l33t substitutions a password might be using"
             );
         }
@@ -137,8 +137,8 @@ class L33tTest extends AbstractMatchTest
 
     public function commonCaseProvider()
     {
-        return array(
-            array(
+        return [
+            [
                 'password'        => 'p4ssword',
                 'pattern'         => 'p4ssword',
                 'word'            => 'password',
@@ -146,8 +146,8 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 3,
                 'ij'              => [0, 7],
                 'sub'             => ['4' => 'a']
-            ),
-            array(
+            ],
+            [
                 'password'        => 'p@ssw0rd',
                 'pattern'         => 'p@ssw0rd',
                 'word'            => 'password',
@@ -155,8 +155,8 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 3,
                 'ij'              => [0, 7],
                 'sub'             => ['@' => 'a', '0' => 'o']
-            ),
-            array(
+            ],
+            [
                 'password'        => 'aSdfO{G0asDfO',
                 'pattern'         => '{G0',
                 'word'            => 'cgo',
@@ -164,8 +164,8 @@ class L33tTest extends AbstractMatchTest
                 'rank'            => 1,
                 'ij'              => [5, 7],
                 'sub'             => ['{' => 'c', '0' => 'o']
-            ),
-        );
+            ],
+        ];
     }
 
     /**
