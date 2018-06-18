@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ZxcvbnPhp\Matchers\RepeatMatch;
-
 abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
 {
     /**

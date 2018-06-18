@@ -9,27 +9,24 @@ namespace ZxcvbnPhp\Matchers;
 class L33tMatch extends DictionaryMatch
 {
 
-    /**
-     * @var array
-     */
+    /** @var array An array of substitutions made to get from the token to the dictionary word. */
     public $sub = [];
 
-    /**
-     * @var string
-     */
+    /** @var string A user-readable string that shows which substitutions were detected. */
     public $subDisplay;
 
-    /**
-     * @var boolean
-     */
+    /** @var bool Whether or not the token contained l33t substitutions. */
     public $l33t = true;
 
     /**
      * Match occurences of l33t words in password to dictionary words.
      *
-     * @copydoc Match::match()
+     * @param string $password
+     * @param array $userInputs
+     * @param array $rankedDictionaries
+     * @return L33tMatch[]
      */
-    public static function match($password, array $userInputs = [], $rankedDictionaries = null)
+    public static function match($password, array $userInputs = [], $rankedDictionaries = [])
     {
         // Translate l33t password and dictionary match the translated password.
         $maps = array_filter(static::getL33tSubstitutions(static::getL33tSubtable($password)));
@@ -71,16 +68,15 @@ class L33tMatch extends DictionaryMatch
     }
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [sub, sub_display].
      */
     public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token, $params);
-        $this->l33t = true;
         if (!empty($params)) {
             $this->sub = isset($params['sub']) ? $params['sub'] : null;
             $this->subDisplay = isset($params['sub_display']) ? $params['sub_display'] : null;

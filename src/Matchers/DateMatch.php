@@ -12,6 +12,8 @@ class DateMatch extends Match
     const MIN_YEAR = 1000;
     const MAX_YEAR = 2050;
 
+    public $pattern = 'date';
+
     private static $DATE_SPLITS = [
         4 => [         # For length-4 strings, eg 1191 or 9111, two ways to split:
             [1, 2],    # 1 1 91 (2nd split starts at index 1, 3rd at index 2)
@@ -49,30 +51,24 @@ class DateMatch extends Match
      */
     const DATE_WITH_SEPARATOR = '/^(\d{1,4})([\s\/\\\\_.-])(\d{1,2})\2(\d{1,4})$/';
 
-    /**
-     * @var
-     */
+    /** @var int The day portion of the date in the token. */
     public $day;
 
-    /**
-     * @var
-     */
+    /** @var int The month portion of the date in the token. */
     public $month;
 
-    /**
-     * @var
-     */
+    /** @var int The year portion of the date in the token. */
     public $year;
 
-    /**
-     * @var
-     */
+    /** @var string The separator used for the date in the token. */
     public $separator;
 
     /**
      * Match occurences of dates in a password
      *
-     * @copydoc Match::match()
+     * @param string $password
+     * @param array $userInputs
+     * @return DateMatch[]
      */
     public static function match($password, array $userInputs = [])
     {
@@ -116,17 +112,15 @@ class DateMatch extends Match
     }
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
-     *   Array with keys: day, month, year, separator.
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [day, month, year, separator].
      */
-    public function __construct($password, $begin, $end, $token, $params)
+    public function __construct($password, $begin, $end, $token, array $params)
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'date';
         $this->day = $params['day'];
         $this->month = $params['month'];
         $this->year = $params['year'];
@@ -245,10 +239,10 @@ class DateMatch extends Match
                 // ie, considering '111504', prefer 11-15-04 to 1-1-1504
                 // (interpreting '04' as 2004)
                 $bestCandidate = $candidates[0];
-                $minDistance = self::getDistanceForMatch($bestCandidate);
+                $minDistance = self::getDistanceForMatchCandidate($bestCandidate);
 
                 foreach ($candidates as $candidate) {
-                    $distance = self::getDistanceForMatch($candidate);
+                    $distance = self::getDistanceForMatchCandidate($candidate);
                     if ($distance < $minDistance) {
                         $bestCandidate = $candidate;
                         $minDistance = $distance;
@@ -274,14 +268,22 @@ class DateMatch extends Match
         return $matches;
     }
 
-    protected static function getDistanceForMatch($match)
+    /**
+     * @param array $candidate
+     * @return int Returns the number of years between the detected year and the current year for a candidate.
+     */
+    protected static function getDistanceForMatchCandidate($candidate)
     {
-        return abs((integer)$match['year'] - (integer)date('Y'));
+        return abs((integer)$candidate['year'] - (integer)date('Y'));
     }
 
+    /**
+     * @param int[] $ints Three numbers in an array representing day, month and year (not necessarily in that order).
+     * @return array|bool Returns an associative array containing 'day', 'month' and 'year' keys, or false if the
+     *                    provided date array is invalid.
+     */
     protected static function checkDate($ints)
     {
-        // var_dump($ints);die();
         # given a 3-tuple, discard if:
         #   middle int is over 31 (for all dmy formats, years are never allowed in the middle)
         #   middle int is zero
@@ -321,7 +323,7 @@ class DateMatch extends Match
             [$ints[2], [$ints[0], $ints[1]]], // year last
             [$ints[0], [$ints[1], $ints[2]]], // year first
         ];
-        // var_dump($possibleYearSplits);die();
+
         foreach ($possibleYearSplits as list($year, $rest)) {
             if ($year >= static::MIN_YEAR && $year <= static::MAX_YEAR) {
                 if ($dm = static::mapIntsToDayMonth($rest)) {
@@ -351,6 +353,11 @@ class DateMatch extends Match
         return false;
     }
 
+    /**
+     * @param int[] $ints Two numbers in an array representing day and month (not necessarily in that order).
+     * @return array|bool Returns an associative array containing 'day' and 'month' keys, or false if any combination
+     *                    of the two numbers does not match a day and month.
+     */
     protected static function mapIntsToDayMonth($ints)
     {
         foreach([$ints, array_reverse($ints)] as list($d, $m)) {
@@ -365,6 +372,10 @@ class DateMatch extends Match
         return false;
     }
 
+    /**
+     * @param int $year A two digit number representing a year.
+     * @return int Returns the most likely four digit year for the provided number.
+     */
     protected static function twoToFourDigitYear($year)
     {
         if ($year > 99) {
@@ -380,8 +391,16 @@ class DateMatch extends Match
     }
 
     /**
-     * @param array $matches
-     * @return array
+     * Removes date matches that are strict substrings of others.
+     *
+     * This is helpful because the match function will contain matches for all valid date strings in a way that is
+     * tricky to capture with regexes only. While thorough, it will contain some unintuitive noise:
+     *
+     *   '2015_06_04', in addition to matching 2015_06_04, will also contain
+     *   5(!) other date matches: 15_06_04, 5_06_04, ..., even 2015 (matched as 5/1/2020)
+     *
+     * @param array $matches An array of matches (not Match objects)
+     * @return array The provided array of matches, but with matches that are strict substrings of others removed.
      */
     protected static function removeRedundantMatches($matches)
     {

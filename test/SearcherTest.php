@@ -18,7 +18,18 @@ class SearcherTest extends \PHPUnit_Framework_TestCase
 
         // Test password with repeat pattern.
         $password = 'aaa';
-        $match = new RepeatMatch($password, 0, 2, 'aaa', 'a', 12, [], 3);
+        $match = new RepeatMatch(
+            $password,
+            0,
+            2,
+            'aaa',
+            [
+                'repeated_char' => 'a',
+                'base_guesses' => 12,
+                'base_matches' => [],
+                'repeat_count' => 3
+            ]
+        );
         $entropy = $searcher->getMinimumEntropy($password, [$match]);
         $this->assertEquals(log(26 * 3, 2), $entropy, "Entropy incorrect for '$password'");
         $sequence = $searcher->matchSequence;

@@ -6,25 +6,23 @@ class SequenceMatch extends Match
 {
     const MAX_DELTA = 5;
 
-    /**
-     * @var
-     */
+    public $pattern = 'sequence';
+
+    /** @var string The name of the detected sequence. */
     public $sequenceName;
 
-    /**
-     * @var
-     */
+    /** @var int The number of characters in the complete sequence space. */
     public $sequenceSpace;
 
-    /**
-     * @var
-     */
+    /** @var bool True if the sequence is ascending, and false if it is descending. */
     public $ascending;
 
     /**
      * Match sequences of three or more characters.
      *
-     * @copydoc Match::match()
+     * @param string $password
+     * @param array $userInputs
+     * @return SequenceMatch[]
      */
     public static function match($password, array $userInputs = [])
     {
@@ -97,16 +95,15 @@ class SequenceMatch extends Match
     }
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [sequenceName, sequenceSpace, ascending].
      */
     public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'sequence';
         if (!empty($params)) {
             $this->sequenceName = isset($params['sequenceName']) ? $params['sequenceName'] : null;
             $this->sequenceSpace = isset($params['sequenceSpace']) ? $params['sequenceSpace'] : null;

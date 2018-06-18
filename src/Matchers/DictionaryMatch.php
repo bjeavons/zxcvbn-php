@@ -5,30 +5,32 @@ namespace ZxcvbnPhp\Matchers;
 class DictionaryMatch extends Match
 {
 
-    /**
-     * @var
-     */
+    public $pattern = 'dictionary';
+
+    /** @var string The name of the dictionary that the token was found in. */
     public $dictionaryName;
 
-    /**
-     * @var
-     */
+    /** @var int The rank of the token in the dictionary. */
     public $rank;
 
-    /**
-     * @var
-     */
+    /** @var string The word that was matched from the dictionary. */
     public $matchedWord;
 
+    /** @var bool Whether or not the matched word was reversed in the token. */
     public $reversed = false;
+
+    /** @var bool Whether or not the token contained l33t substitutions. */
     public $l33t = false;
 
     /**
      * Match occurences of dictionary words in password.
      *
+     * @param string $password
+     * @param array $userInputs
+     * @param array $rankedDictionaries
      * @return DictionaryMatch[]
      */
-    public static function match($password, array $userInputs = [], $rankedDictionaries = null)
+    public static function match($password, array $userInputs = [], $rankedDictionaries = [])
     {
         $matches = [];
         if ($rankedDictionaries) {
@@ -55,16 +57,15 @@ class DictionaryMatch extends Match
     }
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [dictionary_name, matched_word, rank].
      */
-    public function __construct($password, $begin, $end, $token, $params = [])
+    public function __construct($password, $begin, $end, $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'dictionary';
         if (!empty($params)) {
             $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
             $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
@@ -183,10 +184,11 @@ class DictionaryMatch extends Match
     }
 
     /**
-     * Match password in a dictionary.
+     * Attempts to find the provided password (as well as all possible substrings) in a dictionary.
      *
      * @param string $password
      * @param array $dict
+     * @return array
      */
     protected static function dictionaryMatch($password, $dict)
     {

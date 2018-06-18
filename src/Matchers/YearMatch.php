@@ -7,10 +7,14 @@ class YearMatch extends Match
 
     const NUM_YEARS = 119;
 
+    public $pattern = 'year';
+
     /**
      * Match occurences of years in a password
      *
-     * @copydoc Match::match()
+     * @param string $password
+     * @param array $userInputs
+     * @return YearMatch[]
      */
     public static function match($password, array $userInputs = [])
     {
@@ -31,18 +35,6 @@ class YearMatch extends Match
                 'Avoid years that are associated with you',
             ]
         ];
-    }
-
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     */
-    public function __construct($password, $begin, $end, $token)
-    {
-        parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'year';
     }
 
     /**

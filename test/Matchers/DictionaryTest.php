@@ -3,7 +3,6 @@
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\DictionaryMatch;
-use ZxcvbnPhp\Matchers\ReverseDictionaryMatch;
 
 class DictionaryTest extends AbstractMatchTest
 {

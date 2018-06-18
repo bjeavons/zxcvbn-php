@@ -3,7 +3,6 @@
 namespace ZxcvbnPhp;
 
 use ZxcvbnPhp\Matchers\Match;
-use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
 {
