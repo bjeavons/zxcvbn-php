@@ -63,7 +63,10 @@ class MatchTest extends \PHPUnit_Framework_TestCase
      */
     private function getMatchMock($guesses)
     {
-        $stub = $this->createPartialMock(DateMatch::class, ['getGuesses']);
+        $stub = $this->getMockBuilder(DateMatch::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getGuesses'])
+            ->getMock();
         $stub->method('getGuesses')->willReturn($guesses);
 
         return $stub;
