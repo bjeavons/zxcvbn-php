@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Scorer;
+
 /**
  * Class Bruteforce
  * @package ZxcvbnPhp\Matchers
@@ -12,8 +14,6 @@ class Bruteforce extends Match
 {
 
     const BRUTEFORCE_CARDINALITY = 10;
-    const MIN_SUBMATCH_GUESSES_SINGLE_CHAR = 10;
-    const MIN_SUBMATCH_GUESSES_MULTI_CHAR = 50;
 
     public $pattern = 'bruteforce';
 
@@ -71,9 +71,9 @@ class Bruteforce extends Match
         // small detail: make bruteforce matches at minimum one guess bigger than smallest allowed
         // submatch guesses, such that non-bruteforce submatches over the same [i..j] take precedence.
         if (strlen($this->token) === 1) {
-            $minGuesses = self::MIN_SUBMATCH_GUESSES_SINGLE_CHAR + 1;
+            $minGuesses = Scorer::MIN_SUBMATCH_GUESSES_SINGLE_CHAR + 1;
         } else {
-            $minGuesses = self::MIN_SUBMATCH_GUESSES_MULTI_CHAR + 1;
+            $minGuesses = Scorer::MIN_SUBMATCH_GUESSES_MULTI_CHAR + 1;
         }
 
         return max($guesses, $minGuesses);
