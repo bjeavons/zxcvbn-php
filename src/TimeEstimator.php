@@ -60,14 +60,14 @@ class TimeEstimator
 
     protected function displayTime($seconds)
     {
-        $minute = 60;
-        $hour = $minute * 60;
-        $day = $hour * 24;
-        $month = $day * 31;
-        $year = $month * 12;
-        $century = $year * 100;
+        $callback = function ($seconds) {
+            $minute = 60;
+            $hour = $minute * 60;
+            $day = $hour * 24;
+            $month = $day * 31;
+            $year = $month * 12;
+            $century = $year * 100;
 
-        $callback = function($seconds) {
             if ($seconds < 1) {
                 return [null, 'less than a second'];
             }
@@ -76,34 +76,36 @@ class TimeEstimator
                 return [$base, "$base second"];
             }
             else if ($seconds < $hour) {
-                $base = round($seconds) / $minute;
+                $base = round($seconds / $minute);
                 return [$base, "$base minute"];
             }
             else if ($seconds < $day) {
-                $base = round($seconds) / $hour;
+                $base = round($seconds / $hour);
                 return [$base, "$base hour"];
             }
             else if ($seconds < $month) {
-                $base = round($seconds) / $day;
+                $base = round($seconds / $day);
                 return [$base, "$base day"];
             }
             else if ($seconds < $year) {
-                $base = round($seconds) / $month;
+                $base = round($seconds / $month);
                 return [$base, "$base month"];
             }
             else if ($seconds < $century) {
-                $base = round($seconds) / $year;
+                $base = round($seconds / $year);
                 return [$base, "$base year"];
             }
             else {
                 return [null, 'centuries'];
             }
         };
+
         list($display_num, $display_str) = $callback($seconds);
 
         if ($display_num > 1) {
             $display_str .= "s";
         }
+
         return $display_str;
     }
 }
