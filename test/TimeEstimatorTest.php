@@ -54,6 +54,15 @@ class TimeEstimatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('3 minutes', $actual, "1500 guesses / 10 per second = 3 minutes and not 2.5 minutes");
     }
 
+    public function testPlurals()
+    {
+        $actual = $this->timeEstimator->estimateAttackTimes(12)['crack_times_display']['online_no_throttling_10_per_second'];
+        $this->assertEquals('1 second', $actual, "no plural if unit value is 1");
+
+        $actual = $this->timeEstimator->estimateAttackTimes(22)['crack_times_display']['online_no_throttling_10_per_second'];
+        $this->assertEquals('2 seconds', $actual, "plural if unit value is more than 1");
+    }
+
     public function unitProvider()
     {
         return [
