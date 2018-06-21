@@ -38,7 +38,7 @@ class Searcher
             $entropyStack[$k] = $this->prevValue($entropyStack, $k) + $charEntropy;
             $backpointers[$k] = null;
             foreach ($matches as $match) {
-                if (!isset($match->begin) || $match->end != $k ) {
+                if (!isset($match->begin) || $match->end != $k) {
                     continue;
                 }
 
@@ -62,8 +62,7 @@ class Searcher
                 $matchSequence[] = $match;
 
                 $k = $match->begin - 1;
-            }
-            else {
+            } else {
                 $k -= 1;
             }
         }

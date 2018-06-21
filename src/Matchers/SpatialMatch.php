@@ -86,11 +86,10 @@ class SpatialMatch extends Match
      */
     public function getEntropy()
     {
-        if ($this->graph  === 'qwerty' || $this->graph === 'dvorak' ) {
+        if ($this->graph  === 'qwerty' || $this->graph === 'dvorak') {
             $startingPos = self::KEYBOARD_STARTING_POSITION;
             $avgDegree = self::KEYBOARD_AVERAGE_DEGREES;
-        }
-        else {
+        } else {
             $startingPos = self::KEYPAD_STARTING_POSITION;
             $avgDegree = self::KEYPAD_AVERAGE_DEGREES;
         }
@@ -156,7 +155,7 @@ class SpatialMatch extends Match
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
                     $curChar = $password[$j];
-                    foreach ($adjacents as $adj ) {
+                    foreach ($adjacents as $adj) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
                         if ($adj !== null && $curCharPos !== -1) {
@@ -183,11 +182,10 @@ class SpatialMatch extends Match
                 // if the current pattern continued, extend j and try to grow again
                 if ($found) {
                     $j += 1;
-                }
-                // otherwise push the pattern discovered so far, if any...
+                } // otherwise push the pattern discovered so far, if any...
                 else {
                     // Ignore length 1 or 2 chains.
-                    if ($j - $i > 2)  {
+                    if ($j - $i > 2) {
                         $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,

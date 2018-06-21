@@ -119,7 +119,7 @@ class L33tMatch extends DictionaryMatch
                 }
             }
             foreach (range(0, min($uLen, $sLen)) as $i) {
-                $possibilities += $this->binom($uLen + $sLen,  $i);
+                $possibilities += $this->binom($uLen + $sLen, $i);
             }
         }
 
@@ -158,7 +158,8 @@ class L33tMatch extends DictionaryMatch
         ];
     }
 
-    protected static function getL33tSubtable($password){
+    protected static function getL33tSubtable($password)
+    {
         $passwordChars = array_unique(str_split($password));
 
         $subTable = [];

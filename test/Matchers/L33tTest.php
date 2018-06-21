@@ -15,7 +15,8 @@ class L33tTest extends AbstractMatchTest
 
     // Generally we only need to test the public interface of the matchers, but it can be useful
     // to occasionally test protected methods to ensure consistency with upstream.
-    protected static function callProtectedMethod($name, $args) {
+    protected static function callProtectedMethod($name, $args)
+    {
         $class = new ReflectionClass(MockL33tMatch::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
@@ -210,7 +211,7 @@ class L33tTest extends AbstractMatchTest
     public function testSubstitutionSubsets()
     {
         // From the coffeescript source:
-        // 
+        //
         // # known issue: subsets of substitutions aren't tried.
         // # for long inputs, trying every subset of every possible substitution could quickly get large,
         // # but there might be a performant way to fix.

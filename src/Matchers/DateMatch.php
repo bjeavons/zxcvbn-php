@@ -137,8 +137,7 @@ class DateMatch extends Match
         if ($this->year < 100) {
             // two-digit year
             $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * 100);
-        }
-        else {
+        } else {
             // four-digit year
             $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * self::NUM_YEARS);
         }
@@ -296,7 +295,7 @@ class DateMatch extends Match
             return false;
         }
 
-        $invalidYear = count(array_filter($ints, function($int) {
+        $invalidYear = count(array_filter($ints, function ($int) {
             return ($int >= 100 && $int < static::MIN_YEAR)
                 || ($int > static::MAX_YEAR);
         }));
@@ -304,13 +303,13 @@ class DateMatch extends Match
             return false;
         }
 
-        $over12 = count(array_filter($ints, function($int) {
+        $over12 = count(array_filter($ints, function ($int) {
             return $int > 12;
         }));
-        $over31 = count(array_filter($ints, function($int) {
+        $over31 = count(array_filter($ints, function ($int) {
             return $int > 31;
         }));
-        $under1 = count(array_filter($ints, function($int) {
+        $under1 = count(array_filter($ints, function ($int) {
             return $int <= 0;
         }));
 
@@ -360,7 +359,7 @@ class DateMatch extends Match
      */
     protected static function mapIntsToDayMonth($ints)
     {
-        foreach([$ints, array_reverse($ints)] as list($d, $m)) {
+        foreach ([$ints, array_reverse($ints)] as list($d, $m)) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
                 return [
                     'day'   => $d,
@@ -387,7 +386,6 @@ class DateMatch extends Match
             // 15 -> 2015
             return $year + 2000;
         }
-
     }
 
     /**

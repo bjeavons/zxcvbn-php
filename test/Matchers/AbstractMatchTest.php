@@ -10,7 +10,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
      * with each possible prefix/suffix combination, including no prefix/suffix
      *
      * @see test-matching.coffee
-     * 
+     *
      * @param  string $pattern
      * @param  array  $prefixes
      * @param  array  $suffixes
@@ -67,7 +67,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
         }
 
         // TODO: Port the next few lines to PHP
-        // 
+        //
         // is_equal_len_args = pattern_names.length == patterns.length == ijs.length
         // for prop, lst of props
         //   # props is structured as: keys that points to list of values

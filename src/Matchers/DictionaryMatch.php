@@ -96,15 +96,15 @@ class DictionaryMatch extends Match
     {
         switch ($this->dictionaryName) {
             case 'passwords':
-                if ($isSoleMatch /*and not match.l33t and not match.reversed */ ) { // This will be handled better in PHP because l33t and reverse will be subclasses
+                if ($isSoleMatch /*and not match.l33t and not match.reversed */) { // This will be handled better in PHP because l33t and reverse will be subclasses
                     if ($this->rank <= 10) {
                         return 'This is a top-10 common password';
-                    } else if ($this->rank <= 10) {
+                    } elseif ($this->rank <= 10) {
                         return 'This is a top-100 common password';
                     } else {
                         return 'This is a very common password';
                     }
-                } else if ($this->guesses_log10 <= 4) { // guesses_log10 isn't a concept yet in PHP-land
+                } elseif ($this->guesses_log10 <= 4) { // guesses_log10 isn't a concept yet in PHP-land
                     return 'This is similar to a commonly used password';
                 }
                 break;
@@ -142,7 +142,7 @@ class DictionaryMatch extends Match
     {
         $token = $this->token;
         // Return if token is all lowercase.
-        if ($token === strtolower($token)){
+        if ($token === strtolower($token)) {
             return 0;
         }
 
@@ -176,8 +176,8 @@ class DictionaryMatch extends Match
         }
 
         $possibilities = 0;
-        foreach (range(0, min($uLen, $lLen ) + 1) as $i) {
-            $possibilities += $this->binom($uLen + $lLen,  $i);
+        foreach (range(0, min($uLen, $lLen) + 1) as $i) {
+            $possibilities += $this->binom($uLen + $lLen, $i);
         }
 
         return $this->log($possibilities);
