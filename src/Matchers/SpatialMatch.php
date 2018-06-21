@@ -182,8 +182,9 @@ class SpatialMatch extends Match
                 // if the current pattern continued, extend j and try to grow again
                 if ($found) {
                     $j += 1;
-                } // otherwise push the pattern discovered so far, if any...
-                else {
+                } else {
+                    // otherwise push the pattern discovered so far, if any...
+                    
                     // Ignore length 1 or 2 chains.
                     if ($j - $i > 2) {
                         $result[] = [
