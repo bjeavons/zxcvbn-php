@@ -26,10 +26,10 @@ class Searcher
     public function getMinimumEntropy($password, $matches)
     {
         $passwordLength = strlen($password);
-        $entropyStack = array();
+        $entropyStack = [];
         // for the optimal sequence of matches up to k, holds the final match (match.end == k).
         // null means the sequence ends without a brute-force character.
-        $backpointers = array();
+        $backpointers = [];
         $bruteforceMatch = new Bruteforce($password, 0, $passwordLength - 1, $password);
         $charEntropy = log($bruteforceMatch->getCardinality(), 2);
 
@@ -53,7 +53,7 @@ class Searcher
         }
 
         // Walk backwards and decode the best sequence
-        $matchSequence = array();
+        $matchSequence = [];
         $k = $passwordLength - 1;
         while ($k >= 0) {
             $match = $backpointers[$k];
@@ -70,7 +70,7 @@ class Searcher
         $matchSequence = array_reverse($matchSequence);
 
         $s = 0;
-        $matchSequenceCopy = array();
+        $matchSequenceCopy = [];
         // Handle subtrings that weren't matched as bruteforce match.
         foreach ($matchSequence as $match) {
             if ($match->begin - $s > 0) {

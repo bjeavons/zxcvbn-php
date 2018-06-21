@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ZxcvbnPhp\Matchers\RepeatMatch;
-
 abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -16,7 +14,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
      * @param  string $pattern
      * @param  array  $prefixes
      * @param  array  $suffixes
-     * @return a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
+     * @return array a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
      */
     protected function generatePasswords($pattern, $prefixes, $suffixes)
     {

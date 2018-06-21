@@ -2,35 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ZxcvbnPhp\Matchers\L33tMatch;
-
-class MockL33tMatch extends L33tMatch
-{
-    protected static function getRankedDictionaries()
-    {
-        return [
-            'words' => [
-                'aac' => 1,
-                'password' => 3,
-                'paassword' => 4,
-                'asdf0' => 5,
-            ],
-            'words2' => [
-                'cgo' => 1,
-            ]
-        ];
-    }
-
-    protected static function getL33tTable()
-    {
-        return array(
-            'a' => ['4', '@'],
-            'c' => ['(', '{', '[', '<'],
-            'g' => ['6', '9'],
-            'o' => ['0'],
-        );
-    }
-}
+use ReflectionClass;
 
 class L33tTest extends AbstractMatchTest
 {
@@ -41,12 +13,17 @@ class L33tTest extends AbstractMatchTest
         'o' => ['0'],
     ];
 
+    // Generally we only need to test the public interface of the matchers, but it can be useful
+    // to occasionally test protected methods to ensure consistency with upstream.
+    protected static function callProtectedMethod($name, $args) {
+        $class = new ReflectionClass(MockL33tMatch::class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs(null, $args);
+    }
+
     public function testReducesL33tTable()
     {
-        // As this is truly a unit test testing the internals, I'm OK with not implementing
-        // it unless it's helpful for resolving discrepancies between the libraries
-        $this->markTestSkipped('Not implemented');
-
         $cases = [
             ''      => [] ,
             'abcdefgo123578!#$&*)]}>' => [] ,
@@ -68,7 +45,7 @@ class L33tTest extends AbstractMatchTest
         foreach ($cases as $pw => $expected) {
             $this->assertEquals(
                 $expected,
-                L33tMatch::getRelevantL33tSubtable($pw, self::$testTable),
+                static::callProtectedMethod('getL33tSubtable', [$pw]),
                 "reduces l33t table to only the substitutions that a password might be employing"
             );
         }
@@ -76,19 +53,30 @@ class L33tTest extends AbstractMatchTest
 
     public function testEnumeratesL33tSubstitutions()
     {
-        // As this is truly a unit test testing the internals, I'm OK with not implementing
-        // it unless it's helpful for resolving discrepancies between the libraries
-        $this->markTestSkipped('Not implemented');
+        $cases = [
+            [
+                [],
+                [[]]
+            ],
+            [
+                ['a' => ['@']],     // subtable
+                [['@' => 'a']] ],   // expected result
+            [
+                ['a' => ['@', '4']],
+                [['@' => 'a'], ['4' => 'a']] ],
+            [
+                ['a' => ['@', '4'], 'c' => ['(']],
+                [['@' => 'a', '(' => 'c'], ['4' => 'a', '(' => 'c']]
+            ]
+        ];
 
-        // CoffeeScript source: 
-        // for [table, subs] in [
-        //   [ {},                        [{}] ]
-        //   [ {a: ['@']},                [{'@': 'a'}] ]
-        //   [ {a: ['@','4']},            [{'@': 'a'}, {'4': 'a'}] ]
-        //   [ {a: ['@','4'], c: ['(']},  [{'@': 'a', '(': 'c' }, {'4': 'a', '(': 'c'}] ]
-        //   ]
-        //   msg = "enumerates the different sets of l33t substitutions a password might be using"
-        //   t.deepEquals matching.enumerate_l33t_subs(table), subs, msg
+        foreach ($cases as $case) {
+            $this->assertEquals(
+                $case[1],
+                static::callProtectedMethod('getL33tSubstitutions', [$case[0]]),
+                "enumerates the different sets of l33t substitutions a password might be using"
+            );
+        }
     }
 
     public function testEmptyString()
@@ -109,9 +97,18 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
-    public function testCommonL33tSubstitutions()
+    public function testPureDictionaryWordsWithL33tCharactersAfter()
     {
-        $cases = [
+        $this->assertEquals(
+            [],
+            MockL33tMatch::match('password4'),
+            "doesn't match pure dictionary word with l33t characters after"
+        );
+    }
+
+    public function commonCaseProvider()
+    {
+        return [
             [
                 'password'        => 'p4ssword',
                 'pattern'         => 'p4ssword',
@@ -140,23 +137,34 @@ class L33tTest extends AbstractMatchTest
                 'sub'             => ['{' => 'c', '0' => 'o']
             ],
         ];
+    }
 
-        foreach ($cases as $case) {
-            $this->checkMatches(
-                "matches against common l33t substitutions",
-                MockL33tMatch::match($case['password']),
-                'dictionary',
-                [ $case['pattern'] ],
-                [ $case['ij'] ],
-                [
-                    'l33t'           => [ true ],
-                    'sub'            => [ $case['sub'] ],
-                    'matchedWord'    => [ $case['word'] ],
-                    'rank'           => [ $case['rank'] ],
-                    'dictionaryName' => [ $case['dictionary_name'] ]
-                ]
-            );
-        }
+    /**
+     * @dataProvider commonCaseProvider
+     * @param string $password
+     * @param string $pattern
+     * @param string $word
+     * @param string $dictionary
+     * @param int $rank
+     * @param int[] $ij
+     * @param array $substitutions
+     */
+    public function testCommonL33tSubstitutions($password, $pattern, $word, $dictionary, $rank, $ij, $substitutions)
+    {
+        $this->checkMatches(
+            "matches against common l33t substitutions",
+            MockL33tMatch::match($password),
+            'dictionary',
+            [$pattern],
+            [$ij],
+            [
+                'l33t' => [true],
+                'sub' => [$substitutions],
+                'matchedWord' => [$word],
+                'rank' => [$rank],
+                'dictionaryName' => [$dictionary]
+            ]
+        );
     }
 
     public function testOverlappingL33tPatterns()

@@ -2,7 +2,7 @@
 
 namespace ZxcvbnPhp;
 
-use ZxcvbnPhp\Matchers\MatchInterface;
+use ZxcvbnPhp\Matchers\Match;
 
 class Matcher
 {
@@ -19,12 +19,12 @@ class Matcher
      * @code
      *   array('Alice Smith')
      * @endcode
-     * @return array
+     * @return Match[]
      *   Array of Match objects.
      */
-    public function getMatches($password, array $userInputs = array())
+    public function getMatches($password, array $userInputs = [])
     {
-        $matches = array();
+        $matches = [];
         foreach ($this->getMatchers() as $matcher) {
             $matched = $matcher::match($password, $userInputs);
             if (is_array($matched) && !empty($matched)) {
@@ -32,6 +32,19 @@ class Matcher
             }
         }
         return $matches;
+    }
+
+    /**
+     * @param Match $a
+     * @param Match $b
+     */
+    public static function sortMatches($a, $b)
+    {
+        if ($a->begin != $b->begin) {
+            return $a->begin - $b->begin;
+        } else {
+            return $a->end - $b->end;
+        }
     }
 
     /**
@@ -43,7 +56,7 @@ class Matcher
     protected function getMatchers()
     {
         // @todo change to dynamic
-        return array(
+        return [
             'ZxcvbnPhp\Matchers\DateMatch',
             'ZxcvbnPhp\Matchers\L33tMatch',
             'ZxcvbnPhp\Matchers\RepeatMatch',
@@ -51,6 +64,7 @@ class Matcher
             'ZxcvbnPhp\Matchers\SpatialMatch',
             'ZxcvbnPhp\Matchers\YearMatch',
             'ZxcvbnPhp\Matchers\DictionaryMatch',
-        );
+            'ZxcvbnPhp\Matchers\ReverseDictionaryMatch',
+        ];
     }
 }

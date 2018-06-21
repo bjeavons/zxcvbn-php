@@ -45,6 +45,6 @@ class Scorer implements ScorerInterface
     # ------------------------------------------------------------------------------
     public function mostGuessableMatchSequence($password, $matches)
     {
-        return array();
+        return [];
     }
 }

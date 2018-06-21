@@ -18,21 +18,21 @@ class Bruteforce extends Match
     /**
      * @copydoc Match::match()
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
         // Matches entire string.
         $match = new static($password, 0, strlen($password) - 1, $password);
-        return array($match);
+        return [$match];
     }
 
 
     public function getFeedback($isSoleMatch)
     {
-        return array(
+        return [
             'warning' => "",
-            'suggestions' => array(
-            )
-        );
+            'suggestions' => [
+            ]
+        ];
     }
 
     /**

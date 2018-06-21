@@ -12,23 +12,23 @@ class TimeEstimator
 {
     public function estimateAttackTimes($guesses)
     {
-        $crack_times_seconds = array(
+        $crack_times_seconds = [
             'online_throttling_100_per_hour' => $guesses / (100 / 3600),
             'online_no_throttling_10_per_second' => $guesses / 10,
             'offline_slow_hashing_1e4_per_second' => $guesses / 1e4,
             'offline_fast_hashing_1e10_per_second' => $guesses / 1e10
-        );
+        ];
 
         $crack_times_display = array_map(
             [ $this, 'displayTime' ],
             $crack_times_seconds
         );
 
-        return array(
+        return [
             'crack_times_seconds' => $crack_times_seconds,
             'crack_times_display' => $crack_times_display,
             'score'               => $this->guessesToScore($guesses)
-        );
+        ];
     }
 
     protected function guessesToScore($guesses)
@@ -69,34 +69,34 @@ class TimeEstimator
 
         $callback = function($seconds) {
             if ($seconds < 1) {
-                return array(null, 'less than a second');
+                return [null, 'less than a second'];
             }
             else if ($seconds < $minute) {
                 $base = round($seconds);
-                return array($base, "$base second");
+                return [$base, "$base second"];
             }
             else if ($seconds < $hour) {
                 $base = round($seconds) / $minute;
-                return array($base, "$base minute");
+                return [$base, "$base minute"];
             }
             else if ($seconds < $day) {
                 $base = round($seconds) / $hour;
-                return array($base, "$base hour");
+                return [$base, "$base hour"];
             }
             else if ($seconds < $month) {
                 $base = round($seconds) / $day;
-                return array($base, "$base day");
+                return [$base, "$base day"];
             }
             else if ($seconds < $year) {
                 $base = round($seconds) / $month;
-                return array($base, "$base month");
+                return [$base, "$base month"];
             }
             else if ($seconds < $century) {
                 $base = round($seconds) / $year;
-                return array($base, "$base year");
+                return [$base, "$base year"];
             }
             else {
-                return array(null, 'centuries');
+                return [null, 'centuries'];
             }
         };
         list($display_num, $display_str) = $callback($seconds);

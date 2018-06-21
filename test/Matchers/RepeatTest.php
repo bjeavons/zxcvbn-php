@@ -3,6 +3,7 @@
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\RepeatMatch;
+use ZxcvbnPhp\Matchers\SequenceMatch;
 
 class RepeatTest extends AbstractMatchTest
 {
@@ -16,7 +17,7 @@ class RepeatTest extends AbstractMatchTest
         }
     }
     
-    public function testSingleCharacterRepeats()
+    public function testSingleCharacterEmbeddedRepeats()
     {
         $prefixes = ['@', 'y4@'];
         $suffixes = ['u', 'u%7'];
@@ -30,13 +31,17 @@ class RepeatTest extends AbstractMatchTest
                 [$pattern],
                 [[$i, $j]],
                 [
-                    'repeatedChar' => ['&']
+                    'repeatedChar' => ['&'],
+                    'repeatCount' => [5],
                 ]
             );
         }
+    }
 
-        foreach (array(3, 12) as $length) {
-            foreach (array('a', 'Z', '4', '&') as $chr) {
+    public function testSingleCharacterRepeats()
+    {
+        foreach ([3, 12] as $length) {
+            foreach (['a', 'Z', '4', '&'] as $chr) {
                 $pattern = str_repeat($chr, $length);
 
                 $this->checkMatches(
@@ -46,7 +51,8 @@ class RepeatTest extends AbstractMatchTest
                     [$pattern],
                     [[0, strlen($pattern) - 1]],
                     [
-                        'repeatedChar' => [$chr]
+                        'repeatedChar' => [$chr],
+                        'repeatCount' => [$length]
                     ]
                 );
             }
@@ -64,7 +70,8 @@ class RepeatTest extends AbstractMatchTest
             $patterns,
             [[0, 2],[3, 6],[7, 11],[12, 17]],
             [
-                'repeatedChar' => ['B', '1', 'a', '@']
+                'repeatedChar' => ['B', '1', 'a', '@'],
+                'repeatCount' => [3, 4, 5, 6],
             ]
         );
     }
@@ -80,15 +87,14 @@ class RepeatTest extends AbstractMatchTest
             $patterns,
             [[4, 6],[12, 15],[21, 25],[30, 35]],
             [
-                'repeatedChar' => ['B', '1', 'a', '@']
+                'repeatedChar' => ['B', '1', 'a', '@'],
+                'repeatCount' => [3, 4, 5, 6],
             ]
         );
     }
 
     public function testMultiCharacterRepeats()
     {
-        $this->markTestSkipped('Not yet implemented');
-        
         $pattern = 'abab';
         $this->checkMatches(
             'matches multi-character repeat pattern',
@@ -97,15 +103,14 @@ class RepeatTest extends AbstractMatchTest
             [$pattern],
             [[0, strlen($pattern) - 1]],
             [
-                'repeatedChar' => ['ab']
+                'repeatedChar' => ['ab'],
+                'repeatCount' => [2],
             ]
         );
     }
 
     public function testGreedyMultiCharacterRepeats()
     {
-        $this->markTestSkipped('Not yet implemented');
-
         $pattern = 'aabaab';
         $this->checkMatches(
             'matches aabaab as a repeat instead of the aa prefix',
@@ -114,15 +119,14 @@ class RepeatTest extends AbstractMatchTest
             [$pattern],
             [[0, strlen($pattern) - 1]],
             [
-                'repeatedChar' => ['aab']
+                'repeatedChar' => ['aab'],
+                'repeatCount' => [2],
             ]
         );
     }
 
     public function testFrequentlyRepeatedMultiCharacterRepeats()
     {
-        $this->markTestSkipped('Not yet implemented');
-
         $pattern = 'abababab';
         $this->checkMatches(
             'identifies ab as repeat string, even though abab is also repeated',
@@ -131,8 +135,40 @@ class RepeatTest extends AbstractMatchTest
             [$pattern],
             [[0, strlen($pattern) - 1]],
             [
-                'repeatedChar' => ['ab']
+                'repeatedChar' => ['ab'],
+                'repeatCount' => [4],
             ]
         );
+    }
+
+    public function testBaseGuesses()
+    {
+        $this->markTestSkipped('Base guesses have not yet been implemented.');
+
+        $pattern = 'abcabc';
+        $this->checkMatches(
+            'calculates the correct number of guesses for the base token',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, strlen($pattern) - 1]],
+            [
+                'repeatedChar' => ['abc'],
+                'repeatCount' => [2],
+                'baseGuesses' => [13]
+            ]
+        );
+    }
+
+    public function testBaseMatches()
+    {
+        $this->markTestSkipped('Base matches have not yet been implemented.');
+
+        $pattern = 'abcabc';
+        $match = RepeatMatch::match($pattern)[0];
+
+        $baseMatches = $match->baseMatches;
+        $this->assertEquals(1, count($baseMatches));
+        $this->assertInstanceOf(SequenceMatch::class, $baseMatches[0]);
     }
 }

@@ -66,7 +66,7 @@ abstract class Match implements MatchInterface
      * @return array
      *   Array of Match objects
      */
-    public static function match($password, array $userInputs = array()) {}
+    public static function match($password, array $userInputs = []) {}
 
     /**
      * Calculate entropy for match token of a password.
@@ -108,33 +108,33 @@ abstract class Match implements MatchInterface
       *     )
       *
       */
-    public static function findAll($string, $regex)
+    public static function findAll($string, $regex, $offset = 0)
     {
-        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER);
+        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER, $offset);
         if (!$count) {
-            return array();
+            return [];
         }
 
         $pos = 0;
-        $groups = array();
+        $groups = [];
         foreach ($matches as $group) {
             $captureBegin = 0;
             $match = array_shift($group);
             $matchBegin = strpos($string, $match, $pos);
-            $captures = array(
-                array(
+            $captures = [
+                [
                     'begin' => $matchBegin,
                     'end' => $matchBegin + strlen($match) - 1,
                     'token' => $match,
-                ),
-            );
+                ],
+            ];
             foreach ($group as $capture) {
                 $captureBegin =  strpos($match, $capture, $captureBegin);
-                $captures[] = array(
+                $captures[] = [
                     'begin' => $matchBegin + $captureBegin,
                     'end' => $matchBegin + $captureBegin + strlen($capture) - 1,
                     'token' => $capture,
-                );
+                ];
             }
             $groups[] = $captures;
             $pos += strlen($match) - 1;

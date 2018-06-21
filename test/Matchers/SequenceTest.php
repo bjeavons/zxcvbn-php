@@ -4,49 +4,125 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\SequenceMatch;
 
-class SequenceTest extends \PHPUnit_Framework_TestCase
+class SequenceTest extends AbstractMatchTest
 {
-    public function testMatch()
+    public function shortPasswordProvider()
+    {
+        return [
+            [''],
+            ['a'],
+            ['1'],
+        ];
+    }
+
+    /**
+     * @dataProvider shortPasswordProvider
+     * @param $password
+     */
+    public function testShortPassword($password)
+    {
+        $matches = SequenceMatch::match($password);
+        $this->assertEmpty($matches, "doesn't match length-" . strlen($password) . " sequences");
+    }
+
+    public function testNonSequence()
     {
         $password = 'password';
         $matches = SequenceMatch::match($password);
-        $this->assertEmpty($matches);
+        $this->assertEmpty($matches, "doesn't match password that's not a sequence");
+    }
 
-        $password = '12ab78UV';
-        $matches = SequenceMatch::match($password);
-        $this->assertEmpty($matches);
+    public function testOverlappingPatterns()
+    {
+        $password = 'abcbabc';
 
-        $password = '12345';
-        $matches = SequenceMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame($password, $matches[0]->token, "Token incorrect");
-        $this->assertSame($password, $matches[0]->password, "Password incorrect");
+        $this->checkMatches(
+            "matches overlapping patterns",
+            SequenceMatch::match($password),
+            'sequence',
+            ['abc', 'cba', 'abc'],
+            [[0, 2], [2, 4], [4, 6]],
+            [
+                'ascending' => [true, false, true],
+            ]
+        );
+    }
 
-        $password = 'ZYX';
-        $matches = SequenceMatch::match($password);
-        $this->assertCount(1, $matches);
-        $this->assertSame($password, $matches[0]->token, "Token incorrect");
-        $this->assertSame($password, $matches[0]->password, "Password incorrect");
+    public function testEmbeddedSequencePatterns()
+    {
+        $prefixes = ['!', '22'];
+        $suffixes = ['!', '22'];
+        $pattern = 'jihg';
 
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+            $this->checkMatches(
+                "matches embedded sequence patterns",
+                SequenceMatch::match($password),
+                'sequence',
+                [$pattern],
+                [[$i, $j]],
+                [
+                    'sequenceName'  => ['lower'],
+                    'ascending' => [false],
+                ]
+            );
+        }
+    }
+
+    public function sequenceProvider()
+    {
+        return [
+            ['ABC',   'upper',  true],
+            ['CBA',   'upper',  false],
+            ['PQR',   'upper',  true],
+            ['RQP',   'upper',  false],
+            ['XYZ',   'upper',  true],
+            ['ZYX',   'upper',  false],
+            ['abcd',  'lower',  true],
+            ['dcba',  'lower',  false],
+            ['jihg',  'lower',  false],
+            ['wxyz',  'lower',  true],
+            ['zxvt',  'lower',  false],
+            ['0369',  'digits', true],
+            ['97531', 'digits', false]
+        ];
+    }
+
+    /**
+     * @dataProvider sequenceProvider
+     * @param string $password
+     * @param string $name
+     * @param bool $ascending
+     */
+    public function testSequenceInformation($password, $name, $ascending)
+    {
+        $this->checkMatches(
+            "matches " . $password . " as a " . $name . " sequence",
+            SequenceMatch::match($password),
+            'sequence',
+            [$password],
+            [[0, strlen($password) - 1]],
+            [
+                'sequenceName' => [$name],
+                'ascending' => [$ascending],
+            ]
+        );
+    }
+
+    public function testMultipleMatches()
+    {
         $password = 'pass123wordZYX';
-        $matches = SequenceMatch::match($password);
-        $this->assertCount(2, $matches);
-        $this->assertSame('123', $matches[0]->token, "First match token incorrect");
-        $this->assertSame('ZYX', $matches[1]->token, "Second match token incorrect");
-
-        $password = 'wordZYX ';
-        $matches = SequenceMatch::match($password);
-        $this->assertEquals('ZYX', $matches[0]->token, "First match token incorrect");
-
-        $password = 'XYZ123 ';
-        $matches = SequenceMatch::match($password);
-        $this->assertEquals('XYZ', $matches[0]->token, "First match token incorrect");
-        $this->assertEquals('123', $matches[1]->token, "Second match token incorrect");
-
-        $password = 'abc213456de';
-        $matches = SequenceMatch::match($password);
-        $this->assertEquals('abc', $matches[0]->token, "First match token incorrect");
-        $this->assertEquals('3456', $matches[1]->token, "Second match token incorrect");
+        $this->checkMatches(
+            "matches password with multiple sequences",
+            SequenceMatch::match($password),
+            'sequence',
+            ['123', 'ZYX'],
+            [[4, 6], [11, 13]],
+            [
+                'sequenceName' => ['digits', 'upper'],
+                'ascending' => [true, false],
+            ]
+        );
     }
 
     public function testEntropy()

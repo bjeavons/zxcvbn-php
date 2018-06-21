@@ -18,7 +18,7 @@ interface MatchInterface
      * @return array
      *   Array of Match objects
      */
-    public static function match($password, array $userInputs = array());
+    public static function match($password, array $userInputs = []);
 
     /**
      * Get entropy for this match's token.

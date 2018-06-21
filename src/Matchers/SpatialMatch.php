@@ -2,60 +2,44 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-/**
- * Class SpatialMatch.
- * @package ZxcvbnPhp\Matchers
- */
 class SpatialMatch extends Match
 {
+    const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
 
-    /**
-     * @var
-     */
+    // Preset properties since adjacency graph is constant for qwerty keyboard and keypad.
+    const KEYBOARD_STARTING_POSITION = 94;
+    const KEYPAD_STARTING_POSITION = 15;
+    const KEYBOARD_AVERAGE_DEGREES = 4.5957446809; // 432 / 94
+    const KEYPAD_AVERAGE_DEGREES = 5.0666666667; // 76 / 15
+
+    public $pattern = 'spatial';
+
+    /** @var int The number of characters the shift key was held for in the token. */
     public $shiftedCount;
 
-    /**
-     * @var
-     */
+    /** @var int The number of turns on the keyboard required to complete the token. */
     public $turns;
 
-    /**
-     * @var
-     */
+    /** @var string The keyboard layout that the token is a spatial match on. */
     public $graph;
-
-    /**
-     * @var
-     */
-    protected $keyboardStartingPos;
-
-    /**
-     * @var
-     */
-    protected $keypadStartingPos;
-
-    /**
-     * @var
-     */
-    protected $keyboardAvgDegree;
-
-    /**
-     * @var
-     */
-    protected $keypadAvgDegree;
 
     /**
      * Match spatial patterns based on keyboard layouts (e.g. qwerty, dvorak, keypad).
      *
-     * @copydoc Match::match()
+     * @param string $password
+     * @param array $userInputs
+     * @param array $graphs
+     * @return SpatialMatch[]
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [], array $graphs = [])
     {
 
-        $matches = array();
-        $graphs = static::getAdjacencyGraphs();
+        $matches = [];
+        if (!$graphs) {
+            $graphs = static::getAdjacencyGraphs();
+        }
         foreach ($graphs as $name => $graph) {
-            $results = static::graphMatch($password, $graph);
+            $results = static::graphMatch($password, $graph, $name);
             foreach ($results as $result) {
                 $result['graph'] = $name;
                 $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
@@ -70,35 +54,29 @@ class SpatialMatch extends Match
             ? 'Straight rows of keys are easy to guess'
             : 'Short keyboard patterns are easy to guess';
 
-        return array(
+        return [
             'warning' => $warning,
-            'suggestions' => array(
+            'suggestions' => [
                 'Use a longer keyboard pattern with more turns'
-            )
-        );
+            ]
+        ];
     }
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [graph (required), shifted_count, turns].
      */
-    public function __construct($password, $begin, $end, $token, $params = array())
+    public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'spatial';
         $this->graph = $params['graph'];
         if (!empty($params)) {
             $this->shiftedCount = isset($params['shifted_count']) ? $params['shifted_count'] : null;
             $this->turns = isset($params['turns']) ? $params['turns'] : null;
         }
-        // Preset properties since adjacency graph is constant for qwerty keyboard and keypad.
-        $this->keyboardStartingPos = 94;
-        $this->keypadStartingPos = 15;
-        $this->keyboardAvgDegree = 432 / 94;
-        $this->keypadAvgDegree = 76 / 15;
     }
 
     /**
@@ -109,12 +87,12 @@ class SpatialMatch extends Match
     public function getEntropy()
     {
         if ($this->graph  === 'qwerty' || $this->graph === 'dvorak' ) {
-            $startingPos = $this->keyboardStartingPos;
-            $avgDegree = $this->keyboardAvgDegree;
+            $startingPos = self::KEYBOARD_STARTING_POSITION;
+            $avgDegree = self::KEYBOARD_AVERAGE_DEGREES;
         }
         else {
-            $startingPos = $this->keypadStartingPos;
-            $avgDegree = $this->keypadAvgDegree;
+            $startingPos = self::KEYPAD_STARTING_POSITION;
+            $avgDegree = self::KEYPAD_AVERAGE_DEGREES;
         }
 
         $possibilities = 0;
@@ -144,13 +122,14 @@ class SpatialMatch extends Match
 
     /**
      * Match spatial patterns in a adjacency graph.
-     *
      * @param string $password
-     * @param array $graph
+     * @param array  $graph
+     * @param string $graphName
+     * @return array
      */
-    protected static function graphMatch($password, $graph)
+    protected static function graphMatch($password, $graph, $graphName)
     {
-        $result = array();
+        $result = [];
         $i = 0;
 
         $passwordLength = strlen($password);
@@ -161,18 +140,26 @@ class SpatialMatch extends Match
             $turns = 0;
             $shiftedCount = 0;
 
+            // Check if the initial character is shifted
+            if ($graphName === 'qwerty' || $graphName === 'dvorak') {
+                if (strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
+                    $shiftedCount++;
+                }
+            }
+
             while (true) {
                 $prevChar = $password[$j - 1];
                 $found = false;
                 $curDirection = -1;
-                $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : array();
+                $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : [];
+
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
                     $curChar = $password[$j];
                     foreach ($adjacents as $adj ) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
-                        if ($adj && $curCharPos !== -1) {
+                        if ($adj !== null && $curCharPos !== -1) {
                             $found = true;
                             $foundDirection = $curDirection;
 
@@ -201,13 +188,13 @@ class SpatialMatch extends Match
                 else {
                     // Ignore length 1 or 2 chains.
                     if ($j - $i > 2)  {
-                        $result[] = array(
+                        $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,
                             'token' => substr($password, $i, $j - $i),
                             'turns' => $turns,
                             'shifted_count' => $shiftedCount
-                        );
+                        ];
                     }
                     // ...and then start a new search for the rest of the password.
                     $i = $j;
@@ -229,7 +216,7 @@ class SpatialMatch extends Match
      */
     protected static function indexOf($string, $char)
     {
-        $pos = @strpos($string, $char);
+        $pos = strpos($string, $char);
         return ($pos === false ? -1 : $pos);
     }
 
@@ -259,7 +246,7 @@ class SpatialMatch extends Match
      *
      * @return array
      */
-    protected static function getAdjacencyGraphs()
+    public static function getAdjacencyGraphs()
     {
         $data = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
         return json_decode($data, true);

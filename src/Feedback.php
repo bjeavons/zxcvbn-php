@@ -14,21 +14,21 @@ class Feedback
     {
         // starting feedback
         if (count($sequence) == 0) {
-            return array(
+            return [
                 'warning' => '',
-                'suggestions' => array(
+                'suggestions' => [
                     "Use a few words, avoid common phrases",
                     "No need for symbols, digits, or uppercase letters"
-                )
-            );
+                ]
+            ];
         }
 
         // no feedback if score is good or great.
         if ($score > 2) {
-            return array(
+            return [
                 'warning' => '',
-                'suggestions' => array()
-            );
+                'suggestions' => []
+            ];
         }
 
         // tie feedback to the longest match for longer sequences
@@ -43,18 +43,18 @@ class Feedback
         $extraFeedback = 'Add another word or two. Uncommon words are better.';
 
         if ($feedback) {
-            return array(
+            return [
                 'warning' => $feedback['warning'] ?: '', // this seems unnecessary...
                 'suggestions' => array_merge(
-                    array($extraFeedback),
+                    [$extraFeedback],
                     $feedback['suggestions']
                 )
-            );
+            ];
         }
 
-        return array(
+        return [
             'warning' => '',
-            'suggestions' => array($extraFeedback)
-        );
+            'suggestions' => [$extraFeedback]
+        ];
     }
 }
