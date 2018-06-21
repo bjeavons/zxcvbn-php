@@ -12,8 +12,16 @@ matrix:
   allow_failures:
     - php: hhvm
 
+before_install:
+  - pyrus install pear/PHP_CodeSniffer
+  - phpenv rehash
+
 before_script:
   - composer update --prefer-dist
+
+script:
+  - phpcs .
+  - phpunit
 
 after_script:
   - php vendor/bin/php-coveralls -v
