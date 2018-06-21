@@ -169,9 +169,9 @@ class DateMatch extends Match
                 }
 
                 $date = static::checkDate([
-                    (integer) $captures[1],
-                    (integer) $captures[3],
-                    (integer) $captures[4]
+                    (int) $captures[1],
+                    (int) $captures[3],
+                    (int) $captures[4]
                 ]);
 
                 if ($date === false) {
@@ -273,7 +273,7 @@ class DateMatch extends Match
      */
     protected static function getDistanceForMatchCandidate($candidate)
     {
-        return abs((integer)$candidate['year'] - (integer)date('Y'));
+        return abs((int)$candidate['year'] - (int)date('Y'));
     }
 
     /**

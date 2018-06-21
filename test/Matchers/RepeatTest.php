@@ -12,7 +12,7 @@ class RepeatTest extends AbstractMatchTest
         foreach (['', '#'] as $password) {
             $this->assertEmpty(
                 RepeatMatch::match($password),
-                "doesn't match length-".strlen($password)." repeat patterns"
+                "doesn't match length-" . strlen($password) . " repeat patterns"
             );
         }
     }

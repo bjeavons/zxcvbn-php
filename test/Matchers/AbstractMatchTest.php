@@ -77,7 +77,7 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             count($patterns),
             count($matches),
-            $prefix . ": matches.length == ".count($patterns)
+            $prefix . ": matches.length == " . count($patterns)
         );
 
         foreach ($patterns as $k => $pattern) {
