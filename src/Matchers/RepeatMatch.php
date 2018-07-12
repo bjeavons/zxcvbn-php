@@ -2,6 +2,9 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Scorer;
+
 class RepeatMatch extends Match
 {
     const GREEDY_MATCH = '/(.+)\1+/';
@@ -51,14 +54,12 @@ class RepeatMatch extends Match
                 $repeatedChar = $match[1]['token'];
             }
 
-            // @TODO: most_guessable_match_sequence not yet implemented. See Scorer::mostGuessableMatchSequence
+            $scorer = new Scorer();
+            $matcher = new Matcher();
 
-            //  const base_analysis = scoring.most_guessable_match_sequence(
-            //          base_token,
-            //          this.omnimatch(base_token)
-            //      );
-            //  const base_matches = base_analysis.sequence;
-            //  const base_guesses = base_analysis.guesses;
+            $baseAnalysis = $scorer->getMostGuessableMatchSequence($repeatedChar, $matcher->getMatches($repeatedChar));
+            $baseMatches = $baseAnalysis['sequence'];
+            $baseGuesses = $baseAnalysis['guesses'];
 
             $repeatCount = strlen($match[0]['token']) / strlen($repeatedChar);
 
@@ -69,8 +70,8 @@ class RepeatMatch extends Match
                 $match[0]['token'],
                 [
                     'repeated_char' => $repeatedChar,
-                    'base_guesses' => null,
-                    'base_matches' => [],
+                    'base_guesses' => $baseGuesses,
+                    'base_matches' => $baseMatches,
                     'repeat_count' => $repeatCount
                 ]
             );
