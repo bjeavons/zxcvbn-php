@@ -128,4 +128,27 @@ class YearTest extends AbstractMatchTest
             "guesses of MIN_YEAR_SPACE for a year close to REFERENCE_YEAR"
         );
     }
+
+    public function testFeedback()
+    {
+        $token = '2010';
+        $match = new YearMatch($token, 0, strlen($token) - 1, $token);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Recent years are easy to guess',
+            $feedback['warning'],
+            "year match gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid recent years',
+            $feedback['suggestions'],
+            "year match gives correct suggestion #1"
+        );
+        $this->assertContains(
+            'Avoid years that are associated with you',
+            $feedback['suggestions'],
+            "year match gives correct suggestion #2"
+        );
+    }
 }

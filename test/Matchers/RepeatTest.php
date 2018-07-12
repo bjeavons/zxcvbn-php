@@ -218,4 +218,46 @@ class RepeatTest extends AbstractMatchTest
 
         self::assertEquals($expectedGuesses, $match->getGuesses(), "the repeat pattern {$token} has guesses of {$expectedGuesses}");
     }
+
+    public function testFeedbackSingleCharacterRepeat()
+    {
+        $token = 'bbbbbb';
+        $match = new RepeatMatch($token, 0, strlen($token) - 1, $token, [
+            'repeated_char' => 'b',
+            'repeat_count' => 6,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Repeats like "aaa" are easy to guess',
+            $feedback['warning'],
+            "one repeated character gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid repeated words and characters',
+            $feedback['suggestions'],
+            "one repeated character gives correct suggestion"
+        );
+    }
+
+    public function testFeedbackMultipleCharacterRepeat()
+    {
+        $token = 'bababa';
+        $match = new RepeatMatch($token, 0, strlen($token) - 1, $token, [
+            'repeated_char' => 'ba',
+            'repeat_count' => 3,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Repeats like "abcabcabc" are only slightly harder to guess than "abc"',
+            $feedback['warning'],
+            "multiple repeated characters gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid repeated words and characters',
+            $feedback['suggestions'],
+            "multiple repeated characters gives correct suggestion"
+        );
+    }
 }

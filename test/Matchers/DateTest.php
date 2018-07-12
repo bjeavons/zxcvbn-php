@@ -284,4 +284,27 @@ class DateTest extends AbstractMatchTest
         $expected = 29200; // 365 * DateMatch::MIN_YEAR_SPACE * 4;
         $this->assertEquals($expected, $match->getGuesses(), "extra guesses are added for separators");
     }
+
+    public function testFeedback()
+    {
+        $token = '26/01/1990';
+        $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
+            'separator' => '/',
+            'year' => 1990,
+            'month' => 1,
+            'day' => 26,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Dates are often easy to guess',
+            $feedback['warning'],
+            "date match gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid dates and years that are associated with you',
+            $feedback['suggestions'],
+            "date match gives correct suggestion"
+        );
+    }
 }

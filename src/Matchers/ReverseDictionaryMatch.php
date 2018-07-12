@@ -37,4 +37,15 @@ class ReverseDictionaryMatch extends DictionaryMatch
     {
         return parent::getGuesses() * 2;
     }
+
+    public function getFeedback($isSoleMatch)
+    {
+        $feedback = parent::getFeedback($isSoleMatch);
+
+        if (strlen($this->token) >= 4) {
+            $feedback['suggestions'][] = "Reversed words aren't much harder to guess";
+        }
+
+        return $feedback;
+    }
 }

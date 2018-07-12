@@ -2,9 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ReflectionClass;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
-use ZxcvbnPhp\Matchers\Match;
 
 class DictionaryTest extends AbstractMatchTest
 {
@@ -263,5 +261,141 @@ class DictionaryTest extends AbstractMatchTest
             $match->getGuesses(),
             "guess multiplier of $token is $expectedGuesses"
         );
+    }
+
+    public function testFeedbackTop10Password()
+    {
+        $feedback = $this->getFeedbackForToken('password', 'passwords', 2, true);
+        $this->assertEquals(
+            'This is a top-10 common password',
+            $feedback['warning'],
+            "dictionary match warns about top-10 password"
+        );
+    }
+
+    public function testFeedbackTop100Password()
+    {
+        $feedback = $this->getFeedbackForToken('hunter', 'passwords', 37, true);
+        $this->assertEquals(
+            'This is a top-100 common password',
+            $feedback['warning'],
+            "dictionary match warns about top-100 password"
+        );
+    }
+
+    public function testFeedbackTopPasswordSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('mytruck', 'passwords', 19324, true);
+        $this->assertEquals(
+            'This is a very common password',
+            $feedback['warning'],
+            "dictionary match warns about common password"
+        );
+    }
+
+    public function testFeedbackTopPasswordNotSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('browndog', 'passwords', 7014, false);
+        $this->assertEquals(
+            'This is similar to a commonly used password',
+            $feedback['warning'],
+            "dictionary match warns about common password (not a sole match)"
+        );
+    }
+
+    public function testFeedbackTopPasswordNotSoleMatchRankTooLow()
+    {
+        $feedback = $this->getFeedbackForToken('mytruck', 'passwords', 19324, false);
+        $this->assertEquals(
+            '',
+            $feedback['warning'],
+            "no warning for a non-sole match in the password dictionary"
+        );
+    }
+
+    public function testFeedbackWikipediaWordSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('university', 'english_wikipedia', 69, true);
+        $this->assertEquals(
+            'A word by itself is easy to guess',
+            $feedback['warning'],
+            "dictionary match warns about Wikipedia word (sole match)"
+        );
+    }
+
+    public function testFeedbackWikipediaWordNonSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('university', 'english_wikipedia', 69, false);
+        $this->assertEquals(
+            '',
+            $feedback['warning'],
+            "dictionary match doesn't warn about Wikipedia word (not a sole match)"
+        );
+    }
+
+    public function testFeedbackNameSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('rodriguez', 'surnames', 21, true);
+        $this->assertEquals(
+            'Names and surnames by themselves are easy to guess',
+            $feedback['warning'],
+            "dictionary match warns about surname (sole match)"
+        );
+    }
+
+    public function testFeedbackNameNonSoleMatch()
+    {
+        $feedback = $this->getFeedbackForToken('rodriguez', 'surnames', 21, false);
+        $this->assertEquals(
+            'Common names and surnames are easy to guess',
+            $feedback['warning'],
+            "dictionary match warns about surname (not a sole match)"
+        );
+    }
+
+    public function testFeedbackTvAndFilmDictionary()
+    {
+        $feedback = $this->getFeedbackForToken('know', 'us_tv_and_film', 9, true);
+        $this->assertEquals(
+            '',
+            $feedback['warning'],
+            "no warning for match from us_tv_and_film dictionary"
+        );
+    }
+
+    public function testFeedbackAllUppercaseWord()
+    {
+        $feedback = $this->getFeedbackForToken('PASSWORD', 'passwords', 2, true);
+        $this->assertContains(
+            'All-uppercase is almost as easy to guess as all-lowercase',
+            $feedback['suggestions'],
+            "dictionary match gives suggestion for all-uppercase word"
+        );
+    }
+
+    public function testFeedbackWordStartsWithUppercase()
+    {
+        $feedback = $this->getFeedbackForToken('Password', 'passwords', 2, true);
+        $this->assertContains(
+            'Capitalization doesn\'t help very much',
+            $feedback['suggestions'],
+            "dictionary match gives suggestion for word starting with uppercase"
+        );
+    }
+
+    /**
+     * @param string $token
+     * @param string $dictionary
+     * @param int $rank
+     * @param bool $soleMatch
+     * @return array
+     */
+    private function getFeedbackForToken($token, $dictionary, $rank, $soleMatch)
+    {
+        $match = new DictionaryMatch($token, 0, strlen($token) - 1, $token, [
+            'dictionary_name' => $dictionary,
+            'rank' => $rank
+        ]);
+        return $match->getFeedback($soleMatch);
     }
 }

@@ -151,4 +151,22 @@ class SequenceTest extends AbstractMatchTest
             "the sequence pattern '$token' has guesses of $expectedGuesses"
         );
     }
+
+    public function testFeedback()
+    {
+        $token = 'rstuvw';
+        $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => true]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Sequences like abc or 6543 are easy to guess',
+            $feedback['warning'],
+            "sequence gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid sequences',
+            $feedback['suggestions'],
+            "sequence gives correct suggestion"
+        );
+    }
 }

@@ -197,4 +197,48 @@ class SpatialTest extends AbstractMatchTest
             "spatial guesses accounts for turn positions, directions and starting keys"
         );
     }
+
+    public function testFeedbackStraightLine()
+    {
+        $token = 'dfghjk';
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => 1,
+            'shifted_count' => 0,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Straight rows of keys are easy to guess',
+            $feedback['warning'],
+            "spatial match in straight line gives correct warning"
+        );
+        $this->assertContains(
+            'Use a longer keyboard pattern with more turns',
+            $feedback['suggestions'],
+            "spatial match in straight line gives correct suggestion"
+        );
+    }
+
+    public function testFeedbackWithTurns()
+    {
+        $token = 'xcvgy789';
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => 3,
+            'shifted_count' => 0,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Short keyboard patterns are easy to guess',
+            $feedback['warning'],
+            "spatial match with turns gives correct warning"
+        );
+        $this->assertContains(
+            'Use a longer keyboard pattern with more turns',
+            $feedback['suggestions'],
+            "spatial match with turns gives correct suggestion"
+        );
+    }
 }

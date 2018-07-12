@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Matchers\Match;
+
 /**
  * Feedback - gives some user guidance based on the strength
  * of a password
@@ -10,7 +12,12 @@ namespace ZxcvbnPhp;
  */
 class Feedback
 {
-    public function getFeedback($score, $sequence)
+    /**
+     * @param int $score
+     * @param Match[] $sequence
+     * @return array
+     */
+    public function getFeedback($score, array $sequence)
     {
         // starting feedback
         if (count($sequence) == 0) {

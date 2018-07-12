@@ -304,4 +304,43 @@ class L33tTest extends AbstractMatchTest
 
         $this->assertEquals($expected, $actual, "capitalization doesn't affect extra l33t guesses calc");
     }
+
+    public function testFeedback()
+    {
+        $token = 'univer5ity';
+        $match = new L33tMatch($token, 0, strlen($token) - 1, $token, [
+            'dictionary_name' => 'english_wikipedia',
+            'rank' => 69,
+            'sub' => ['5' => 's'],
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'A word by itself is easy to guess',
+            $feedback['warning'],
+            "l33t match didn't lose the original dictionary match warning"
+        );
+        $this->assertContains(
+            'Predictable substitutions like \'@\' instead of \'a\' don\'t help very much',
+            $feedback['suggestions'],
+            "l33t match gives correct suggestion"
+        );
+    }
+
+    public function testFeedbackTop100Password()
+    {
+        $token = 'hunt3r';
+        $match = new L33tMatch($token, 0, strlen($token) - 1, $token, [
+            'dictionary_name' => 'passwords',
+            'rank' => 37,
+            'sub' => ['3' => 'e'],
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'This is similar to a commonly used password',
+            $feedback['warning'],
+            "l33t match doesn't give top-100 warning"
+        );
+    }
 }

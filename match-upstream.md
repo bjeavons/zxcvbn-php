@@ -7,8 +7,8 @@ Public API: the main public API of zxcvbn-php does not need to change with this 
 Planned Changes:
 * Zxcvbn: I updated `passwordStrength()` to more closely mimic upstream's `main.coffee`. I arguably went too far, and might walk that back a bit.
 * Feedback: added.
-  * [ ] Need to flesh out based on upstream. Should be pretty straightforward.
-  * [ ] Write tests for the feedback.
+  * [x] Need to flesh out based on upstream. Should be pretty straightforward.
+  * [x] Write tests for the feedback.
 * Time estimator: added.
   * [x] Just need to flesh out `displayTime()` based on upstream. Should be straightforward.
   * [x] Write tests for the time estimator.

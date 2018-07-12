@@ -101,10 +101,10 @@ class DictionaryMatch extends Match
     {
         switch ($this->dictionaryName) {
             case 'passwords':
-                if ($isSoleMatch /*and not match.l33t and not match.reversed */ ) { // This will be handled better in PHP because l33t and reverse will be subclasses
+                if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
                         return 'This is a top-10 common password';
-                    } else if ($this->rank <= 10) {
+                    } else if ($this->rank <= 100) {
                         return 'This is a top-100 common password';
                     } else {
                         return 'This is a very common password';
