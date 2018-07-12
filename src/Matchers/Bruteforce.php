@@ -53,14 +53,6 @@ class Bruteforce extends Match
         $this->cardinality = $cardinality;
     }
 
-    public function getEntropy()
-    {
-        if (is_null($this->entropy)) {
-            $this->entropy = $this->log(pow($this->getCardinality(), strlen($this->token)));
-        }
-        return $this->entropy;
-    }
-
     public function getGuesses()
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, strlen($this->token));

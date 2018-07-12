@@ -219,15 +219,6 @@ class DictionaryTest extends AbstractMatchTest
         );
     }
 
-    public function testEntropy()
-    {
-        $password = 'password';
-        $matches = DictionaryMatch::match($password);
-
-        // Match 0 is "pass" with rank 61.
-        $this->assertEquals(log(61, 2), $matches[0]->getEntropy());
-    }
-
     public function testGuessesBaseRank()
     {
         $match = new DictionaryMatch('aaaaa', 0, 5, 'aaaaaa', ['rank' => 32]);

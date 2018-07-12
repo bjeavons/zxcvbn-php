@@ -111,36 +111,6 @@ class SequenceMatch extends Match
         }
     }
 
-    /**
-     * @copydoc Match::getEntropy()
-     */
-    public function getEntropy()
-    {
-        $char = $this->token[0];
-        if ($char === 'a' || $char === '1') {
-            $entropy = 1;
-        }
-        else {
-            $ord = ord($char);
-
-            if ($this->isDigit($ord)) {
-                $entropy = $this->log(10);
-            }
-            elseif ($this->isLower($ord)) {
-                $entropy = $this->log(26);
-            }
-            else {
-                $entropy = $this->log(26) + 1; // Extra bit for upper.
-            }
-        }
-
-        if (empty($this->ascending)) {
-            $entropy += 1; // Extra bit for descending instead of ascending
-        }
-
-        return $entropy + $this->log(strlen($this->token));
-    }
-
     public function getGuesses()
     {
         $firstCharacter = $this->token[0];

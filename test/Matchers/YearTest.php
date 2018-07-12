@@ -93,13 +93,6 @@ class YearTest extends AbstractMatchTest
         );
     }
 
-    public function testEntropy()
-    {
-        $password = '1900';
-        $matches = YearMatch::match($password);
-        $this->assertEquals(log(119, 2), $matches[0]->getEntropy());
-    }
-
     public function testGuessesPast()
     {
         $token = '1972';

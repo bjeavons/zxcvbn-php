@@ -21,14 +21,6 @@ interface MatchInterface
     public static function match($password, array $userInputs = []);
 
     /**
-     * Get entropy for this match's token.
-     *
-     * @return float
-     *   Entropy of the matched token in the password.
-     */
-    public function getEntropy();
-
-    /**
      * @return integer
      */
     public function getGuesses();

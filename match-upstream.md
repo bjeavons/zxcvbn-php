@@ -16,9 +16,6 @@ Planned Changes:
   * [x] The majority of the matchers have now been ported.
   * [x] Port the tests for the matchers.
   * [ ] RepeatMatch: `base_guesses` and `base_matches` are still missing, but this will require the `Scorer` to be up and running before we can implement them.
-* Entropy: this is a feature unique to the PHP library.
-  * [ ] Some changes will be needed since we've added new matches.
-  * [ ] Some new tests will also likely need to be written.
 * `Scorer`:  This is vastly different between upstream and this port. Upstream's algorithm is complicated and hard to follow. I think this will be the hardest thing to bring up to parity. *Some* of this may be similar to `Searcher::getMinimumEntropy()` but I really can't tell.
   * Some of the other language ports e.g. https://github.com/rianhunter/zxcvbn-cpp/blob/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp may also be useful references when porting. 
   * :question: `ScorerInterface`: In upstream, `scoring.most_guessable_match_sequence` returns a hash with password/guesses/guesses_log10/sequence. Our current `ScorerInterface` has methods for `getScore()` and `getMetrics()`. Our interface is clearly "cleaner", but it might make more sense to just mirror upstream. :neutral_face:

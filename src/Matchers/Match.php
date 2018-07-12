@@ -33,11 +33,6 @@ abstract class Match implements MatchInterface
     /**
      * @var
      */
-    public $entropy;
-
-    /**
-     * @var
-     */
     public $cardinality;
 
     /**
@@ -52,7 +47,6 @@ abstract class Match implements MatchInterface
         $this->begin = $begin;
         $this->end = $end;
         $this->token = $token;
-        $this->entropy = null;
         $this->cardinality = null;
     }
 
@@ -67,14 +61,6 @@ abstract class Match implements MatchInterface
      *   Array of Match objects
      */
     public static function match($password, array $userInputs = []) {}
-
-    /**
-     * Calculate entropy for match token of a password.
-     *
-     * @return float
-     *   Entropy of the matched token in the password.
-     */
-    public function getEntropy() {}
 
     /**
      * Get feedback to a user based on the match.

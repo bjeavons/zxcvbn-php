@@ -130,28 +130,6 @@ class DateMatch extends Match
     }
 
     /**
-     * Get match entropy.
-     *
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if ($this->year < 100) {
-            // two-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * 100);
-        }
-        else {
-            // four-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * self::NUM_YEARS);
-        }
-        // add two bits for separator selection [/,-,.,etc]
-        if (!empty($this->separator)) {
-            $entropy += 2;
-        }
-        return $entropy;
-    }
-
-    /**
      * Find dates with separators in a password.
      *
      * @param string $password

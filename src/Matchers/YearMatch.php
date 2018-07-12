@@ -37,17 +37,6 @@ class YearMatch extends Match
         ];
     }
 
-    /**
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if (is_null($this->entropy)) {
-            $this->entropy = $this->log(self::NUM_YEARS);
-        }
-        return $this->entropy;
-    }
-
     public function getGuesses()
     {
         $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());

@@ -105,18 +105,6 @@ class SpatialTest extends AbstractMatchTest
             ]
         );
     }
-
-    public function testEntropy()
-    {
-        $password = 'reds';
-        $matches = SpatialMatch::match($password);
-        $this->assertEquals(15.23614334369886, $matches[0]->getEntropy());
-
-        // Test shifted character.
-        $password = 'rEds';
-        $matches = SpatialMatch::match($password);
-        $this->assertEquals(17.55807143858622, $matches[0]->getEntropy());
-    }
     
     protected function getBaseGuessCount($token)
     {

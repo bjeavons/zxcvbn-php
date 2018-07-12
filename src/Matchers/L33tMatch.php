@@ -93,44 +93,6 @@ class L33tMatch extends DictionaryMatch
     }
 
     /**
-     * @return float
-     */
-    public function getEntropy()
-    {
-        return parent::getEntropy() + $this->l33tEntropy();
-    }
-
-    /**
-     * @return float
-     */
-    protected function l33tEntropy()
-    {
-        $possibilities = 0;
-        foreach ($this->sub as $subbed => $unsubbed) {
-            $sLen = 0;
-            $uLen = 0;
-            // Count occurences of substituted and unsubstituted characters in the token.
-            foreach (str_split($this->token) as $char) {
-                if ($char === (string) $subbed) {
-                    $sLen++;
-                }
-                if ($char === (string) $unsubbed) {
-                    $uLen++;
-                }
-            }
-            foreach (range(0, min($uLen, $sLen)) as $i) {
-                $possibilities += static::binom($uLen + $sLen,  $i);
-            }
-        }
-
-        // corner: return 1 bit for single-letter subs, like 4pple -> apple, instead of 0.
-        if ($possibilities <= 1) {
-            return 1;
-        }
-        return $this->log($possibilities);
-    }
-
-    /**
      * @param string $string
      * @param array $map
      * @return string

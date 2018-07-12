@@ -151,11 +151,4 @@ class SequenceTest extends AbstractMatchTest
             "the sequence pattern '$token' has guesses of $expectedGuesses"
         );
     }
-
-    public function testEntropy()
-    {
-        $password = '12345';
-        $matches = SequenceMatch::match($password);
-        $this->assertEquals(log(5, 2) + 1, $matches[0]->getEntropy());
-    }
 }

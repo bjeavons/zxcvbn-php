@@ -80,47 +80,6 @@ class SpatialMatch extends Match
     }
 
     /**
-     * Get entropy.
-     *
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if ($this->graph  === 'qwerty' || $this->graph === 'dvorak' ) {
-            $startingPos = self::KEYBOARD_STARTING_POSITION;
-            $avgDegree = self::KEYBOARD_AVERAGE_DEGREES;
-        }
-        else {
-            $startingPos = self::KEYPAD_STARTING_POSITION;
-            $avgDegree = self::KEYPAD_AVERAGE_DEGREES;
-        }
-
-        $possibilities = 0;
-        // estimate the number of possible patterns w/ token length or less with match turns or less.
-        for ($i = 2; $i <= strlen($this->token); $i++) {
-            $possibleTurns = min($this->turns, $i - 1);
-
-            for ($j = 1; $j <= $possibleTurns; $j++) {
-                $possibilities += static::binom($i - 1, $j - 1) * $startingPos * pow($avgDegree, $j);
-            }
-        }
-        $entropy = $this->log($possibilities);
-
-        // add extra entropy for shifted keys. (% instead of 5, A instead of a.)
-        if (!empty($this->shiftedCount)) {
-            $possibilities = 0;
-            $unshiftedCount = strlen($this->token) - $this->shiftedCount;
-            $len = min($this->shiftedCount, $unshiftedCount);
-
-            for ($i = 0; $i <= $len; $i++) {
-                $possibilities += static::binom($this->shiftedCount + $unshiftedCount, $i);
-            }
-            $entropy += $this->log($possibilities);
-        }
-        return $entropy;
-    }
-
-    /**
      * Match spatial patterns in a adjacency graph.
      * @param string $password
      * @param array  $graph
