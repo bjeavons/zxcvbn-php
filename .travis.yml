@@ -11,6 +11,7 @@ matrix:
     - php: hhvm
   allow_failures:
     - php: hhvm
+    - php: 5.5
 
 before_script:
   - composer update --prefer-dist
