@@ -22,6 +22,11 @@ class DictionaryMatch extends Match
     /** @var bool Whether or not the token contained l33t substitutions. */
     public $l33t = false;
 
+    const START_UPPER = "/^[A-Z][^A-Z]+$/";
+    const END_UPPER = "/^[^A-Z]+[A-Z]$/";
+    const ALL_UPPER = "/^[^a-z]+$/";
+    const ALL_LOWER = "/^[^A-Z]+$/";
+
     /**
      * Match occurences of dictionary words in password.
      *
@@ -104,7 +109,7 @@ class DictionaryMatch extends Match
                     } else {
                         return 'This is a very common password';
                     }
-                } elseif ($this->guesses_log10 <= 4) { // guesses_log10 isn't a concept yet in PHP-land
+                } elseif ($this->getGuessesLog10() <= 4) {
                     return 'This is similar to a commonly used password';
                 }
                 break;
@@ -125,62 +130,6 @@ class DictionaryMatch extends Match
         }
 
         return '';
-    }
-
-    /**
-     * @return float
-     */
-    public function getEntropy()
-    {
-        return $this->log($this->rank) + $this->uppercaseEntropy();
-    }
-
-    /**
-     * @return float
-     */
-    protected function uppercaseEntropy()
-    {
-        $token = $this->token;
-        // Return if token is all lowercase.
-        if ($token === strtolower($token)) {
-            return 0;
-        }
-
-        $startUpper = '/^[A-Z][^A-Z]+$/';
-        $endUpper = '/^[^A-Z]+[A-Z]$/';
-        $allUpper = '/^[A-Z]+$/';
-        // a capitalized word is the most common capitalization scheme, so it only doubles the search space
-        // (uncapitalized + capitalized): 1 extra bit of entropy. allcaps and end-capitalized are common enough to
-        // underestimate as 1 extra bit to be safe.
-        foreach ([$startUpper, $endUpper, $allUpper] as $regex) {
-            if (preg_match($regex, $token)) {
-                return 1;
-            }
-        }
-
-        // Otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters with U uppercase letters or
-        // less. Or, if there's more uppercase than lower (for e.g. PASSwORD), the number of ways to lowercase U+L letters
-        // with L lowercase letters or less.
-        $uLen = 0;
-        $lLen = 0;
-
-        foreach (str_split($token) as $x) {
-            $ord = ord($x);
-
-            if ($this->isUpper($ord)) {
-                $uLen += 1;
-            }
-            if ($this->isLower($ord)) {
-                $lLen += 1;
-            }
-        }
-
-        $possibilities = 0;
-        foreach (range(0, min($uLen, $lLen) + 1) as $i) {
-            $possibilities += $this->binom($uLen + $lLen, $i);
-        }
-
-        return $this->log($possibilities);
     }
 
     /**
@@ -232,5 +181,48 @@ class DictionaryMatch extends Match
         }
 
         return $rankedLists;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getGuesses()
+    {
+        $guesses = $this->rank;
+        $guesses *= $this->getUppercaseVariations();
+
+        return $guesses;
+    }
+
+    /**
+     * @return integer
+     */
+    protected function getUppercaseVariations()
+    {
+        $word = $this->token;
+        if (preg_match(self::ALL_LOWER, $word) || strtolower($word) === $word) {
+            return 1;
+        }
+
+        // a capitalized word is the most common capitalization scheme,
+        // so it only doubles the search space (uncapitalized + capitalized).
+        // allcaps and end-capitalized are common enough too, underestimate as 2x factor to be safe.
+        foreach (array(self::START_UPPER, self::END_UPPER, self::ALL_UPPER) as $regex) {
+            if (preg_match($regex, $word)) {
+                return 2;
+            }
+        }
+
+        // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
+        // with U uppercase letters or less. or, if there's more uppercase than lower (for eg. PASSwORD),
+        // the number of ways to lowercase U+L letters with L lowercase letters or less.
+        $uppercase = count(array_filter(str_split($word), 'ctype_upper'));
+        $lowercase = count(array_filter(str_split($word), 'ctype_lower'));
+
+        $variations = 0;
+        for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {
+            $variations += static::binom($uppercase + $lowercase, $i);
+        }
+        return $variations;
     }
 }

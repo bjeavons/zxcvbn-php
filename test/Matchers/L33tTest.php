@@ -3,6 +3,8 @@
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ReflectionClass;
+use ZxcvbnPhp\Matchers\L33tMatch;
+use ZxcvbnPhp\Matchers\Match;
 
 class L33tTest extends AbstractMatchTest
 {
@@ -17,7 +19,7 @@ class L33tTest extends AbstractMatchTest
     // to occasionally test protected methods to ensure consistency with upstream.
     protected static function callProtectedMethod($name, $args)
     {
-        $class = new ReflectionClass(MockL33tMatch::class);
+        $class = new ReflectionClass('\\ZxcvbnPhp\\Test\\Matchers\\MockL33tMatch');
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method->invokeArgs(null, $args);
@@ -226,5 +228,81 @@ class L33tTest extends AbstractMatchTest
             MockL33tMatch::match('4sdf0'),
             "doesn't match with subsets of possible l33t substitutions"
         );
+    }
+
+    public function testGuessesL33t()
+    {
+        $match = new L33tMatch('aaa@@@', 0, 5, 'aaa@@@', [
+            'rank' => 32,
+            'sub' => array('@' => 'a')
+        ]);
+        $expected = 32 * 41;    // rank * l33t variations
+        $this->assertEquals($expected, $match->getGuesses(), "guesses are doubled when word is reversed");
+    }
+
+    public function testGuessesL33tAndUppercased()
+    {
+        $match = new L33tMatch('AaA@@@', 0, 5, 'AaA@@@', [
+            'rank' => 32,
+            'sub' => array('@' => 'a')
+        ]);
+        $expected = 32 * 41 * 3;    // rank * l33t variations * uppercase variations
+        $this->assertEquals(
+            $expected,
+            $match->getGuesses(),
+            "extra guesses are added for both capitalization and common l33t substitutions"
+        );
+    }
+    
+    public function variationsProvider()
+    {
+        return array(
+            [ '',  1, [] ],
+            [ 'a', 1, [] ],
+            [ '4', 2, ['4' => 'a'] ],
+            [ '4pple', 2, ['4' => 'a'] ],
+            [ 'abcet', 1, [] ],
+            [ '4bcet', 2, ['4' => 'a'] ],
+            [ 'a8cet', 2, ['8' => 'b'] ],
+            [ 'abce+', 2, ['+' => 't'] ],
+            [ '48cet', 4, ['4' => 'a', '8' => 'b'] ],
+            [ 'a4a4aa',  Match::binom(6, 2) + Match::binom(6, 1), ['4' => 'a'] ],
+            [ '4a4a44',  Match::binom(6, 2) + Match::binom(6, 1), ['4' => 'a'] ],
+            [ 'a44att+', (Match::binom(4, 2) + Match::binom(4, 1)) * Match::binom(3, 1), ['4' => 'a', '+' => 't'] ]
+        );
+    }
+
+    /**
+     * @dataProvider variationsProvider
+     * @param $token
+     * @param $expectedGuesses
+     * @param $substitutions
+     */
+    public function testGuessesL33tVariations($token, $expectedGuesses, $substitutions)
+    {
+        $match = new L33tMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1, 'sub' => $substitutions]);
+        $this->assertEquals(
+            $expectedGuesses,
+            $match->getGuesses(),
+            "extra l33t guesses of $token is $expectedGuesses"
+        );
+    }
+
+    /**
+     * This test is not strictly needed as it's testing an internal detail, but it's included to match an upstream test.
+     * @link https://github.com/dropbox/zxcvbn/blob/master/test/test-scoring.coffee#L357
+     */
+    public function testCapitalisationNotAffectingL33t()
+    {
+        $token = 'Aa44aA';
+        $match = new L33tMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1, 'sub' => ['4' => 'a']]);
+        $expected = Match::binom(6, 2) + Match::binom(6, 1);
+
+        $class = new ReflectionClass('\\ZxcvbnPhp\\Matchers\\L33tMatch');
+        $method = $class->getMethod('getL33tVariations');
+        $method->setAccessible(true);
+        $actual = $method->invoke($match);
+
+        $this->assertEquals($expected, $actual, "capitalization doesn't affect extra l33t guesses calc");
     }
 }

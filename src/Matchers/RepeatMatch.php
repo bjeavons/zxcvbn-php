@@ -113,14 +113,8 @@ class RepeatMatch extends Match
         }
     }
 
-    /**
-     * @return float
-     */
-    public function getEntropy()
+    public function getGuesses()
     {
-        if (is_null($this->entropy)) {
-            $this->entropy = $this->log($this->getCardinality() * strlen($this->token));
-        }
-        return $this->entropy;
+        return $this->baseGuesses * $this->repeatCount;
     }
 }

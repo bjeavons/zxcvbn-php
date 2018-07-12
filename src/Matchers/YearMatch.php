@@ -37,14 +37,9 @@ class YearMatch extends Match
         ];
     }
 
-    /**
-     * @return float
-     */
-    public function getEntropy()
+    public function getGuesses()
     {
-        if (is_null($this->entropy)) {
-            $this->entropy = $this->log(self::NUM_YEARS);
-        }
-        return $this->entropy;
+        $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());
+        return max($yearSpace, DateMatch::MIN_YEAR_SPACE);
     }
 }
