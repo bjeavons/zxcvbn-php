@@ -111,12 +111,13 @@ class Scorer implements ScorerInterface
             $this->bruteforceUpdate($k);
         }
 
-        $optimalSequence = $this->unwind($length);
-        $optimalSequenceLength = count($optimalSequence);
 
         if ($length === 0) {
             $guesses = 1;
+            $optimalSequence = [];
         } else {
+            $optimalSequence = $this->unwind($length);
+            $optimalSequenceLength = count($optimalSequence);
             $guesses = $this->optimal['g'][$length - 1][$optimalSequenceLength];
         }
 
