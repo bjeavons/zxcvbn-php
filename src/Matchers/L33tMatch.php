@@ -120,7 +120,8 @@ class L33tMatch extends DictionaryMatch
         ];
     }
 
-    protected static function getL33tSubtable($password){
+    protected static function getL33tSubtable($password)
+    {
         $passwordChars = array_unique(str_split($password));
 
         $subTable = [];

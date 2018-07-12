@@ -19,7 +19,8 @@ class TimeEstimatorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1 hour', $actual, "100 guesses / 100 per hour = 1 hour");
     }
 
-    public function testTime10PerSecond()    {
+    public function testTime10PerSecond()
+    {
         $actual = $this->timeEstimator->estimateAttackTimes(10)['crack_times_display']['online_no_throttling_10_per_second'];
         $this->assertEquals('1 second', $actual, "10 guesses / 10 per second = 1 second");
     }

@@ -150,9 +150,9 @@ class DateMatch extends Match
                 }
 
                 $date = static::checkDate([
-                    (integer) $captures[1],
-                    (integer) $captures[3],
-                    (integer) $captures[4]
+                    (int) $captures[1],
+                    (int) $captures[3],
+                    (int) $captures[4]
                 ]);
 
                 if ($date === false) {
@@ -254,12 +254,12 @@ class DateMatch extends Match
      */
     protected static function getDistanceForMatchCandidate($candidate)
     {
-        return abs((integer)$candidate['year'] - static::getReferenceYear());
+        return abs((int)$candidate['year'] - static::getReferenceYear());
     }
 
     public static function getReferenceYear()
     {
-        return (integer)date('Y');
+        return (int)date('Y');
     }
 
     /**
@@ -281,7 +281,7 @@ class DateMatch extends Match
             return false;
         }
 
-        $invalidYear = count(array_filter($ints, function($int) {
+        $invalidYear = count(array_filter($ints, function ($int) {
             return ($int >= 100 && $int < static::MIN_YEAR)
                 || ($int > static::MAX_YEAR);
         }));
@@ -289,13 +289,13 @@ class DateMatch extends Match
             return false;
         }
 
-        $over12 = count(array_filter($ints, function($int) {
+        $over12 = count(array_filter($ints, function ($int) {
             return $int > 12;
         }));
-        $over31 = count(array_filter($ints, function($int) {
+        $over31 = count(array_filter($ints, function ($int) {
             return $int > 31;
         }));
-        $under1 = count(array_filter($ints, function($int) {
+        $under1 = count(array_filter($ints, function ($int) {
             return $int <= 0;
         }));
 
@@ -345,7 +345,7 @@ class DateMatch extends Match
      */
     protected static function mapIntsToDayMonth($ints)
     {
-        foreach([$ints, array_reverse($ints)] as list($d, $m)) {
+        foreach ([$ints, array_reverse($ints)] as list($d, $m)) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
                 return [
                     'day'   => $d,
@@ -372,7 +372,6 @@ class DateMatch extends Match
             // 15 -> 2015
             return $year + 2000;
         }
-
     }
 
     /**

@@ -57,7 +57,7 @@ class Zxcvbn
         $timeStart = microtime(true);
 
         $sanitizedInputs = array_map(
-            function($input) {
+            function ($input) {
                 return strtolower((string) $input);
             },
             $userInputs

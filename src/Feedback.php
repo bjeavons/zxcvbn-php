@@ -40,7 +40,7 @@ class Feedback
 
         // tie feedback to the longest match for longer sequences
         $longestMatch = $sequence[0];
-        foreach(array_slice($sequence, 1) as $match) {
+        foreach (array_slice($sequence, 1) as $match) {
             if (strlen($match->token) > strlen($longestMatch->token)) {
                 $longestMatch = $match;
             }

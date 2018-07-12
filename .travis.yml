@@ -15,5 +15,9 @@ matrix:
 before_script:
   - composer update --prefer-dist
 
+script:
+  - ./vendor/bin/phpcs .
+  - ./vendor/bin/phpunit
+
 after_script:
   - php vendor/bin/php-coveralls -v

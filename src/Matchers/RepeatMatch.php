@@ -84,7 +84,7 @@ class RepeatMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        $warning = strlen($this->repeatedChar) == 1 
+        $warning = strlen($this->repeatedChar) == 1
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 

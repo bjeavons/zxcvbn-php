@@ -104,12 +104,12 @@ class DictionaryMatch extends Match
                 if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
                         return 'This is a top-10 common password';
-                    } else if ($this->rank <= 100) {
+                    } elseif ($this->rank <= 100) {
                         return 'This is a top-100 common password';
                     } else {
                         return 'This is a very common password';
                     }
-                } else if ($this->getGuessesLog10() <= 4) {
+                } elseif ($this->getGuessesLog10() <= 4) {
                     return 'This is similar to a commonly used password';
                 }
                 break;

@@ -60,11 +60,13 @@ abstract class Match implements MatchInterface
      * @return array
      *   Array of Match objects
      */
-    public static function match($password, array $userInputs = []) {}
+    public static function match($password, array $userInputs = [])
+    {
+    }
 
     /**
      * Get feedback to a user based on the match.
-     * 
+     *
      * @param  bool $isSoleMatch
      *   Whether this is the only match in the password
      * @return array
@@ -148,17 +150,13 @@ abstract class Match implements MatchInterface
 
             if ($this->isDigit($ord)) {
                 $digits = 10;
-            }
-            elseif ($this->isUpper($ord)) {
+            } elseif ($this->isUpper($ord)) {
                 $upper = 26;
-            }
-            elseif ($this->isLower($ord)) {
+            } elseif ($this->isLower($ord)) {
                 $lower = 26;
-            }
-            elseif ($this->isSymbol($ord)) {
+            } elseif ($this->isSymbol($ord)) {
                 $symbols = 33;
-            }
-            else {
+            } else {
                 $unicode = 100;
             }
         }
@@ -206,16 +204,17 @@ abstract class Match implements MatchInterface
      * @param $k
      * @return int
      */
-    public static function binom($n, $k) {
+    public static function binom($n, $k)
+    {
         $j = $res = 1;
 
-        if($k < 0 || $k > $n) {
+        if ($k < 0 || $k > $n) {
             return 0;
         }
-        if(($n - $k) < $k) {
+        if (($n - $k) < $k) {
             $k = $n - $k;
         }
-        while($j <= $k) {
+        while ($j <= $k) {
             $res *= $n--;
             $res /= $j++;
         }
