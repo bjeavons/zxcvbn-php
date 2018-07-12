@@ -9,10 +9,10 @@ class RepeatTest extends AbstractMatchTest
 {
     public function testEmpty()
     {
-        foreach(['', '#'] as $password) {
+        foreach (['', '#'] as $password) {
             $this->assertEmpty(
                 RepeatMatch::match($password),
-                "doesn't match length-".strlen($password)." repeat patterns"
+                "doesn't match length-" . strlen($password) . " repeat patterns"
             );
         }
     }
@@ -170,5 +170,27 @@ class RepeatTest extends AbstractMatchTest
         $baseMatches = $match->baseMatches;
         $this->assertEquals(1, count($baseMatches));
         $this->assertInstanceOf(SequenceMatch::class, $baseMatches[0]);
+    }
+
+    public function guessesProvider()
+    {
+        return array(
+            [ 'aa',   'a',  2],
+            [ '999',  '9',  3],
+            [ '$$$$', '$',  4],
+            [ 'abab', 'ab', 2],
+            [ 'batterystaplebatterystaplebatterystaple', 'batterystaple', 3]
+        );
+    }
+
+    /**
+     * @dataProvider guessesProvider
+     * @param $token
+     * @param $repeatedChar
+     * @param $repeatCount
+     */
+    public function testGuesses($token, $repeatedChar, $repeatCount)
+    {
+        $this->markTestIncomplete("Test not yet written, requires other functionality that's yet to be ported");
     }
 }

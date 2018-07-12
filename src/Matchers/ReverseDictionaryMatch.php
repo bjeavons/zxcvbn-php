@@ -32,4 +32,9 @@ class ReverseDictionaryMatch extends DictionaryMatch
         usort($matches, ['ZxcvbnPhp\Matcher', 'sortMatches']);
         return $matches;
     }
+
+    public function getGuesses()
+    {
+        return parent::getGuesses() * 2;
+    }
 }

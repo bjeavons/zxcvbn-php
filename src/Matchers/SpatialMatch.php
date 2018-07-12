@@ -80,47 +80,6 @@ class SpatialMatch extends Match
     }
 
     /**
-     * Get entropy.
-     *
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if ($this->graph  === 'qwerty' || $this->graph === 'dvorak' ) {
-            $startingPos = self::KEYBOARD_STARTING_POSITION;
-            $avgDegree = self::KEYBOARD_AVERAGE_DEGREES;
-        }
-        else {
-            $startingPos = self::KEYPAD_STARTING_POSITION;
-            $avgDegree = self::KEYPAD_AVERAGE_DEGREES;
-        }
-
-        $possibilities = 0;
-        // estimate the number of possible patterns w/ token length or less with match turns or less.
-        for ($i = 2; $i <= strlen($this->token); $i++) {
-            $possibleTurns = min($this->turns, $i - 1);
-
-            for ($j = 1; $j <= $possibleTurns; $j++) {
-                $possibilities += $this->binom($i - 1, $j - 1) * $startingPos * pow($avgDegree, $j);
-            }
-        }
-        $entropy = $this->log($possibilities);
-
-        // add extra entropy for shifted keys. (% instead of 5, A instead of a.)
-        if (!empty($this->shiftedCount)) {
-            $possibilities = 0;
-            $unshiftedCount = strlen($this->token) - $this->shiftedCount;
-            $len = min($this->shiftedCount, $unshiftedCount);
-
-            for ($i = 0; $i <= $len; $i++) {
-                $possibilities += $this->binom($this->shiftedCount + $unshiftedCount, $i);
-            }
-            $entropy += $this->log($possibilities);
-        }
-        return $entropy;
-    }
-
-    /**
      * Match spatial patterns in a adjacency graph.
      * @param string $password
      * @param array  $graph
@@ -156,7 +115,7 @@ class SpatialMatch extends Match
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
                     $curChar = $password[$j];
-                    foreach ($adjacents as $adj ) {
+                    foreach ($adjacents as $adj) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
                         if ($adj !== null && $curCharPos !== -1) {
@@ -183,11 +142,11 @@ class SpatialMatch extends Match
                 // if the current pattern continued, extend j and try to grow again
                 if ($found) {
                     $j += 1;
-                }
-                // otherwise push the pattern discovered so far, if any...
-                else {
+                } else {
+                    // otherwise push the pattern discovered so far, if any...
+                    
                     // Ignore length 1 or 2 chains.
-                    if ($j - $i > 2)  {
+                    if ($j - $i > 2) {
                         $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,
@@ -250,5 +209,47 @@ class SpatialMatch extends Match
     {
         $data = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
         return json_decode($data, true);
+    }
+
+    public function getGuesses()
+    {
+        if ($this->graph === 'qwerty' || $this->graph === 'dvoark') {
+            $startingPosition = self::KEYBOARD_STARTING_POSITION;
+            $averageDegree = self::KEYBOARD_AVERAGE_DEGREES;
+        } else {
+            $startingPosition = self::KEYPAD_STARTING_POSITION;
+            $averageDegree = self::KEYPAD_AVERAGE_DEGREES;
+        }
+
+        $guesses = 0;
+        $length = strlen($this->token);
+        $turns = $this->turns;
+
+        // estimate the number of possible patterns w/ length L or less with t turns or less.
+        for ($i = 2; $i <= $length; $i++) {
+            $possibleTurns = min($turns, $i - 1);
+            for ($j = 1; $j <= $possibleTurns; $j++) {
+                $guesses += static::binom($i - 1, $j - 1) * $startingPosition * pow($averageDegree, $j);
+            }
+        }
+
+        // add extra guesses for shifted keys. (% instead of 5, A instead of a.)
+        // math is similar to extra guesses of l33t substitutions in dictionary matches.
+        if ($this->shiftedCount > 0) {
+            $shifted = $this->shiftedCount;
+            $unshifted = $length - $shifted;
+
+            if ($shifted === 0 || $unshifted === 0) {
+                $guesses *= 2;
+            } else {
+                $variations = 0;
+                for ($i = 1; $i <= min($shifted, $unshifted); $i++) {
+                    $variations += static::binom($shifted + $unshifted, $i);
+                }
+                $guesses *= $variations;
+            }
+        }
+
+        return (int)$guesses;
     }
 }

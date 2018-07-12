@@ -12,6 +12,8 @@ class DateMatch extends Match
     const MIN_YEAR = 1000;
     const MAX_YEAR = 2050;
 
+    const MIN_YEAR_SPACE = 20;
+    
     public $pattern = 'date';
 
     private static $DATE_SPLITS = [
@@ -128,28 +130,6 @@ class DateMatch extends Match
     }
 
     /**
-     * Get match entropy.
-     *
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if ($this->year < 100) {
-            // two-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * 100);
-        }
-        else {
-            // four-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * self::NUM_YEARS);
-        }
-        // add two bits for separator selection [/,-,.,etc]
-        if (!empty($this->separator)) {
-            $entropy += 2;
-        }
-        return $entropy;
-    }
-
-    /**
      * Find dates with separators in a password.
      *
      * @param string $password
@@ -170,9 +150,9 @@ class DateMatch extends Match
                 }
 
                 $date = static::checkDate([
-                    (integer) $captures[1],
-                    (integer) $captures[3],
-                    (integer) $captures[4]
+                    (int) $captures[1],
+                    (int) $captures[3],
+                    (int) $captures[4]
                 ]);
 
                 if ($date === false) {
@@ -274,7 +254,12 @@ class DateMatch extends Match
      */
     protected static function getDistanceForMatchCandidate($candidate)
     {
-        return abs((integer)$candidate['year'] - (integer)date('Y'));
+        return abs((int)$candidate['year'] - static::getReferenceYear());
+    }
+
+    public static function getReferenceYear()
+    {
+        return (int)date('Y');
     }
 
     /**
@@ -296,7 +281,7 @@ class DateMatch extends Match
             return false;
         }
 
-        $invalidYear = count(array_filter($ints, function($int) {
+        $invalidYear = count(array_filter($ints, function ($int) {
             return ($int >= 100 && $int < static::MIN_YEAR)
                 || ($int > static::MAX_YEAR);
         }));
@@ -304,13 +289,13 @@ class DateMatch extends Match
             return false;
         }
 
-        $over12 = count(array_filter($ints, function($int) {
+        $over12 = count(array_filter($ints, function ($int) {
             return $int > 12;
         }));
-        $over31 = count(array_filter($ints, function($int) {
+        $over31 = count(array_filter($ints, function ($int) {
             return $int > 31;
         }));
-        $under1 = count(array_filter($ints, function($int) {
+        $under1 = count(array_filter($ints, function ($int) {
             return $int <= 0;
         }));
 
@@ -360,7 +345,7 @@ class DateMatch extends Match
      */
     protected static function mapIntsToDayMonth($ints)
     {
-        foreach([$ints, array_reverse($ints)] as list($d, $m)) {
+        foreach ([$ints, array_reverse($ints)] as list($d, $m)) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
                 return [
                     'day'   => $d,
@@ -387,7 +372,6 @@ class DateMatch extends Match
             // 15 -> 2015
             return $year + 2000;
         }
-
     }
 
     /**
@@ -416,5 +400,19 @@ class DateMatch extends Match
 
             return true;
         });
+    }
+
+    public function getGuesses()
+    {
+        // base guesses: (year distance from REFERENCE_YEAR) * num_days * num_years
+        $yearSpace = max(abs($this->year - static::getReferenceYear()), static::MIN_YEAR_SPACE);
+        $guesses = $yearSpace * 365;
+
+        // add factor of 4 for separator selection (one of ~4 choices)
+        if ($this->separator) {
+            $guesses *= 4;
+        }
+
+        return $guesses;
     }
 }

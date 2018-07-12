@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Matchers\SpatialMatch;
 
 class SpatialTest extends AbstractMatchTest
@@ -104,16 +105,96 @@ class SpatialTest extends AbstractMatchTest
             ]
         );
     }
-
-    public function testEntropy()
+    
+    protected function getBaseGuessCount($token)
     {
-        $password = 'reds';
-        $matches = SpatialMatch::match($password);
-        $this->assertEquals(15.23614334369886, $matches[0]->getEntropy());
+        // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
+        // - 1 term because: not counting spatial patterns of length 1
+        // eg for length==6, multiplier is 5 for needing to try len2,len3,..,len6
+        return (int)(SpatialMatch::KEYBOARD_STARTING_POSITION
+            * SpatialMatch::KEYBOARD_AVERAGE_DEGREES
+            * (strlen($token) - 1)
+        );
+    }
 
-        // Test shifted character.
-        $password = 'rEds';
-        $matches = SpatialMatch::match($password);
-        $this->assertEquals(17.55807143858622, $matches[0]->getEntropy());
+    public function testGuessesBasic()
+    {
+        $token = 'zxcvbn';
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => 1,
+            'shifted_count' => 0,
+        ]);
+
+        $this->assertEquals(
+            $this->getBaseGuessCount($token),
+            $match->getGuesses(),
+            "with no turns or shifts, guesses is starts * degree * (len-1)"
+        );
+    }
+
+    public function testGuessesShifted()
+    {
+        $token = 'ZxCvbn';
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => 1,
+            'shifted_count' => 2,
+        ]);
+
+        $this->assertEquals(
+            $this->getBaseGuessCount($token) * (Match::binom(6, 2) + Match::binom(6, 1)),
+            $match->getGuesses(),
+            "guesses is added for shifted keys, similar to capitals in dictionary matching"
+        );
+    }
+
+    public function testGuessesEverythingShifted()
+    {
+        $token = 'ZXCVBN';
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => 1,
+            'shifted_count' => 6,
+        ]);
+
+        $this->assertEquals(
+            $this->getBaseGuessCount($token) * 2,
+            $match->getGuesses(),
+            "when everything is shifted, guesses are double"
+        );
+    }
+
+    public function complexGuessProvider()
+    {
+        return [
+            ['6yhgf',        2, 19596.25531914894],
+            ['asde3w',       3, 203315.15799004078],
+            ['zxcft6yh',     3, 558460.6174739702],
+            ['xcvgy7uj',     3, 558460.6174739702],
+            ['ertghjm,.',    5, 30160744.327082045],
+            ['qwerfdsazxcv', 5, 175281377.63647097],
+        ];
+    }
+
+    /**
+     * @dataProvider complexGuessProvider
+     * @param string $token
+     * @param int $turns
+     * @param float $expected
+     */
+    public function testGuessesComplexCase($token, $turns, $expected)
+    {
+        $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
+            'graph' => 'qwerty',
+            'turns' => $turns,
+            'shifted_count' => 0,
+        ]);
+
+        $this->assertEquals(
+            (int)$expected,
+            $match->getGuesses(),
+            "spatial guesses accounts for turn positions, directions and starting keys"
+        );
     }
 }

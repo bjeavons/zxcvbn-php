@@ -83,7 +83,7 @@ class RepeatMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        $warning = strlen($this->repeatedChar) == 1 
+        $warning = strlen($this->repeatedChar) == 1
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
@@ -113,14 +113,8 @@ class RepeatMatch extends Match
         }
     }
 
-    /**
-     * @return float
-     */
-    public function getEntropy()
+    public function getGuesses()
     {
-        if (is_null($this->entropy)) {
-           $this->entropy = $this->log($this->getCardinality() * strlen($this->token));
-        }
-        return $this->entropy;
+        return $this->baseGuesses * $this->repeatCount;
     }
 }
