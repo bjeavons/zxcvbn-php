@@ -233,4 +233,55 @@ class DateTest extends AbstractMatchTest
             ]
         );
     }
+
+    public function testReferenceYearImplementation()
+    {
+        $this->assertEquals(date('Y'), DateMatch::getReferenceYear(), "reference year implementation");
+    }
+
+    public function testGuessDistanceFromReferenceYear()
+    {
+        $token = '1123';
+        $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
+            'separator' => '',
+            'year' => 1923,
+            'month' => 1,
+            'day' => 1
+        ]);
+
+        $expected = 365 * abs(DateMatch::getReferenceYear() - $match->year);
+        $this->assertEquals(
+            $expected,
+            $match->getGuesses(),
+            "guesses for $token is 365 * distance_from_ref_year"
+        );
+    }
+
+    public function testGuessMinYearSpace()
+    {
+        $token = '112010';
+        $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
+            'separator' => '',
+            'year' => 2010,
+            'month' => 1,
+            'day' => 1
+        ]);
+
+        $expected = 7300; // 365 * DateMatch::MIN_YEAR_SPACE;
+        $this->assertEquals($expected, $match->getGuesses(), "recent years assume MIN_YEAR_SPACE");
+    }
+
+    public function testGuessWithSeparator()
+    {
+        $token = '1/1/2010';
+        $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
+            'separator' => '/',
+            'year' => 2010,
+            'month' => 1,
+            'day' => 1
+        ]);
+
+        $expected = 29200; // 365 * DateMatch::MIN_YEAR_SPACE * 4;
+        $this->assertEquals($expected, $match->getGuesses(), "extra guesses are added for separators");
+    }
 }

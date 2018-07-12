@@ -12,6 +12,8 @@ class DateMatch extends Match
     const MIN_YEAR = 1000;
     const MAX_YEAR = 2050;
 
+    const MIN_YEAR_SPACE = 20;
+    
     public $pattern = 'date';
 
     private static $DATE_SPLITS = [
@@ -125,28 +127,6 @@ class DateMatch extends Match
         $this->month = $params['month'];
         $this->year = $params['year'];
         $this->separator = $params['separator'];
-    }
-
-    /**
-     * Get match entropy.
-     *
-     * @return float
-     */
-    public function getEntropy()
-    {
-        if ($this->year < 100) {
-            // two-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * 100);
-        }
-        else {
-            // four-digit year
-            $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * self::NUM_YEARS);
-        }
-        // add two bits for separator selection [/,-,.,etc]
-        if (!empty($this->separator)) {
-            $entropy += 2;
-        }
-        return $entropy;
     }
 
     /**
@@ -274,7 +254,12 @@ class DateMatch extends Match
      */
     protected static function getDistanceForMatchCandidate($candidate)
     {
-        return abs((integer)$candidate['year'] - (integer)date('Y'));
+        return abs((integer)$candidate['year'] - static::getReferenceYear());
+    }
+
+    public static function getReferenceYear()
+    {
+        return (integer)date('Y');
     }
 
     /**
@@ -416,5 +401,19 @@ class DateMatch extends Match
 
             return true;
         });
+    }
+
+    public function getGuesses()
+    {
+        // base guesses: (year distance from REFERENCE_YEAR) * num_days * num_years
+        $yearSpace = max(abs($this->year - static::getReferenceYear()), static::MIN_YEAR_SPACE);
+        $guesses = $yearSpace * 365;
+
+        // add factor of 4 for separator selection (one of ~4 choices)
+        if ($this->separator) {
+            $guesses *= 4;
+        }
+
+        return $guesses;
     }
 }

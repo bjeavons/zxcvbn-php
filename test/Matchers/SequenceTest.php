@@ -125,10 +125,30 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testEntropy()
+    public function guessProvider()
     {
-        $password = '12345';
-        $matches = SequenceMatch::match($password);
-        $this->assertEquals(log(5, 2) + 1, $matches[0]->getEntropy());
+        return array(
+            array('ab',   true,  4 * 2),        // obvious start * len-2
+            array('XYZ',  true,  26 * 3),       // base26 * len-3
+            array('4567', true,  10 * 4),       // base10 * len-4
+            array('7654', false, 10 * 4 * 2),   // base10 * len-4 * descending
+            array('ZYX',  false, 4 * 3 * 2),    // obvious start * len-3 * descending
+        );
+    }
+
+    /**
+     * @dataProvider guessProvider
+     * @param $token
+     * @param $ascending
+     * @param $expectedGuesses
+     */
+    public function testGuesses($token, $ascending, $expectedGuesses)
+    {
+        $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => $ascending]);
+        $this->assertEquals(
+            $expectedGuesses,
+            $match->getGuesses(),
+            "the sequence pattern '$token' has guesses of $expectedGuesses"
+        );
     }
 }

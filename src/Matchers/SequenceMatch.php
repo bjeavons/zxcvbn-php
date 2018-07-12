@@ -111,33 +111,27 @@ class SequenceMatch extends Match
         }
     }
 
-    /**
-     * @copydoc Match::getEntropy()
-     */
-    public function getEntropy()
+    public function getGuesses()
     {
-        $char = $this->token[0];
-        if ($char === 'a' || $char === '1') {
-            $entropy = 1;
-        }
-        else {
-            $ord = ord($char);
+        $firstCharacter = $this->token[0];
+        $guesses = 0;
 
-            if ($this->isDigit($ord)) {
-                $entropy = $this->log(10);
-            }
-            elseif ($this->isLower($ord)) {
-                $entropy = $this->log(26);
-            }
-            else {
-                $entropy = $this->log(26) + 1; // Extra bit for upper.
-            }
+        if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
+            $guesses += 4;  // lower guesses for obvious starting points
+        } elseif (ctype_digit($firstCharacter)) {
+            $guesses += 10; // digits
+        } else {
+            // could give a higher base for uppercase,
+            // assigning 26 to both upper and lower sequences is more conservative
+            $guesses += 26;
         }
 
-        if (empty($this->ascending)) {
-            $entropy += 1; // Extra bit for descending instead of ascending
+        if (!$this->ascending) {
+            // need to try a descending sequence in addition to every ascending sequence ->
+            // 2x guesses
+            $guesses *= 2;
         }
 
-        return $entropy + $this->log(strlen($this->token));
+        return $guesses * strlen($this->token);
     }
 }

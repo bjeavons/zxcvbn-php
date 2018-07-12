@@ -93,44 +93,6 @@ class L33tMatch extends DictionaryMatch
     }
 
     /**
-     * @return float
-     */
-    public function getEntropy()
-    {
-        return parent::getEntropy() + $this->l33tEntropy();
-    }
-
-    /**
-     * @return float
-     */
-    protected function l33tEntropy()
-    {
-        $possibilities = 0;
-        foreach ($this->sub as $subbed => $unsubbed) {
-            $sLen = 0;
-            $uLen = 0;
-            // Count occurences of substituted and unsubstituted characters in the token.
-            foreach (str_split($this->token) as $char) {
-                if ($char === (string) $subbed) {
-                    $sLen++;
-                }
-                if ($char === (string) $unsubbed) {
-                    $uLen++;
-                }
-            }
-            foreach (range(0, min($uLen, $sLen)) as $i) {
-                $possibilities += $this->binom($uLen + $sLen,  $i);
-            }
-        }
-
-        // corner: return 1 bit for single-letter subs, like 4pple -> apple, instead of 0.
-        if ($possibilities <= 1) {
-            return 1;
-        }
-        return $this->log($possibilities);
-    }
-
-    /**
      * @param string $string
      * @param array $map
      * @return string
@@ -188,5 +150,40 @@ class L33tMatch extends DictionaryMatch
             $result = $tmp;
         }
         return $result;
+    }
+
+    public function getGuesses()
+    {
+        return parent::getGuesses() * $this->getL33tVariations();
+    }
+
+    protected function getL33tVariations()
+    {
+        $variations = 1;
+
+        foreach ($this->sub as $substitution => $letter) {
+            $characters = str_split(strtolower($this->token));
+
+            $subbed = count(array_filter($characters, function ($character) use ($substitution) {
+                return (string)$character === (string)$substitution;
+            }));
+            $unsubbed = count(array_filter($characters, function ($character) use ($letter) {
+                return (string)$character === (string)$letter;
+            }));
+
+            if ($subbed === 0 || $unsubbed === 0) {
+                // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
+                // treat that as doubling the space (attacker needs to try fully subbed chars in addition to
+                // unsubbed.)
+                $variations *= 2;
+            } else {
+                $possibilities = 0;
+                for ($i = 1; $i <= min($subbed, $unsubbed); $i++) {
+                    $possibilities += static::binom($subbed + $unsubbed, $i);
+                }
+                $variations *= $possibilities;
+            }
+        }
+        return $variations;
     }
 }

@@ -70,7 +70,7 @@ class Zxcvbn
 
         // 1.0 rewrite: Although upstream has a single variable for $result,
         // this is opaque and I'd rather do it a clearer, more transparent way
-        $result = $this->scorer->mostGuessableMatchSequence($password, $matches);
+        $result = $this->scorer->getMostGuessableMatchSequence($password, $matches);
         $attackTimes = $this->timeEstimator->estimateAttackTimes($result['guesses']);
 
         $feedback = $this->feedback->getFeedback($result['score'], $result['sequence']);

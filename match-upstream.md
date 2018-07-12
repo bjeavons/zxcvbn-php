@@ -11,19 +11,16 @@ Planned Changes:
   * [ ] Write tests for the feedback.
 * Time estimator: added.
   * [x] Just need to flesh out `displayTime()` based on upstream. Should be straightforward.
-  * [ ] Write tests for the time estimator.
+  * [x] Write tests for the time estimator.
 * Matchers: added.
   * [x] The majority of the matchers have now been ported.
   * [x] Port the tests for the matchers.
   * [ ] RepeatMatch: `base_guesses` and `base_matches` are still missing, but this will require the `Scorer` to be up and running before we can implement them.
-* Entropy: this is a feature unique to the PHP library.
-  * [ ] Some changes will be needed since we've added new matches.
-  * [ ] Some new tests will also likely need to be written.
 * `Scorer`:  This is vastly different between upstream and this port. Upstream's algorithm is complicated and hard to follow. I think this will be the hardest thing to bring up to parity. *Some* of this may be similar to `Searcher::getMinimumEntropy()` but I really can't tell.
   * Some of the other language ports e.g. https://github.com/rianhunter/zxcvbn-cpp/blob/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp may also be useful references when porting. 
   * :question: `ScorerInterface`: In upstream, `scoring.most_guessable_match_sequence` returns a hash with password/guesses/guesses_log10/sequence. Our current `ScorerInterface` has methods for `getScore()` and `getMetrics()`. Our interface is clearly "cleaner", but it might make more sense to just mirror upstream. :neutral_face:
-  * [ ] Port or rewrite the scorer - this includes returning `guesses`, `guesses_log10` and `score`.
-  * [ ] Write tests for the scorer.
+  * [x] Port or rewrite the scorer - this includes returning `guesses`, `guesses_log10` and `score`.
+  * [x] Write tests for the scorer.
 * [ ] `Searcher`: Once we're done using it as a reference when porting `Scorer`, it should probably be deleted.
 * [x] Data files: We have 3 files at `src/Matchers/*.json` which at least approximately correspond to their data files. Their `data/` directory has been copied verbatim, and the `data-scripts/*.py` scripts which were generating coffeescript have been modified to output JSON instead. Some of upstream's `data-scripts` are used to build `data/*.txt` files based on wikipedia/wiktionary/etc exports. Those haven't been copied over; instead, if the upstream data files change, we should recopy the data files.
   * [x] `src/Matchers/adjacency_graphs.json` This is identical to upstream.

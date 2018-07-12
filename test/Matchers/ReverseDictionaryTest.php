@@ -33,4 +33,11 @@ class RerverseDictionaryTest extends AbstractMatchTest
             ]
         );
     }
+
+    public function testGuessesReversed()
+    {
+        $match = new ReverseDictionaryMatch('aaa', 0, 2, 'aaa', ['rank' => 32]);
+        $expected = 32 * 2;     // rank * reversed
+        $this->assertEquals($expected, $match->getGuesses(), "guesses are doubled when word is reversed");
+    }
 }
