@@ -45,7 +45,12 @@ class FeedbackTest extends \PHPUnit_Framework_TestCase
     public function testLongestMatchGetsFeedback()
     {
         $match1 = new SequenceMatch('abcd26-01-1991', 0, 4, 'abcd');
-        $match2 = new DateMatch('abcd26-01-1991', 4, 14, '26-01-1991', []);
+        $match2 = new DateMatch('abcd26-01-1991', 4, 14, '26-01-1991', [
+            'day' => 26,
+            'month' => 1,
+            'year' => 1991,
+            'separator' => '-',
+        ]);
         $feedback = $this->feedback->getFeedback(1, [$match1, $match2]);
 
         $this->assertEquals(
@@ -67,7 +72,12 @@ class FeedbackTest extends \PHPUnit_Framework_TestCase
 
     public function testDefaultSuggestion()
     {
-        $match = new DateMatch('26-01-1991', 0, 10, '26-01-1991', []);
+        $match = new DateMatch('26-01-1991', 0, 10, '26-01-1991', [
+            'day' => 26,
+            'month' => 1,
+            'year' => 1991,
+            'separator' => '-',
+        ]);
         $feedback = $this->feedback->getFeedback(1, [$match]);
 
         $this->assertContains(
