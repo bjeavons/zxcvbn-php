@@ -103,12 +103,11 @@ abstract class Match implements MatchInterface
             return [];
         }
 
-        $pos = 0;
         $groups = [];
         foreach ($matches as $group) {
             $captureBegin = 0;
             $match = array_shift($group);
-            $matchBegin = strpos($string, $match, $pos);
+            $matchBegin = strpos($string, $match, $offset);
             $captures = [
                 [
                     'begin' => $matchBegin,
@@ -125,7 +124,7 @@ abstract class Match implements MatchInterface
                 ];
             }
             $groups[] = $captures;
-            $pos += strlen($match) - 1;
+            $offset += strlen($match) - 1;
         }
         return $groups;
     }

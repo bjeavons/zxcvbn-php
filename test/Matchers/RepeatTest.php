@@ -185,6 +185,22 @@ class RepeatTest extends AbstractMatchTest
         $this->assertEquals('lt', $baseMatches[1]->repeatedChar);
     }
 
+    public function testDuplicateRepeatsInPassword()
+    {
+        $pattern = 'scoobydoo';
+        $this->checkMatches(
+            'duplicate repeats in the password are identified correctly',
+            RepeatMatch::match($pattern),
+            'repeat',
+            ['oo', 'oo'],
+            [[2, 3], [7, 8]],
+            [
+                'repeatedChar' => ['o', 'o'],
+                'repeatCount' => [2, 2]
+            ]
+        );
+    }
+
     public function guessesProvider()
     {
         return array(
