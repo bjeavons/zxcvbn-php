@@ -46,7 +46,16 @@ class L33tMatch extends DictionaryMatch
             $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
             foreach ($results as $match) {
                 $token = substr($password, $match->begin, $match->end - $match->begin + 1);
-                if (strtolower($token) === $match->token) {
+
+                # only return the matches that contain an actual substitution
+                if (strtolower($token) === $match->matchedWord) {
+                    continue;
+                }
+
+                # filter single-character l33t matches to reduce noise.
+                # otherwise '1' matches 'i', '4' matches 'a', both very common English words
+                # with low dictionary rank.
+                if (strlen($token) === 1) {
                     continue;
                 }
 

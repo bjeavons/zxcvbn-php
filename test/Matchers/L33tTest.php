@@ -86,7 +86,7 @@ class L33tTest extends AbstractMatchTest
     {
         $this->assertEquals(
             [],
-            MockL33tMatch::match(''),
+            L33tMatch::match(''),
             "doesn't match empty string"
         );
     }
@@ -95,7 +95,7 @@ class L33tTest extends AbstractMatchTest
     {
         $this->assertEquals(
             [],
-            MockL33tMatch::match('password'),
+            L33tMatch::match('password'),
             "doesn't match pure dictionary words"
         );
     }
@@ -104,8 +104,17 @@ class L33tTest extends AbstractMatchTest
     {
         $this->assertEquals(
             [],
-            MockL33tMatch::match('password4'),
+            L33tMatch::match('password4'),
             "doesn't match pure dictionary word with l33t characters after"
+        );
+    }
+
+    public function testCapitalizedDictionaryWordsWithL33tCharactersAfter()
+    {
+        $this->assertEquals(
+            [],
+            L33tMatch::match('Password4'),
+            "doesn't match capitalized dictionary word with l33t characters after"
         );
     }
 
@@ -205,7 +214,7 @@ class L33tTest extends AbstractMatchTest
     {
         $this->assertEquals(
             [],
-            MockL33tMatch::match('4 1 @'),
+            L33tMatch::match('4 1 @'),
             "doesn't match single-character l33ted words"
         );
     }
