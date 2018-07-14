@@ -211,7 +211,7 @@ class SpatialMatch extends Match
         return json_decode($data, true);
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         if ($this->graph === 'qwerty' || $this->graph === 'dvoark') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;

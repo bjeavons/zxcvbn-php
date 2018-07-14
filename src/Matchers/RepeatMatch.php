@@ -114,7 +114,7 @@ class RepeatMatch extends Match
         }
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         return $this->baseGuesses * $this->repeatCount;
     }

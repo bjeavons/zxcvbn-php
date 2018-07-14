@@ -53,7 +53,7 @@ class Bruteforce extends Match
         $this->cardinality = $cardinality;
     }
 
-    public function getGuesses()
+    public function getRawGuesses()
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, strlen($this->token));
         if ($guesses === INF) {

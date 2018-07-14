@@ -111,7 +111,7 @@ class SequenceMatch extends Match
         }
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         $firstCharacter = $this->token[0];
         $guesses = 0;

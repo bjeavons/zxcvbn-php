@@ -2,10 +2,29 @@
 
 namespace ZxcvbnPhp\Test;
 
+use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Zxcvbn;
 
 class ZxcvbnTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var Zxcvbn */
+    private $zxcvbn;
+
+    public function setUp()
+    {
+        $this->zxcvbn = new Zxcvbn();
+    }
+
+    public function testMinimumGuessesForMultipleMatches()
+    {
+        /** @var Match[] $matches */
+        $matches = $this->zxcvbn->passwordStrength('rockyou')['sequence'];
+
+        // zxcvbn will return two matches: 'rock' (rank 359) and 'you' (rank 1).
+        // If tested alone, the word 'you' would return only 1 guess, but because it's part of a larger password,
+        // it should return the minimum number of guesses, which is 50 for a multi-character token.
+        $this->assertEquals(50, $matches[1]->getGuesses());
+    }
 
     public function testZxcvbn()
     {

@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Scorer;
+
 abstract class Match implements MatchInterface
 {
 
@@ -219,6 +221,25 @@ abstract class Match implements MatchInterface
         }
 
         return $res;
+    }
+
+    abstract protected function getRawGuesses();
+
+    public function getGuesses()
+    {
+        return max($this->getRawGuesses(), $this->getMinimumGuesses());
+    }
+
+    protected function getMinimumGuesses()
+    {
+        if (strlen($this->token) < strlen($this->password)) {
+            if (strlen($this->token) === 1) {
+                return Scorer::MIN_SUBMATCH_GUESSES_SINGLE_CHAR;
+            } else {
+                return Scorer::MIN_SUBMATCH_GUESSES_MULTI_CHAR;
+            }
+        }
+        return 0;
     }
 
     public function getGuessesLog10()

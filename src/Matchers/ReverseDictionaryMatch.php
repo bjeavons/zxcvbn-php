@@ -33,9 +33,9 @@ class ReverseDictionaryMatch extends DictionaryMatch
         return $matches;
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
-        return parent::getGuesses() * 2;
+        return parent::getRawGuesses() * 2;
     }
 
     public function getFeedback($isSoleMatch)

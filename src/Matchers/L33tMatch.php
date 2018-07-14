@@ -162,9 +162,9 @@ class L33tMatch extends DictionaryMatch
         return $result;
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
-        return parent::getGuesses() * $this->getL33tVariations();
+        return parent::getRawGuesses() * $this->getL33tVariations();
     }
 
     protected function getL33tVariations()

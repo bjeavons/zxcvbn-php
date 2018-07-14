@@ -402,7 +402,7 @@ class DateMatch extends Match
         });
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         // base guesses: (year distance from REFERENCE_YEAR) * num_days * num_years
         $yearSpace = max(abs($this->year - static::getReferenceYear()), static::MIN_YEAR_SPACE);

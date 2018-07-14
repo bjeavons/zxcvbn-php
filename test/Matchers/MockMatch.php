@@ -29,7 +29,7 @@ class MockMatch extends Match
     /**
      * @return integer
      */
-    public function getGuesses()
+    public function getRawGuesses()
     {
         return $this->guesses;
     }

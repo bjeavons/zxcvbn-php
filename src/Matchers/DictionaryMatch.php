@@ -186,7 +186,7 @@ class DictionaryMatch extends Match
     /**
      * @return integer
      */
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         $guesses = $this->rank;
         $guesses *= $this->getUppercaseVariations();
