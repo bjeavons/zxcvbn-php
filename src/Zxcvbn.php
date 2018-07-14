@@ -72,8 +72,7 @@ class Zxcvbn
         // this is opaque and I'd rather do it a clearer, more transparent way
         $result = $this->scorer->getMostGuessableMatchSequence($password, $matches);
         $attackTimes = $this->timeEstimator->estimateAttackTimes($result['guesses']);
-
-        $feedback = $this->feedback->getFeedback($result['score'], $result['sequence']);
+        $feedback = $this->feedback->getFeedback($attackTimes['score'], $result['sequence']);
 
         return array_merge(
             $result,
