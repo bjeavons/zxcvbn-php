@@ -39,20 +39,6 @@ class Bruteforce extends Match
         ];
     }
 
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param $cardinality
-     */
-    public function __construct($password, $begin, $end, $token, $cardinality = null)
-    {
-        parent::__construct($password, $begin, $end, $token);
-        // Cardinality can be injected to support full password cardinality instead of token.
-        $this->cardinality = $cardinality;
-    }
-
     public function getRawGuesses()
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, strlen($this->token));

@@ -33,11 +33,6 @@ abstract class Match implements MatchInterface
     public $pattern;
 
     /**
-     * @var
-     */
-    public $cardinality;
-
-    /**
      * @param $password
      * @param $begin
      * @param $end
@@ -49,21 +44,6 @@ abstract class Match implements MatchInterface
         $this->begin = $begin;
         $this->end = $end;
         $this->token = $token;
-        $this->cardinality = null;
-    }
-
-    /**
-     * Find matches in a password.
-     *
-     * @param string $password
-     *   Password to check for match.
-     * @param array $userInputs
-     *   Array of values related to the user (optional).
-     * @return array
-     *   Array of Match objects
-     */
-    public static function match($password, array $userInputs = [])
-    {
     }
 
     /**
@@ -129,71 +109,6 @@ abstract class Match implements MatchInterface
             $offset += strlen($match) - 1;
         }
         return $groups;
-    }
-
-    /**
-     * Get token's symbol space.
-     *
-     * @return int
-     */
-    public function getCardinality()
-    {
-        if (!is_null($this->cardinality)) {
-            return $this->cardinality;
-        }
-        $lower = $upper = $digits = $symbols = $unicode = 0;
-
-        // Use token instead of password to support bruteforce matches on sub-string
-        // of password.
-        $chars = str_split($this->token);
-        foreach ($chars as $char) {
-            $ord = ord($char);
-
-            if ($this->isDigit($ord)) {
-                $digits = 10;
-            } elseif ($this->isUpper($ord)) {
-                $upper = 26;
-            } elseif ($this->isLower($ord)) {
-                $lower = 26;
-            } elseif ($this->isSymbol($ord)) {
-                $symbols = 33;
-            } else {
-                $unicode = 100;
-            }
-        }
-        $this->cardinality = $lower + $digits + $upper + $symbols + $unicode;
-        return $this->cardinality;
-    }
-
-    protected function isDigit($ord)
-    {
-        return $ord >= 0x30 && $ord <= 0x39;
-    }
-
-    protected function isUpper($ord)
-    {
-        return $ord >= 0x41 && $ord <= 0x5a;
-    }
-
-    protected function isLower($ord)
-    {
-        return $ord >= 0x61 && $ord <= 0x7a;
-    }
-
-    protected function isSymbol($ord)
-    {
-        return $ord <= 0x7f;
-    }
-
-    /**
-     * Calculate entropy.
-     *
-     * @param $number
-     * @return float
-     */
-    protected function log($number)
-    {
-        return log($number, 2);
     }
 
     /**
