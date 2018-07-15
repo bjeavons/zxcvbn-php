@@ -149,17 +149,52 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tSubstitutions($subtable)
     {
-        $result = [[]];
-        foreach ($subtable as $letter => $substitutions) {
-            $tmp = [];
-            foreach ($result as $result_item) {
-                foreach ($substitutions as $substitutedCharacter) {
-                    $tmp[] = $result_item + [$substitutedCharacter => $letter];
+        $keys = array_keys($subtable);
+        $substitutions = self::substitutionTableHelper($subtable, $keys, [[]]);
+
+        // Converts the substitution arrays from [ [a, b], [c, d] ] to [ a => b, c => d ]
+        $substitutions = array_map(function ($subArray) {
+            return array_combine(array_column($subArray, 0), array_column($subArray, 1));
+        }, $substitutions);
+
+        return $substitutions;
+    }
+
+    protected static function substitutionTableHelper($table, $keys, $subs) {
+        if (empty($keys)) {
+            return $subs;
+        }
+
+        $firstKey = array_shift($keys);
+        $otherKeys = $keys;
+        $nextSubs = [];
+
+        foreach ($table[$firstKey] as $l33tCharacter) {
+            foreach ($subs as $sub) {
+                $dupL33tIndex = false;
+                foreach ($sub as $index => $char) {
+                    if ($char[0] === $l33tCharacter) {
+                        $dupL33tIndex = $index;
+                        break;
+                    }
+                }
+
+                if ($dupL33tIndex === false) {
+                    $subExtension = $sub;
+                    $subExtension[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $subExtension;
+                } else {
+                    $subAlternative = $sub;
+                    array_splice($subAlternative, $dupL33tIndex, 1);
+                    $subAlternative[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $sub;
+                    $nextSubs[] = $subAlternative;
                 }
             }
-            $result = $tmp;
         }
-        return $result;
+
+        $nextSubs = array_unique($nextSubs, SORT_REGULAR);
+        return self::substitutionTableHelper($table, $otherKeys, $nextSubs);
     }
 
     protected function getRawGuesses()
