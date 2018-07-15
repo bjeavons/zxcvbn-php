@@ -213,7 +213,7 @@ class SpatialMatch extends Match
 
     protected function getRawGuesses()
     {
-        if ($this->graph === 'qwerty' || $this->graph === 'dvoark') {
+        if ($this->graph === 'qwerty' || $this->graph === 'dvorak') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;
             $averageDegree = self::KEYBOARD_AVERAGE_DEGREES;
         } else {
