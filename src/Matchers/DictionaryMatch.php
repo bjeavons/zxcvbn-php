@@ -81,7 +81,7 @@ class DictionaryMatch extends Match
     public function getFeedback($isSoleMatch)
     {
         $startUpper = '/^[A-Z][^A-Z]+$/';
-        $allUpper = '/^[A-Z]+$/';
+        $allUpper = '/^[^a-z]+$/';
 
         $feedback = [
             'warning' => $this->getFeedbackWarning($isSoleMatch),
