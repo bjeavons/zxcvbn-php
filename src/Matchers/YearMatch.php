@@ -7,7 +7,8 @@ class YearMatch extends Match
 
     const NUM_YEARS = 119;
 
-    public $pattern = 'year';
+    public $pattern = 'regex';
+    public $regexName = 'recent_year';
 
     /**
      * Match occurences of years in a password
