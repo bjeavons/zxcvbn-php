@@ -250,6 +250,6 @@ class SpatialMatch extends Match
             }
         }
 
-        return (int)$guesses;
+        return $guesses;
     }
 }
