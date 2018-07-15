@@ -57,14 +57,14 @@ class Matcher
     {
         // @todo change to dynamic
         return [
-            'ZxcvbnPhp\Matchers\DateMatch',
-            'ZxcvbnPhp\Matchers\L33tMatch',
-            'ZxcvbnPhp\Matchers\RepeatMatch',
-            'ZxcvbnPhp\Matchers\SequenceMatch',
-            'ZxcvbnPhp\Matchers\SpatialMatch',
-            'ZxcvbnPhp\Matchers\YearMatch',
             'ZxcvbnPhp\Matchers\DictionaryMatch',
             'ZxcvbnPhp\Matchers\ReverseDictionaryMatch',
+            'ZxcvbnPhp\Matchers\L33tMatch',
+            'ZxcvbnPhp\Matchers\SpatialMatch',
+            'ZxcvbnPhp\Matchers\RepeatMatch',
+            'ZxcvbnPhp\Matchers\SequenceMatch',
+            'ZxcvbnPhp\Matchers\YearMatch',
+            'ZxcvbnPhp\Matchers\DateMatch',
         ];
     }
 }

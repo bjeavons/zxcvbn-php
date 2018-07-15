@@ -207,8 +207,18 @@ class SpatialMatch extends Match
      */
     public static function getAdjacencyGraphs()
     {
-        $data = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
-        return json_decode($data, true);
+        $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
+        $data = json_decode($json, true);
+
+        // This seems pointless, but the data file is not guaranteed to be in any particular order.
+        // We want to be in the exact order below so as to match most closely with upstream, because when a match
+        // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
+        return [
+            'qwerty' => $data['qwerty'],
+            'dvorak' => $data['dvorak'],
+            'keypad' => $data['keypad'],
+            'mac_keypad' => $data['mac_keypad'],
+        ];
     }
 
     protected function getRawGuesses()
