@@ -160,7 +160,8 @@ class L33tMatch extends DictionaryMatch
         return $substitutions;
     }
 
-    protected static function substitutionTableHelper($table, $keys, $subs) {
+    protected static function substitutionTableHelper($table, $keys, $subs)
+    {
         if (empty($keys)) {
             return $subs;
         }

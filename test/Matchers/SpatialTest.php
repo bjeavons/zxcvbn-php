@@ -111,10 +111,9 @@ class SpatialTest extends AbstractMatchTest
         // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
         // - 1 term because: not counting spatial patterns of length 1
         // eg for length==6, multiplier is 5 for needing to try len2,len3,..,len6
-        return (int)(SpatialMatch::KEYBOARD_STARTING_POSITION
+        return SpatialMatch::KEYBOARD_STARTING_POSITION
             * SpatialMatch::KEYBOARD_AVERAGE_DEGREES
-            * (strlen($token) - 1)
-        );
+            * (strlen($token) - 1);
     }
 
     public function testGuessesBasic()
@@ -168,12 +167,12 @@ class SpatialTest extends AbstractMatchTest
     public function complexGuessProvider()
     {
         return [
-            ['6yhgf',        2, 19596.25531914894],
-            ['asde3w',       3, 203315.15799004078],
-            ['zxcft6yh',     3, 558460.6174739702],
-            ['xcvgy7uj',     3, 558460.6174739702],
-            ['ertghjm,.',    5, 30160744.327082045],
-            ['qwerfdsazxcv', 5, 175281377.63647097],
+            ['6yhgf',        2, 19596.255319547865],
+            ['asde3w',       3, 203315.1579961936],
+            ['zxcft6yh',     3, 558460.6174911747],
+            ['xcvgy7uj',     3, 558460.6174911747],
+            ['ertghjm,.',    5, 30160744.32861352],
+            ['qwerfdsazxcv', 5, 175281377.64553562],
         ];
     }
 
@@ -192,7 +191,7 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $this->assertEquals(
-            (int)$expected,
+            $expected,
             $match->getGuesses(),
             "spatial guesses accounts for turn positions, directions and starting keys"
         );

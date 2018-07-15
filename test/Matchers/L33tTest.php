@@ -239,6 +239,26 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
+    /*
+     * The character '1' can map to both 'i' and 'l' - there was previously a bug that prevented it from matching
+     * against the latter
+     */
+    public function testSubstitutionOfCharacterL()
+    {
+        $this->checkMatches(
+            "matches against overlapping l33t patterns",
+            L33tMatch::match('marie1'),
+            'dictionary',
+            ['marie1', 'arie1'],
+            [[0,5], [1,5]],
+            [
+                'l33t'           => [true, true],
+                'sub'            => [['1' => 'l'], ['1' => 'l'],],
+                'matchedWord'    => ['mariel', 'ariel'],
+            ]
+        );
+    }
+
     public function testGuessesL33t()
     {
         $match = new L33tMatch('aaa@@@', 0, 5, 'aaa@@@', [

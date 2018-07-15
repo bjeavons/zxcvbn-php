@@ -31,7 +31,7 @@ class YearTest extends AbstractMatchTest
         $this->checkMatches(
             "matches recent year",
             YearMatch::match($password),
-            'year',
+            'regex',
             [$password],
             [[0, strlen($password) - 1]],
             []
@@ -67,7 +67,7 @@ class YearTest extends AbstractMatchTest
             $this->checkMatches(
                 "identifies years surrounded by words",
                 YearMatch::match($password),
-                'year',
+                'regex',
                 [$pattern],
                 [[$i, $j]],
                 []
@@ -86,7 +86,7 @@ class YearTest extends AbstractMatchTest
         $this->checkMatches(
             "matches year within other numbers",
             YearMatch::match($password),
-            'year',
+            'regex',
             ['1900'],
             [[1, 4]],
             []
