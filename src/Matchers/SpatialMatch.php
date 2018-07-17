@@ -91,7 +91,7 @@ class SpatialMatch extends Match
         $result = [];
         $i = 0;
 
-        $passwordLength = strlen($password);
+        $passwordLength = mb_strlen($password);
 
         while ($i < $passwordLength - 1) {
             $j = $i + 1;
@@ -101,20 +101,20 @@ class SpatialMatch extends Match
 
             // Check if the initial character is shifted
             if ($graphName === 'qwerty' || $graphName === 'dvorak') {
-                if (strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
+                if (mb_strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
                     $shiftedCount++;
                 }
             }
 
             while (true) {
-                $prevChar = $password[$j - 1];
+                $prevChar = mb_substr($password, $j - 1, 1);
                 $found = false;
                 $curDirection = -1;
                 $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : [];
 
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
-                    $curChar = $password[$j];
+                    $curChar = mb_substr($password, $j, 1);
                     foreach ($adjacents as $adj) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
@@ -150,7 +150,7 @@ class SpatialMatch extends Match
                         $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,
-                            'token' => substr($password, $i, $j - $i),
+                            'token' => mb_substr($password, $i, $j - $i),
                             'turns' => $turns,
                             'shifted_count' => $shiftedCount
                         ];
@@ -175,7 +175,7 @@ class SpatialMatch extends Match
      */
     protected static function indexOf($string, $char)
     {
-        $pos = strpos($string, $char);
+        $pos = mb_strpos($string, $char);
         return ($pos === false ? -1 : $pos);
     }
 
@@ -232,7 +232,7 @@ class SpatialMatch extends Match
         }
 
         $guesses = 0;
-        $length = strlen($this->token);
+        $length = mb_strlen($this->token);
         $turns = $this->turns;
 
         // estimate the number of possible patterns w/ length L or less with t turns or less.

@@ -161,6 +161,23 @@ class RepeatTest extends AbstractMatchTest
         );
     }
 
+    public function testMultibyteRepeat()
+    {
+        $pattern = '🙂🙂🙂';
+
+        $this->checkMatches(
+            'detects repeated multibyte characters',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, 2]],
+            [
+                'repeatedChar' => ['🙂'],
+                'repeatCount' => [3]
+            ]
+        );
+    }
+
     public function testBaseMatches()
     {
         $pattern = 'abcabc';

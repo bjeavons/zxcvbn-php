@@ -23,10 +23,10 @@ class ReverseDictionaryMatch extends DictionaryMatch
             $tempBegin = $match->begin;
 
             // Change the token, password and [begin, end] values to match the original password
-            $match->token = strrev($match->token);
-            $match->password = strrev($match->password);
-            $match->begin = strlen($password) - 1 - $match->end;
-            $match->end = strlen($password) - 1 - $tempBegin;
+            $match->token = self::mbStrRev($match->token);
+            $match->password = self::mbStrRev($match->password);
+            $match->begin = mb_strlen($password) - 1 - $match->end;
+            $match->end = mb_strlen($password) - 1 - $tempBegin;
         }
 
         usort($matches, ['ZxcvbnPhp\Matcher', 'sortMatches']);
@@ -42,10 +42,24 @@ class ReverseDictionaryMatch extends DictionaryMatch
     {
         $feedback = parent::getFeedback($isSoleMatch);
 
-        if (strlen($this->token) >= 4) {
+        if (mb_strlen($this->token) >= 4) {
             $feedback['suggestions'][] = "Reversed words aren't much harder to guess";
         }
 
         return $feedback;
+    }
+
+    public static function mbStrRev($string, $encoding = null)
+    {
+        if ($encoding === null) {
+            $encoding = mb_detect_encoding($string);
+        }
+        $length = mb_strlen($string, $encoding);
+        $reversed = '';
+        while ($length-- > 0) {
+            $reversed .= mb_substr($string, $length, 1, $encoding);
+        }
+
+        return $reversed;
     }
 }

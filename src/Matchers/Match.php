@@ -89,24 +89,24 @@ abstract class Match implements MatchInterface
         foreach ($matches as $group) {
             $captureBegin = 0;
             $match = array_shift($group);
-            $matchBegin = strpos($string, $match, $offset);
+            $matchBegin = mb_strpos($string, $match, $offset);
             $captures = [
                 [
                     'begin' => $matchBegin,
-                    'end' => $matchBegin + strlen($match) - 1,
+                    'end' => $matchBegin + mb_strlen($match) - 1,
                     'token' => $match,
                 ],
             ];
             foreach ($group as $capture) {
-                $captureBegin =  strpos($match, $capture, $captureBegin);
+                $captureBegin = mb_strpos($match, $capture, $captureBegin);
                 $captures[] = [
                     'begin' => $matchBegin + $captureBegin,
-                    'end' => $matchBegin + $captureBegin + strlen($capture) - 1,
+                    'end' => $matchBegin + $captureBegin + mb_strlen($capture) - 1,
                     'token' => $capture,
                 ];
             }
             $groups[] = $captures;
-            $offset += strlen($match) - 1;
+            $offset += mb_strlen($match) - 1;
         }
         return $groups;
     }
@@ -147,8 +147,8 @@ abstract class Match implements MatchInterface
 
     protected function getMinimumGuesses()
     {
-        if (strlen($this->token) < strlen($this->password)) {
-            if (strlen($this->token) === 1) {
+        if (mb_strlen($this->token) < mb_strlen($this->password)) {
+            if (mb_strlen($this->token) === 1) {
                 return Scorer::MIN_SUBMATCH_GUESSES_SINGLE_CHAR;
             } else {
                 return Scorer::MIN_SUBMATCH_GUESSES_MULTI_CHAR;

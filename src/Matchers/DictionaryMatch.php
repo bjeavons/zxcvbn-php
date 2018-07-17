@@ -22,10 +22,10 @@ class DictionaryMatch extends Match
     /** @var bool Whether or not the token contained l33t substitutions. */
     public $l33t = false;
 
-    const START_UPPER = "/^[A-Z][^A-Z]+$/";
-    const END_UPPER = "/^[^A-Z]+[A-Z]$/";
-    const ALL_UPPER = "/^[^a-z]+$/";
-    const ALL_LOWER = "/^[^A-Z]+$/";
+    const START_UPPER = "/^[A-Z][^A-Z]+$/u";
+    const END_UPPER = "/^[^A-Z]+[A-Z]$/u";
+    const ALL_UPPER = "/^[^a-z]+$/u";
+    const ALL_LOWER = "/^[^A-Z]+$/u";
 
     /**
      * Match occurences of dictionary words in password.
@@ -47,7 +47,7 @@ class DictionaryMatch extends Match
         if (!empty($userInputs)) {
             $dicts['user_inputs'] = [];
             foreach ($userInputs as $rank => $input) {
-                $input_lower = strtolower($input);
+                $input_lower = mb_strtolower($input);
                 $dicts['user_inputs'][$input_lower] = $rank + 1; // rank starts at 1, not 0
             }
         }
@@ -80,8 +80,8 @@ class DictionaryMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        $startUpper = '/^[A-Z][^A-Z]+$/';
-        $allUpper = '/^[^a-z]+$/';
+        $startUpper = '/^[A-Z][^A-Z]+$/u';
+        $allUpper = '/^[^a-z]+$/u';
 
         $feedback = [
             'warning' => $this->getFeedbackWarning($isSoleMatch),
@@ -90,7 +90,7 @@ class DictionaryMatch extends Match
 
         if (preg_match($startUpper, $this->token)) {
             $feedback['suggestions'][] = "Capitalization doesn't help very much";
-        } elseif (preg_match($allUpper, $this->token) && strtolower($this->token) != $this->token) {
+        } elseif (preg_match($allUpper, $this->token) && mb_strtolower($this->token) != $this->token) {
             $feedback['suggestions'][] = "All-uppercase is almost as easy to guess as all-lowercase";
         }
 
@@ -142,19 +142,19 @@ class DictionaryMatch extends Match
     protected static function dictionaryMatch($password, $dict)
     {
         $result = [];
-        $length = strlen($password);
+        $length = mb_strlen($password);
 
-        $pw_lower = strtolower($password);
+        $pw_lower = mb_strtolower($password);
 
         foreach (range(0, $length - 1) as $i) {
             foreach (range($i, $length - 1) as $j) {
-                $word = substr($pw_lower, $i, $j - $i + 1);
+                $word = mb_substr($pw_lower, $i, $j - $i + 1);
 
                 if (isset($dict[$word])) {
                     $result[] = [
                         'begin' => $i,
                         'end' => $j,
-                        'token' => substr($password, $i, $j - $i + 1),
+                        'token' => mb_substr($password, $i, $j - $i + 1),
                         'matched_word' => $word,
                         'rank' => $dict[$word],
                     ];
@@ -200,7 +200,7 @@ class DictionaryMatch extends Match
     protected function getUppercaseVariations()
     {
         $word = $this->token;
-        if (preg_match(self::ALL_LOWER, $word) || strtolower($word) === $word) {
+        if (preg_match(self::ALL_LOWER, $word) || mb_strtolower($word) === $word) {
             return 1;
         }
 
@@ -216,8 +216,8 @@ class DictionaryMatch extends Match
         // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
         // with U uppercase letters or less. or, if there's more uppercase than lower (for eg. PASSwORD),
         // the number of ways to lowercase U+L letters with L lowercase letters or less.
-        $uppercase = count(array_filter(str_split($word), 'ctype_upper'));
-        $lowercase = count(array_filter(str_split($word), 'ctype_lower'));
+        $uppercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_upper'));
+        $lowercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_lower'));
 
         $variations = 0;
         for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {

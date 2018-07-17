@@ -58,7 +58,7 @@ class Zxcvbn
 
         $sanitizedInputs = array_map(
             function ($input) {
-                return strtolower((string) $input);
+                return mb_strtolower((string) $input);
             },
             $userInputs
         );

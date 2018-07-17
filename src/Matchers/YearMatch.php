@@ -20,7 +20,7 @@ class YearMatch extends Match
     public static function match($password, array $userInputs = [])
     {
         $matches = [];
-        $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/");
+        $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/u");
         foreach ($groups as $captures) {
             $matches[] = new static($password, $captures[1]['begin'], $captures[1]['end'], $captures[1]['token']);
         }

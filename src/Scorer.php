@@ -63,7 +63,7 @@ class Scorer implements ScorerInterface
         $this->password = $password;
         $this->excludeAdditive = $excludeAdditive;
 
-        $length = strlen($password);
+        $length = mb_strlen($password);
         $emptyArray = array_fill(0, $length, []);
 
         // partition matches into sublists according to ending index j
@@ -212,7 +212,7 @@ class Scorer implements ScorerInterface
      */
     protected function makeBruteforceMatch($begin, $end)
     {
-        return new Bruteforce($this->password, $begin, $end, substr($this->password, $begin, $end - $begin + 1));
+        return new Bruteforce($this->password, $begin, $end, mb_substr($this->password, $begin, $end - $begin + 1));
     }
 
     /**

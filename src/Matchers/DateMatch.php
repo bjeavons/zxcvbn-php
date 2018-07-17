@@ -42,7 +42,7 @@ class DateMatch extends Match
         ],
     ];
 
-    const DATE_NO_SEPARATOR = '/^\d{4,8}$/';
+    const DATE_NO_SEPARATOR = '/^\d{4,8}$/u';
 
     /**
      * (\d{1,4})        # day, month, year
@@ -51,7 +51,7 @@ class DateMatch extends Match
      * \2               # same separator
      * (\d{1,4})        # day, month, year
      */
-    const DATE_WITH_SEPARATOR = '/^(\d{1,4})([\s\/\\\\_.-])(\d{1,2})\2(\d{1,4})$/';
+    const DATE_WITH_SEPARATOR = '/^(\d{1,4})([\s\/\\\\_.-])(\d{1,2})\2(\d{1,4})$/u';
 
     /** @var int The day portion of the date in the token. */
     public $day;
@@ -138,12 +138,12 @@ class DateMatch extends Match
     protected static function datesWithSeparators($password)
     {
         $matches = [];
-        $length = strlen($password);
+        $length = mb_strlen($password);
 
         // dates with separators are between length 6 '1/1/91' and 10 '11/11/1991'
         for ($begin = 0; $begin < $length - 5; $begin++) {
             for ($end = $begin + 5; $end - $begin < 10 && $end < $length; $end++) {
-                $token = substr($password, $begin, $end - $begin + 1);
+                $token = mb_substr($password, $begin, $end - $begin + 1);
 
                 if (!preg_match(static::DATE_WITH_SEPARATOR, $token, $captures)) {
                     continue;
@@ -183,12 +183,12 @@ class DateMatch extends Match
     protected static function datesWithoutSeparators($password)
     {
         $matches = [];
-        $length = strlen($password);
+        $length = mb_strlen($password);
 
         // dates without separators are between length 4 '1191' and 8 '11111991'
         for ($begin = 0; $begin < $length - 3; $begin++) {
             for ($end = $begin + 3; $end - $begin < 8 && $end < $length; $end++) {
-                $token = substr($password, $begin, $end - $begin + 1);
+                $token = mb_substr($password, $begin, $end - $begin + 1);
 
                 if (!preg_match(static::DATE_NO_SEPARATOR, $token)) {
                     continue;
@@ -196,11 +196,11 @@ class DateMatch extends Match
 
                 $candidates = [];
 
-                $possibleSplits = static::$DATE_SPLITS[strlen($token)];
+                $possibleSplits = static::$DATE_SPLITS[mb_strlen($token)];
                 foreach ($possibleSplits as $splitPositions) {
-                    $day = substr($token, 0, $splitPositions[0]);
-                    $month = substr($token, $splitPositions[0], $splitPositions[1] - $splitPositions[0]);
-                    $year = substr($token, $splitPositions[1]);
+                    $day = mb_substr($token, 0, $splitPositions[0]);
+                    $month = mb_substr($token, $splitPositions[0], $splitPositions[1] - $splitPositions[0]);
+                    $year = mb_substr($token, $splitPositions[1]);
 
                     $date = static::checkDate([$day, $month, $year]);
                     if ($date !== false) {

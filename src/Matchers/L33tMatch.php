@@ -45,23 +45,23 @@ class L33tMatch extends DictionaryMatch
             /** @var L33tMatch[] $results */
             $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
             foreach ($results as $match) {
-                $token = substr($password, $match->begin, $match->end - $match->begin + 1);
+                $token = mb_substr($password, $match->begin, $match->end - $match->begin + 1);
 
                 # only return the matches that contain an actual substitution
-                if (strtolower($token) === $match->matchedWord) {
+                if (mb_strtolower($token) === $match->matchedWord) {
                     continue;
                 }
 
                 # filter single-character l33t matches to reduce noise.
                 # otherwise '1' matches 'i', '4' matches 'a', both very common English words
                 # with low dictionary rank.
-                if (strlen($token) === 1) {
+                if (mb_strlen($token) === 1) {
                     continue;
                 }
 
                 $display = [];
                 foreach ($map as $i => $t) {
-                    if (strpos($token, (string)$i) !== false) {
+                    if (mb_strpos($token, (string)$i) !== false) {
                         $match->sub[$i] = $t;
                         $display[] = "$i -> $t";
                     }
@@ -131,7 +131,8 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tSubtable($password)
     {
-        $passwordChars = array_unique(str_split($password));
+        // The preg_split call below is a multibyte compatible version of str_split
+        $passwordChars = array_unique(preg_split('//u', $password, null, PREG_SPLIT_NO_EMPTY));
 
         $subTable = [];
 
@@ -208,7 +209,7 @@ class L33tMatch extends DictionaryMatch
         $variations = 1;
 
         foreach ($this->sub as $substitution => $letter) {
-            $characters = str_split(strtolower($this->token));
+            $characters = preg_split('//u', mb_strtolower($this->token), null, PREG_SPLIT_NO_EMPTY);
 
             $subbed = count(array_filter($characters, function ($character) use ($substitution) {
                 return (string)$character === (string)$substitution;
