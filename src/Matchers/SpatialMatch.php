@@ -101,7 +101,7 @@ class SpatialMatch extends Match
 
             // Check if the initial character is shifted
             if ($graphName === 'qwerty' || $graphName === 'dvorak') {
-                if (mb_strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
+                if (mb_strpos(self::SHIFTED_CHARACTERS, mb_substr($password, 0, 1)) !== false) {
                     $shiftedCount++;
                 }
             }
