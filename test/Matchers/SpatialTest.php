@@ -105,6 +105,23 @@ class SpatialTest extends AbstractMatchTest
             ]
         );
     }
+
+    public function testShiftedCountForMultipleMatches()
+    {
+        $password = "!QAZ1qaz";
+        $this->checkMatches(
+            "shifted count is correct for two matches in a row",
+            SpatialMatch::match($password),
+            'spatial',
+            ['!QAZ', '1qaz'],
+            [[0, 3], [4, 7]],
+            [
+                'graph' => ['qwerty', 'qwerty'],
+                'turns' => [1, 1],
+                'shiftedCount' => [4, 0],
+            ]
+        );
+    }
     
     protected function getBaseGuessCount($token)
     {
