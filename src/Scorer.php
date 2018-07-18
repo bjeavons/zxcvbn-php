@@ -64,7 +64,7 @@ class Scorer implements ScorerInterface
         $this->excludeAdditive = $excludeAdditive;
 
         $length = mb_strlen($password);
-        $emptyArray = array_fill(0, $length, []);
+        $emptyArray = $length > 0 ? array_fill(0, $length, []) : [];
 
         // partition matches into sublists according to ending index j
         $matchesByEndIndex = $emptyArray;
