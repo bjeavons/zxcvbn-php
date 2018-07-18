@@ -57,30 +57,36 @@ abstract class Match implements MatchInterface
     abstract public function getFeedback($isSoleMatch);
 
     /**
-      * Find all occurences of regular expression in a string.
-      *
-      * @param string $string
-      *   String to search.
-      * @param string $regex
-      *   Regular expression with captures.
-      * @return array
-      *   Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
-      *     e.g. fishfish /(fish)/
-      *     array(
-      *       array(
-      *         array('begin' => 0, 'end' => 3, 'token' => 'fish'),
-      *         array('begin' => 0, 'end' => 3, 'token' => 'fish')
-      *       ),
-      *       array(
-      *         array('begin' => 4, 'end' => 7, 'token' => 'fish'),
-      *         array('begin' => 4, 'end' => 7, 'token' => 'fish')
-      *       )
-      *     )
-      *
-      */
+     * Find all occurences of regular expression in a string.
+     *
+     * @param string $string
+     *   String to search.
+     * @param string $regex
+     *   Regular expression with captures.
+     * @param int $offset
+     * @return array
+     *   Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
+     *     e.g. fishfish /(fish)/
+     *     array(
+     *       array(
+     *         array('begin' => 0, 'end' => 3, 'token' => 'fish'),
+     *         array('begin' => 0, 'end' => 3, 'token' => 'fish')
+     *       ),
+     *       array(
+     *         array('begin' => 4, 'end' => 7, 'token' => 'fish'),
+     *         array('begin' => 4, 'end' => 7, 'token' => 'fish')
+     *       )
+     *     )
+     */
     public static function findAll($string, $regex, $offset = 0)
     {
-        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER, $offset);
+        // $offset is the number of multibyte-aware number of characters to offset, but the offset parameter for
+        // preg_match_all counts bytes, not characters: to correct this, we need to calculate the byte offset and pass
+        // that in instead.
+        $charsBeforeOffset = mb_substr($string, 0, $offset);
+        $byteOffset = strlen($charsBeforeOffset);
+
+        $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER, $byteOffset);
         if (!$count) {
             return [];
         }

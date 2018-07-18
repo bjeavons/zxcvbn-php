@@ -178,6 +178,23 @@ class RepeatTest extends AbstractMatchTest
         );
     }
 
+    public function testRepeatAfterMultibyteCharacters()
+    {
+        $pattern = 'niÃ±abella';
+
+        $this->checkMatches(
+            'detects repeat with correct offset after multibyte characters',
+            RepeatMatch::match($pattern),
+            'repeat',
+            ['ll'],
+            [[7, 8]],
+            [
+                'repeatedChar' => ['l'],
+                'repeatCount' => [2]
+            ]
+        );
+    }
+
     public function testBaseMatches()
     {
         $pattern = 'abcabc';
