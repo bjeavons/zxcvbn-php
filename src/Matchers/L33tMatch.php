@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
  * @package ZxcvbnPhp\Matchers
@@ -73,6 +75,7 @@ class L33tMatch extends DictionaryMatch
             }
         }
 
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
         return $matches;
     }
 
