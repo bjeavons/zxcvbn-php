@@ -20,7 +20,7 @@ class ReverseDictionaryMatch extends DictionaryMatch
     public static function match($password, array $userInputs = [], $rankedDictionaries = [])
     {
         /** @var ReverseDictionaryMatch[] $matches */
-        $matches = parent::match(strrev($password), $userInputs, $rankedDictionaries);
+        $matches = parent::match(self::mbStrRev($password), $userInputs, $rankedDictionaries);
         foreach ($matches as $match) {
             $tempBegin = $match->begin;
 
