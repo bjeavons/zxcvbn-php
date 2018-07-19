@@ -25,6 +25,9 @@ class SpatialMatch extends Match
     /** @var string The keyboard layout that the token is a spatial match on. */
     public $graph;
 
+    /** @var array A cache of the adjacency_graphs json file */
+    protected static $adjacencyGraphs = [];
+
     /**
      * Match spatial patterns based on keyboard layouts (e.g. qwerty, dvorak, keypad).
      *
@@ -210,18 +213,23 @@ class SpatialMatch extends Match
      */
     public static function getAdjacencyGraphs()
     {
-        $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
-        $data = json_decode($json, true);
+        if (empty(self::$adjacencyGraphs)) {
+            $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
+            $data = json_decode($json, true);
 
-        // This seems pointless, but the data file is not guaranteed to be in any particular order.
-        // We want to be in the exact order below so as to match most closely with upstream, because when a match
-        // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
-        return [
-            'qwerty' => $data['qwerty'],
-            'dvorak' => $data['dvorak'],
-            'keypad' => $data['keypad'],
-            'mac_keypad' => $data['mac_keypad'],
-        ];
+            // This seems pointless, but the data file is not guaranteed to be in any particular order.
+            // We want to be in the exact order below so as to match most closely with upstream, because when a match
+            // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
+            $data = [
+                'qwerty' => $data['qwerty'],
+                'dvorak' => $data['dvorak'],
+                'keypad' => $data['keypad'],
+                'mac_keypad' => $data['mac_keypad'],
+            ];
+            self::$adjacencyGraphs = $data;
+        }
+
+        return self::$adjacencyGraphs;
     }
 
     protected function getRawGuesses()
