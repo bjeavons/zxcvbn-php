@@ -171,6 +171,12 @@ class Scorer implements ScorerInterface
         $this->optimal['g'][$k][$length] = $g;
         $this->optimal['m'][$k][$length] = $match;
         $this->optimal['pi'][$k][$length] = $pi;
+
+        // Sort the arrays by key after each insert to match how JavaScript objects work
+        // Failing to do this results in slightly different matches in some scenarios
+        ksort($this->optimal['g'][$k]);
+        ksort($this->optimal['m'][$k]);
+        ksort($this->optimal['pi'][$k]);
     }
 
     /**
