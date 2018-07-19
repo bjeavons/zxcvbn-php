@@ -53,7 +53,7 @@ class ReverseDictionaryMatch extends DictionaryMatch
     public static function mbStrRev($string, $encoding = null)
     {
         if ($encoding === null) {
-            $encoding = mb_detect_encoding($string);
+            $encoding = mb_detect_encoding($string) ?: 'UTF-8';
         }
         $length = mb_strlen($string, $encoding);
         $reversed = '';
