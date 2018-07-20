@@ -49,19 +49,7 @@ class Feedback
         $feedback = $longestMatch->getFeedback(count($sequence) == 1);
         $extraFeedback = 'Add another word or two. Uncommon words are better.';
 
-        if ($feedback) {
-            return [
-                'warning' => $feedback['warning'] ?: '', // this seems unnecessary...
-                'suggestions' => array_merge(
-                    [$extraFeedback],
-                    $feedback['suggestions']
-                )
-            ];
-        }
-
-        return [
-            'warning' => '',
-            'suggestions' => [$extraFeedback]
-        ];
+        array_unshift($feedback['suggestions'], $extraFeedback);
+        return $feedback;
     }
 }

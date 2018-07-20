@@ -239,6 +239,11 @@ class DateTest extends AbstractMatchTest
         $this->assertEquals(date('Y'), DateMatch::getReferenceYear(), "reference year implementation");
     }
 
+    public function testNonDateThatLooksLikeDate()
+    {
+        $this->assertEmpty(DateMatch::match('30-31-00'), "no match on invalid date");
+    }
+
     public function testGuessDistanceFromReferenceYear()
     {
         $token = '1123';

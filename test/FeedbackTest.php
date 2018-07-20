@@ -87,4 +87,17 @@ class FeedbackTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertCount(2, $feedback['suggestions'], "default suggestion doesn\'t override existing suggestion");
     }
+
+    public function testBruteforceFeedback()
+    {
+        $match = new Bruteforce('qkcriv', 0, 6, 'qkcriv');
+        $feedback = $this->feedback->getFeedback(1, [$match]);
+
+        $this->assertEquals('', $feedback['warning'], "bruteforce match has no warning");
+        $this->assertEquals(
+            ['Add another word or two. Uncommon words are better.'],
+            $feedback['suggestions'],
+            "bruteforce match only has the default suggestion"
+        );
+    }
 }

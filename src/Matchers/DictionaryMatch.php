@@ -132,7 +132,6 @@ class DictionaryMatch extends Match
                 } else {
                     return 'Common names and surnames are easy to guess';
                 }
-                break;
         }
 
         return '';

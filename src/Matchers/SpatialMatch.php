@@ -186,27 +186,6 @@ class SpatialMatch extends Match
     }
 
     /**
-     * Calculate the average degree for all keys in a adjancency graph.
-     *
-     * @param array $graph
-     *
-     * @return float
-     */
-    protected static function calcAverageDegree($graph)
-    {
-        $sum = 0;
-        foreach ($graph as $neighbors) {
-            foreach ($neighbors as $neighbor) {
-                // Ignore empty neighbors.
-                if (!is_null($neighbor)) {
-                    $sum++;
-                }
-            }
-        }
-        return $sum / count(array_keys($graph));
-    }
-
-    /**
      * Load adjacency graphs.
      *
      * @return array
