@@ -35,5 +35,13 @@ class ZxcvbnTest extends TestCase
         $password = '3m8dlD.3Y@example.c0m';
         $result = $zxcvbn->passwordStrength($password, [$password]);
         $this->assertSame(0, $result['score'], 'Score incorrect');
+
+        $password = 'bob123';
+        $result = $zxcvbn->passwordStrength($password, ['name' => 'bob']);
+        $this->assertSame(0, $result['score'], 'Score incorrect');
+
+        $password = 'correct horse battery staple';
+        $result = $zxcvbn->passwordStrength($password, ['c']);
+        $this->assertSame(4, $result['score'], 'Score incorrect');
     }
 }

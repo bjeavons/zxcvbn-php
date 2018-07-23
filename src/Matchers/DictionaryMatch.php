@@ -55,7 +55,8 @@ class DictionaryMatch extends Match
             $dicts['user_inputs'] = [];
             foreach ($userInputs as $rank => $input) {
                 $input_lower = strtolower($input);
-                $dicts['user_inputs'][$input_lower] = $rank;
+                $rank = is_numeric($rank) ? $rank : count($dicts['user_inputs']);
+                $dicts['user_inputs'][$input_lower] = max(1, $rank);
             }
         }
         foreach ($dicts as $name => $dict) {
