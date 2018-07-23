@@ -1,4 +1,4 @@
-Zxcvbn-PHP is a password strength estimator using pattern matching and minimum entropy calculation. Zxcvbn-PHP is based on the Javascript zxcvbn project from [Dropbox and @lowe](https://tech.dropbox.com/2012/04/zxcvbn-realistic-password-strength-estimation/). "zxcvbn" is bad password, just like "qwerty" and "123456". 
+Zxcvbn-PHP is a password strength estimator using pattern matching and minimum entropy calculation. Zxcvbn-PHP is based on the [the Javascript zxcvbn project](https://github.com/dropbox/zxcvbn) from [Dropbox and @lowe](https://tech.dropbox.com/2012/04/zxcvbn-realistic-password-strength-estimation/). "zxcvbn" is bad password, just like "qwerty" and "123456".
 
 >zxcvbn attempts to give sound password advice through pattern matching and conservative entropy calculations. It finds 10k common passwords, common American names and surnames, common English words, and common patterns like dates, repeats (aaa), sequences (abcd), and QWERTY patterns.
 
@@ -13,7 +13,7 @@ The library can be installed with [Composer](http://getcomposer.org) by adding i
 ```json
 {
     "require": {
-        "bjeavons/zxcvbn-php": "^0.3"
+        "bjeavons/zxcvbn-php": "^0.4"
     }
 }
 ```
@@ -30,10 +30,10 @@ require_once 'vendor/autoload.php';
 ```php
 use ZxcvbnPhp\Zxcvbn;
 
-$userData = array(
+$userData = [
   'Marco',
   'marco@example.com'
-);
+];
 
 $zxcvbn = new Zxcvbn();
 $strength = $zxcvbn->passwordStrength('password', $userData);
