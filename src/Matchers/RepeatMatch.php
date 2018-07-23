@@ -4,21 +4,39 @@ namespace ZxcvbnPhp\Matchers;
 
 class RepeatMatch extends Match
 {
-
     /**
      * @var
      */
     public $repeatedChar;
 
     /**
+     * @param $password
+     * @param $begin
+     * @param $end
+     * @param $token
+     * @param mixed $char
+     */
+    public function __construct($password, $begin, $end, $token, $char)
+    {
+        parent::__construct($password, $begin, $end, $token);
+        $this->pattern = 'repeat';
+        $this->repeatedChar = $char;
+    }
+
+    /**
      * Match 3 or more repeated characters.
      *
      * @copydoc Match::match()
+     *
+     * @param       $password
+     * @param array $userInputs
+     *
+     * @return array
      */
-    public static function match($password, array $userInputs = array())
+    public static function match($password, array $userInputs = [])
     {
         $groups = static::group($password);
-        $matches = array();
+        $matches = [];
 
         $k = 0;
         foreach ($groups as $group) {
@@ -32,20 +50,8 @@ class RepeatMatch extends Match
             }
             $k += $length;
         }
-        return $matches;
-    }
 
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     */
-    public function __construct($password, $begin, $end, $token, $char)
-    {
-        parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'repeat';
-        $this->repeatedChar = $char;
+        return $matches;
     }
 
     /**
@@ -53,9 +59,10 @@ class RepeatMatch extends Match
      */
     public function getEntropy()
     {
-        if (is_null($this->entropy)) {
-           $this->entropy = $this->log($this->getCardinality() * strlen($this->token));
+        if (null === $this->entropy) {
+            $this->entropy = $this->log($this->getCardinality() * strlen($this->token));
         }
+
         return $this->entropy;
     }
 
@@ -63,11 +70,12 @@ class RepeatMatch extends Match
      * Group input by repeated characters.
      *
      * @param string $string
+     *
      * @return array
      */
     protected static function group($string)
     {
-        $grouped = array();
+        $grouped = [];
         $chars = str_split($string);
 
         $prevChar = null;
@@ -75,13 +83,13 @@ class RepeatMatch extends Match
         foreach ($chars as $char) {
             if ($prevChar === $char) {
                 $grouped[$i - 1] .= $char;
-            }
-            else {
+            } else {
                 $grouped[$i] = $char;
-                $i++;
+                ++$i;
                 $prevChar = $char;
             }
         }
+
         return $grouped;
     }
 }

@@ -2,9 +2,13 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\DateMatch;
 
-class DateTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \ZxcvbnPhp\Matchers\DateMatch
+ */
+class DateTest extends TestCase
 {
     public function testMatch()
     {
@@ -28,41 +32,41 @@ class DateTest extends \PHPUnit_Framework_TestCase
         $password = '15111997';
         $matches = DateMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame(15, $matches[0]->day, "Incorrect day");
-        $this->assertSame(11, $matches[0]->month, "Incorrect month");
-        $this->assertSame(1997, $matches[0]->year, "Incorrect year");
+        $this->assertSame(15, $matches[0]->day, 'Incorrect day');
+        $this->assertSame(11, $matches[0]->month, 'Incorrect month');
+        $this->assertSame(1997, $matches[0]->year, 'Incorrect year');
 
         $password = '19970404';
         $matches = DateMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame(04, $matches[0]->day, "Incorrect day");
-        $this->assertSame(04, $matches[0]->month, "Incorrect month");
-        $this->assertSame(1997, $matches[0]->year, "Incorrect year");
+        $this->assertSame(04, $matches[0]->day, 'Incorrect day');
+        $this->assertSame(04, $matches[0]->month, 'Incorrect month');
+        $this->assertSame(1997, $matches[0]->year, 'Incorrect year');
 
         // Test separators.
         $password = '04/04/1997';
         $matches = DateMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame(04, $matches[0]->day, "Incorrect day");
-        $this->assertSame(04, $matches[0]->month, "Incorrect month");
-        $this->assertSame(1997, $matches[0]->year, "Incorrect year");
-        $this->assertSame('/', $matches[0]->separator, "Incorrect separator");
+        $this->assertSame(04, $matches[0]->day, 'Incorrect day');
+        $this->assertSame(04, $matches[0]->month, 'Incorrect month');
+        $this->assertSame(1997, $matches[0]->year, 'Incorrect year');
+        $this->assertSame('/', $matches[0]->separator, 'Incorrect separator');
 
         $password = 'password1997-04-04';
         $matches = DateMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame(04, $matches[0]->day, "Incorrect day");
-        $this->assertSame(04, $matches[0]->month, "Incorrect month");
-        $this->assertSame(1997, $matches[0]->year, "Incorrect year");
-        $this->assertSame('-', $matches[0]->separator, "Incorrect separator");
+        $this->assertSame(04, $matches[0]->day, 'Incorrect day');
+        $this->assertSame(04, $matches[0]->month, 'Incorrect month');
+        $this->assertSame(1997, $matches[0]->year, 'Incorrect year');
+        $this->assertSame('-', $matches[0]->separator, 'Incorrect separator');
 
         $password = 'date11/11/2000-2001-04-04';
         $matches = DateMatch::match($password);
         $this->assertCount(2, $matches);
-        $this->assertSame(11, $matches[0]->day, "Incorrect day");
-        $this->assertSame(11, $matches[0]->month, "Incorrect month");
-        $this->assertSame(2000, $matches[0]->year, "Incorrect year");
-        $this->assertSame('-', $matches[1]->separator, "Incorrect separator");
+        $this->assertSame(11, $matches[0]->day, 'Incorrect day');
+        $this->assertSame(11, $matches[0]->month, 'Incorrect month');
+        $this->assertSame(2000, $matches[0]->year, 'Incorrect year');
+        $this->assertSame('-', $matches[1]->separator, 'Incorrect separator');
     }
 
     public function testEntropy()

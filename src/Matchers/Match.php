@@ -4,7 +4,6 @@ namespace ZxcvbnPhp\Matchers;
 
 abstract class Match implements MatchInterface
 {
-
     /**
      * @var
      */
@@ -59,76 +58,76 @@ abstract class Match implements MatchInterface
     /**
      * Find matches in a password.
      *
-     * @param string $password
-     *   Password to check for match.
-     * @param array $userInputs
-     *   Array of values related to the user (optional).
-     * @return array
-     *   Array of Match objects
+     * @param string $password   Password to check for match
+     * @param array  $userInputs Array of values related to the user (optional)
+     *
+     * @return array Array of Match objects
      */
-    public static function match($password, array $userInputs = array()) {}
+    public static function match($password, array $userInputs = [])
+    {
+    }
 
     /**
      * Calculate entropy for match token of a password.
      *
-     * @return float
-     *   Entropy of the matched token in the password.
+     * @return float Entropy of the matched token in the password
      */
-    public function getEntropy() {}
+    public function getEntropy()
+    {
+    }
 
     /**
-      * Find all occurences of regular expression in a string.
-      *
-      * @param string $string
-      *   String to search.
-      * @param string $regex
-      *   Regular expression with captures.
-      * @return array
-      *   Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
-      *     e.g. fishfish /(fish)/
-      *     array(
-      *       array(
-      *         array('begin' => 0, 'end' => 3, 'token' => 'fish'),
-      *         array('begin' => 0, 'end' => 3, 'token' => 'fish')
-      *       ),
-      *       array(
-      *         array('begin' => 4, 'end' => 7, 'token' => 'fish'),
-      *         array('begin' => 4, 'end' => 7, 'token' => 'fish')
-      *       )
-      *     )
-      *
-      */
+     * Find all occurences of regular expression in a string.
+     *
+     * @param string $string String to search
+     * @param string $regex  Regular expression with captures
+     *
+     * @return array
+     *               Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
+     *               e.g. fishfish /(fish)/
+     *               array(
+     *               array(
+     *               array('begin' => 0, 'end' => 3, 'token' => 'fish'),
+     *               array('begin' => 0, 'end' => 3, 'token' => 'fish')
+     *               ),
+     *               array(
+     *               array('begin' => 4, 'end' => 7, 'token' => 'fish'),
+     *               array('begin' => 4, 'end' => 7, 'token' => 'fish')
+     *               )
+     *               )
+     */
     public static function findAll($string, $regex)
     {
         $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER);
         if (!$count) {
-            return array();
+            return [];
         }
 
         $pos = 0;
-        $groups = array();
+        $groups = [];
         foreach ($matches as $group) {
             $captureBegin = 0;
             $match = array_shift($group);
             $matchBegin = strpos($string, $match, $pos);
-            $captures = array(
-                array(
+            $captures = [
+                [
                     'begin' => $matchBegin,
                     'end' => $matchBegin + strlen($match) - 1,
                     'token' => $match,
-                ),
-            );
+                ],
+            ];
             foreach ($group as $capture) {
-                $captureBegin =  strpos($match, $capture, $captureBegin);
-                $captures[] = array(
+                $captureBegin = strpos($match, $capture, $captureBegin);
+                $captures[] = [
                     'begin' => $matchBegin + $captureBegin,
                     'end' => $matchBegin + $captureBegin + strlen($capture) - 1,
                     'token' => $capture,
-                );
+                ];
             }
             $groups[] = $captures;
             $pos += strlen($match) - 1;
         }
+
         return $groups;
     }
 
@@ -139,7 +138,7 @@ abstract class Match implements MatchInterface
      */
     public function getCardinality()
     {
-        if (!is_null($this->cardinality)) {
+        if (null !== $this->cardinality) {
             return $this->cardinality;
         }
         $lower = $upper = $digits = $symbols = $unicode = 0;
@@ -152,21 +151,18 @@ abstract class Match implements MatchInterface
 
             if ($this->isDigit($ord)) {
                 $digits = 10;
-            }
-            elseif ($this->isUpper($ord)) {
+            } elseif ($this->isUpper($ord)) {
                 $upper = 26;
-            }
-            elseif ($this->isLower($ord)) {
+            } elseif ($this->isLower($ord)) {
                 $lower = 26;
-            }
-            elseif ($this->isSymbol($ord)) {
+            } elseif ($this->isSymbol($ord)) {
                 $symbols = 33;
-            }
-            else {
+            } else {
                 $unicode = 100;
             }
         }
         $this->cardinality = $lower + $digits + $upper + $symbols + $unicode;
+
         return $this->cardinality;
     }
 
@@ -194,6 +190,7 @@ abstract class Match implements MatchInterface
      * Calculate entropy.
      *
      * @param $number
+     *
      * @return float
      */
     protected function log($number)
@@ -208,18 +205,20 @@ abstract class Match implements MatchInterface
      *
      * @param $n
      * @param $k
+     *
      * @return int
      */
-    protected function binom($n, $k) {
+    protected function binom($n, $k)
+    {
         $j = $res = 1;
 
-        if($k < 0 || $k > $n) {
+        if ($k < 0 || $k > $n) {
             return 0;
         }
-        if(($n - $k) < $k) {
+        if (($n - $k) < $k) {
             $k = $n - $k;
         }
-        while($j <= $k) {
+        while ($j <= $k) {
             $res *= $n--;
             $res /= $j++;
         }

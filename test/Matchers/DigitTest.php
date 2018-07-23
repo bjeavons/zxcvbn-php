@@ -2,9 +2,13 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\DigitMatch;
 
-class DigitTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \ZxcvbnPhp\Matchers\DigitMatch
+ */
+class DigitTest extends TestCase
 {
     public function testMatch()
     {
@@ -15,25 +19,25 @@ class DigitTest extends \PHPUnit_Framework_TestCase
         $password = '123';
         $matches = DigitMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame($password, $matches[0]->token, "Token incorrect");
-        $this->assertSame($password, $matches[0]->password, "Password incorrect");
+        $this->assertSame($password, $matches[0]->token, 'Token incorrect');
+        $this->assertSame($password, $matches[0]->password, 'Password incorrect');
 
         $password = 'password123';
         $matches = DigitMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertEquals(strpos($password, '1'), $matches[0]->begin, "Match begin character incorrect");
-        $this->assertEquals(strlen($password) - 1, $matches[0]->end, "Match end character incorrect");
-        $this->assertEquals(3, strlen($matches[0]->token), "Token length incorrect");
+        $this->assertSame(strpos($password, '1'), $matches[0]->begin, 'Match begin character incorrect');
+        $this->assertSame(strlen($password) - 1, $matches[0]->end, 'Match end character incorrect');
+        $this->assertSame(3, strlen($matches[0]->token), 'Token length incorrect');
 
         $password = '123 456546';
         $matches = DigitMatch::match($password);
         $this->assertCount(2, $matches);
-  }
+    }
 
     public function testEntropy()
     {
         $password = '123';
         $matches = DigitMatch::match($password);
-        $this->assertEquals(log(pow(10, 3), 2), $matches[0]->getEntropy());
+        $this->assertSame(log(10 ** 3, 2), $matches[0]->getEntropy());
     }
 }

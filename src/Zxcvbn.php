@@ -21,32 +21,30 @@ class Zxcvbn
 
     public function __construct()
     {
-        $this->scorer = new \ZxcvbnPhp\Scorer();
-        $this->searcher = new \ZxcvbnPhp\Searcher();
-        $this->matcher = new \ZxcvbnPhp\Matcher();
+        $this->scorer = new Scorer();
+        $this->searcher = new Searcher();
+        $this->matcher = new Matcher();
     }
 
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
      *
-     * @param string $password
-     *   Password to measure.
-     * @param array $userInputs
-     *   Optional user inputs.
+     * @param string $password   Password to measure
+     * @param array  $userInputs Optional user inputs
      *
-     * @return array
-     *   Strength result array with keys:
-     *     password
-     *     entropy
-     *     match_sequence
-     *     score
+     * @return array Strength result array with keys:
+     *               password
+     *               entropy
+     *               match_sequence
+     *               score
      */
-    public function passwordStrength($password, array $userInputs = array())
+    public function passwordStrength($password, array $userInputs = [])
     {
         $timeStart = microtime(true);
-        if (strlen($password) === 0) {
+        if ('' === $password) {
             $timeStop = microtime(true) - $timeStart;
-            return $this->result($password, 0, array(), 0, array('calc_time' => $timeStop));
+
+            return $this->result($password, 0, [], 0, ['calc_time' => $timeStop]);
         }
 
         // Get matches for $password.
@@ -62,7 +60,8 @@ class Zxcvbn
 
         $timeStop = microtime(true) - $timeStart;
         // Include metrics and calculation time.
-        $params = array_merge($metrics, array('calc_time' => $timeStop));
+        $params = array_merge($metrics, ['calc_time' => $timeStop]);
+
         return $this->result($password, $entropy, $bestMatches, $score, $params);
     }
 
@@ -70,21 +69,22 @@ class Zxcvbn
      * Result array.
      *
      * @param string $password
-     * @param float $entropy
-     * @param array $matches
-     * @param int $score
-     * @param array $params
+     * @param float  $entropy
+     * @param array  $matches
+     * @param int    $score
+     * @param array  $params
      *
      * @return array
      */
-    protected function result($password, $entropy, $matches, $score, $params = array()) {
-        $r = array(
-            'password'       => $password,
-            'entropy'        => $entropy,
+    protected function result($password, $entropy, $matches, $score, $params = [])
+    {
+        $r = [
+            'password' => $password,
+            'entropy' => $entropy,
             'match_sequence' => $matches,
-            'score'          => $score
-        );
+            'score' => $score,
+        ];
+
         return array_merge($params, $r);
     }
-
 }

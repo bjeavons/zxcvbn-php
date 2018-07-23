@@ -4,7 +4,6 @@ namespace ZxcvbnPhp\Matchers;
 
 class DateMatch extends Match
 {
-
     const NUM_YEARS = 119; // Years match against 1900 - 2019
     const NUM_MONTHS = 12;
     const NUM_DAYS = 31;
@@ -33,27 +32,12 @@ class DateMatch extends Match
     public $separator;
 
     /**
-     * Match occurences of dates in a password
-     *
-     * @copydoc Match::match()
-     */
-    public static function match($password, array $userInputs = array())
-    {
-        $matches = array();
-        $dates = static::datesWithoutSeparators($password) + static::datesWithSeparators($password);
-        foreach ($dates as $date) {
-            $matches[] = new static($password, $date['begin'], $date['end'], $date['token'], $date);
-        }
-        return $matches;
-    }
-
-    /**
      * @param $password
      * @param $begin
      * @param $end
      * @param $token
      * @param array $params
-     *   Array with keys: day, month, year, separator.
+     *                      Array with keys: day, month, year, separator
      */
     public function __construct($password, $begin, $end, $token, $params)
     {
@@ -66,6 +50,27 @@ class DateMatch extends Match
     }
 
     /**
+     * Match occurences of dates in a password.
+     *
+     * @copydoc Match::match()
+     *
+     * @param       $password
+     * @param array $userInputs
+     *
+     * @return array
+     */
+    public static function match($password, array $userInputs = [])
+    {
+        $matches = [];
+        $dates = static::datesWithoutSeparators($password) + static::datesWithSeparators($password);
+        foreach ($dates as $date) {
+            $matches[] = new static($password, $date['begin'], $date['end'], $date['token'], $date);
+        }
+
+        return $matches;
+    }
+
+    /**
      * Get match entropy.
      *
      * @return float
@@ -75,8 +80,7 @@ class DateMatch extends Match
         if ($this->year < 100) {
             // two-digit year
             $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * 100);
-        }
-        else {
+        } else {
             // four-digit year
             $entropy = $this->log(self::NUM_DAYS * self::NUM_MONTHS * self::NUM_YEARS);
         }
@@ -84,6 +88,7 @@ class DateMatch extends Match
         if (!empty($this->separator)) {
             $entropy += 2;
         }
+
         return $entropy;
     }
 
@@ -91,44 +96,45 @@ class DateMatch extends Match
      * Find dates with separators in a password.
      *
      * @param string $password
+     *
      * @return array
      */
     protected static function datesWithSeparators($password)
     {
-        $dates = array();
+        $dates = [];
         foreach (static::findAll($password, static::DATE_RX_YEAR_SUFFIX) as $captures) {
-            $date = array(
-                'day'   => (integer) $captures[1]['token'],
-                'month' => (integer) $captures[3]['token'],
-                'year'  => (integer) $captures[4]['token'],
-                'sep'   => $captures[2]['token'],
+            $date = [
+                'day' => (int) $captures[1]['token'],
+                'month' => (int) $captures[3]['token'],
+                'year' => (int) $captures[4]['token'],
+                'sep' => $captures[2]['token'],
                 'begin' => $captures[0]['begin'],
-                'end'   => $captures[0]['end'],
-            );
+                'end' => $captures[0]['end'],
+            ];
             $dates[] = $date;
         }
         foreach (static::findAll($password, static::DATE_RX_YEAR_PREFIX) as $captures) {
-            $date = array(
-                'day'   => (integer) $captures[4]['token'],
-                'month' => (integer) $captures[3]['token'],
-                'year'  => (integer) $captures[1]['token'],
-                'sep'   => $captures[2]['token'],
+            $date = [
+                'day' => (int) $captures[4]['token'],
+                'month' => (int) $captures[3]['token'],
+                'year' => (int) $captures[1]['token'],
+                'sep' => $captures[2]['token'],
                 'begin' => $captures[0]['begin'],
-                'end'   => $captures[0]['end'],
-            );
+                'end' => $captures[0]['end'],
+            ];
             $dates[] = $date;
         }
 
-        $results = array();
+        $results = [];
         foreach ($dates as $candidate) {
             $date = static::checkDate($candidate['day'], $candidate['month'], $candidate['year']);
 
-            if ($date === false) {
+            if (false === $date) {
                 continue;
             }
             list($day, $month, $year) = $date;
 
-            $results[] = array(
+            $results[] = [
                 'pattern' => 'date',
                 'begin' => $candidate['begin'],
                 'end' => $candidate['end'],
@@ -136,8 +142,8 @@ class DateMatch extends Match
                 'separator' => $candidate['sep'],
                 'day' => $day,
                 'month' => $month,
-                'year' => $year
-            );
+                'year' => $year,
+            ];
         }
 
         return $results;
@@ -147,11 +153,12 @@ class DateMatch extends Match
      * Find dates without separators in a password.
      *
      * @param string $password
+     *
      * @return array
      */
     protected static function datesWithoutSeparators($password)
     {
-        $dateMatches = array();
+        $dateMatches = [];
 
         // 1197 is length-4, 01011997 is length 8
         foreach (static::findAll($password, '/(\d{4,8})/') as $captures) {
@@ -163,102 +170,106 @@ class DateMatch extends Match
             $tokenLen = strlen($token);
 
             // Create year candidates.
-            $candidates1 = array();
+            $candidates1 = [];
             if ($tokenLen <= 6) {
                 // 2 digit year prefix (990112)
-                $candidates1[] = array(
+                $candidates1[] = [
                     'daymonth' => substr($token, 2),
                     'year' => substr($token, 0, 2),
                     'begin' => $begin,
-                    'end' => $end
-                );
+                    'end' => $end,
+                ];
                 // 2 digit year suffix (011299)
-                $candidates1[] = array(
-                    'daymonth' => substr($token, 0, ($tokenLen - 2)),
+                $candidates1[] = [
+                    'daymonth' => substr($token, 0, $tokenLen - 2),
                     'year' => substr($token, -2),
                     'begin' => $begin,
-                    'end' => $end
-                );
+                    'end' => $end,
+                ];
             }
             if ($tokenLen >= 6) {
                 // 4 digit year prefix (199912)
-                $candidates1[] = array(
+                $candidates1[] = [
                     'daymonth' => substr($token, 4),
                     'year' => substr($token, 0, 4),
                     'begin' => $begin,
-                    'end' => $end
-                );
+                    'end' => $end,
+                ];
                 // 4 digit year suffix (121999)
-                $candidates1[] = array(
-                    'daymonth' => substr($token, 0, ($tokenLen - 4)),
+                $candidates1[] = [
+                    'daymonth' => substr($token, 0, $tokenLen - 4),
                     'year' => substr($token, -4),
                     'begin' => $begin,
-                    'end' => $end
-                );
+                    'end' => $end,
+                ];
             }
             // Create day/month candidates from years.
-            $candidates2 = array();
+            $candidates2 = [];
             foreach ($candidates1 as $candidate) {
                 switch (strlen($candidate['daymonth'])) {
                     case 2: // ex. 1 1 97
-                        $candidates2[] = array(
+                        $candidates2[] = [
                             'day' => $candidate['daymonth'][0],
                             'month' => $candidate['daymonth'][1],
                             'year' => $candidate['year'],
                             'begin' => $candidate['begin'],
-                            'end' => $candidate['end']
-                        );
+                            'end' => $candidate['end'],
+                        ];
+
                         break;
                     case 3: // ex. 11 1 97 or 1 11 97
-                        $candidates2[] = array(
+                        $candidates2[] = [
                             'day' => substr($candidate['daymonth'], 0, 2),
                             'month' => substr($candidate['daymonth'], 2),
                             'year' => $candidate['year'],
                             'begin' => $candidate['begin'],
-                            'end' => $candidate['end']
-                        );
-                        $candidates2[] = array(
+                            'end' => $candidate['end'],
+                        ];
+                        $candidates2[] = [
                             'day' => substr($candidate['daymonth'], 0, 1),
                             'month' => substr($candidate['daymonth'], 1, 3),
                             'year' => $candidate['year'],
                             'begin' => $candidate['begin'],
-                            'end' => $candidate['end']
-                        );
+                            'end' => $candidate['end'],
+                        ];
+
                         break;
                     case 4: // ex. 11 11 97
-                        $candidates2[] = array(
+                        $candidates2[] = [
                             'day' => substr($candidate['daymonth'], 0, 2),
                             'month' => substr($candidate['daymonth'], 2, 4),
                             'year' => $candidate['year'],
                             'begin' => $candidate['begin'],
-                            'end' => $candidate['end']
-                        );
+                            'end' => $candidate['end'],
+                        ];
+
                         break;
                 }
             }
             // Reject invalid candidates
             foreach ($candidates2 as $candidate) {
-                $day = (integer) $candidate['day'];
-                $month = (integer) $candidate['month'];
-                $year = (integer) $candidate['year'];
+                $day = (int) $candidate['day'];
+                $month = (int) $candidate['month'];
+                $year = (int) $candidate['year'];
 
                 $date = static::checkDate($day, $month, $year);
-                if ($date === false) {
+                if (false === $date) {
                     continue;
                 }
                 list($day, $month, $year) = $date;
 
-                $dateMatches[] = array(
+                $dateMatches[] = [
                     'begin' => $candidate['begin'],
                     'end' => $candidate['end'],
                     'token' => substr($password, $begin, $begin + $end - 1),
                     'separator' => '',
                     'day' => $day,
                     'month' => $month,
-                    'year' => $year
-                );
+                    'year' => $year,
+                ];
             }
         }
+
         return $dateMatches;
     }
 
@@ -282,9 +293,10 @@ class DateMatch extends Match
         if ($day > 31 || $month > 12) {
             return false;
         }
-        if (!((1900 <= $year && $year <= 2019))) {
+        if (!(1900 <= $year && $year <= 2019)) {
             return false;
         }
-        return array($day, $month, $year);
+
+        return [$day, $month, $year];
     }
 }

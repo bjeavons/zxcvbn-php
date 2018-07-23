@@ -2,9 +2,13 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\RepeatMatch;
 
-class RepeatTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers \ZxcvbnPhp\Matchers\RepeatMatch
+ */
+class RepeatTest extends TestCase
 {
     public function testMatch()
     {
@@ -19,31 +23,30 @@ class RepeatTest extends \PHPUnit_Framework_TestCase
         $password = 'aaa';
         $matches = RepeatMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertEquals('aaa', $matches[0]->token, "Token incorrect");
-        $this->assertEquals('a', $matches[0]->repeatedChar, "Repeated character incorrect");
+        $this->assertSame('aaa', $matches[0]->token, 'Token incorrect');
+        $this->assertSame('a', $matches[0]->repeatedChar, 'Repeated character incorrect');
 
         $password = 'aaa1bbb';
         $matches = RepeatMatch::match($password);
         $this->assertCount(2, $matches);
-        $this->assertEquals('bbb', $matches[1]->token, "Token incorrect");
-        $this->assertEquals('b', $matches[1]->repeatedChar, "Repeated character incorrect");
+        $this->assertSame('bbb', $matches[1]->token, 'Token incorrect');
+        $this->assertSame('b', $matches[1]->repeatedChar, 'Repeated character incorrect');
 
         $password = 'taaaaaa';
         $matches = RepeatMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame('aaaaaa', $matches[0]->token, "Token incorrect");
-        $this->assertSame('a', $matches[0]->repeatedChar, "Repeated character incorrect");
+        $this->assertSame('aaaaaa', $matches[0]->token, 'Token incorrect');
+        $this->assertSame('a', $matches[0]->repeatedChar, 'Repeated character incorrect');
     }
 
     public function testEntropy()
     {
         $password = 'aaa';
         $matches = RepeatMatch::match($password);
-        $this->assertEquals(log(26 * 3, 2), $matches[0]->getEntropy());
+        $this->assertSame(log(26 * 3, 2), $matches[0]->getEntropy());
 
         $password = '..................';
         $matches = RepeatMatch::match($password);
-        $this->assertEquals(log(33 * strlen($password), 2), $matches[0]->getEntropy());
+        $this->assertSame(log(33 * strlen($password), 2), $matches[0]->getEntropy());
     }
-
 }
