@@ -106,7 +106,7 @@ class L33tMatch extends DictionaryMatch
 
     /**
      * @param string $string
-     * @param array $map
+     * @param array  $map
      * @return string
      */
     protected static function translate($string, $map)

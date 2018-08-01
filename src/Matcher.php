@@ -6,21 +6,17 @@ use ZxcvbnPhp\Matchers\Match;
 
 class Matcher
 {
-
     /**
      * Get matches for a password.
      *
      * @see zxcvbn/src/matching.coffee::omnimatch
      *
-     * @param string $password
-     *   Password string to match.
-     * @param array $userInputs
-     *   Array of values related to the user (optional).
-     * @code
-     *   array('Alice Smith')
+     * @param string $password   Password string to match
+     * @param array  $userInputs Array of values related to the user (optional)
+     * @code array('Alice Smith')
      * @endcode
-     * @return Match[]
-     *   Array of Match objects.
+     *
+     * @return Match[] Array of Match objects.
      */
     public function getMatches($password, array $userInputs = [])
     {
@@ -78,21 +74,20 @@ class Matcher
     /**
      * Load available Match objects to match against a password.
      *
-     * @return array
-     *   Array of classes implementing MatchInterface
+     * @return array Array of classes implementing MatchInterface
      */
     protected function getMatchers()
     {
         // @todo change to dynamic
         return [
-            'ZxcvbnPhp\Matchers\DictionaryMatch',
-            'ZxcvbnPhp\Matchers\ReverseDictionaryMatch',
-            'ZxcvbnPhp\Matchers\L33tMatch',
-            'ZxcvbnPhp\Matchers\SpatialMatch',
-            'ZxcvbnPhp\Matchers\RepeatMatch',
-            'ZxcvbnPhp\Matchers\SequenceMatch',
-            'ZxcvbnPhp\Matchers\YearMatch',
-            'ZxcvbnPhp\Matchers\DateMatch',
+            Matchers\DateMatch::class,
+            Matchers\DictionaryMatch::class,
+            Matchers\ReverseDictionaryMatch::class,
+            Matchers\L33tMatch::class,
+            Matchers\RepeatMatch::class,
+            Matchers\SequenceMatch::class,
+            Matchers\SpatialMatch::class,
+            Matchers\YearMatch::class,
         ];
     }
 }

@@ -5,6 +5,9 @@ namespace ZxcvbnPhp\Test\Matchers;
 use ZxcvbnPhp\Matchers\DateMatch;
 use ZxcvbnPhp\Matchers\YearMatch;
 
+/**
+ * @covers \ZxcvbnPhp\Matchers\YearMatch
+ */
 class YearTest extends AbstractMatchTest
 {
     public function testNoMatchForNonYear()
@@ -77,7 +80,7 @@ class YearTest extends AbstractMatchTest
         $password = 'password1900';
         $matches = YearMatch::match($password);
         $this->assertCount(1, $matches);
-        $this->assertSame("1900", $matches[0]->token, "Token incorrect");
+        $this->assertSame('1900', $matches[0]->token, 'Token incorrect');
     }
 
     public function testYearWithinOtherNumbers()

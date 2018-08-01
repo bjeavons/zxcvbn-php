@@ -4,6 +4,9 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\SequenceMatch;
 
+/**
+ * @covers \ZxcvbnPhp\Matchers\SequenceMatch
+ */
 class SequenceTest extends AbstractMatchTest
 {
     public function shortPasswordProvider()

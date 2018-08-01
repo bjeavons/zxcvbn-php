@@ -5,6 +5,9 @@ namespace ZxcvbnPhp\Test;
 use ZxcvbnPhp\Scorer;
 use ZxcvbnPhp\Test\Matchers\MockMatch;
 
+/**
+ * @covers \ZxcvbnPhp\Scorer
+ */
 class ScorerTest extends \PHPUnit_Framework_TestCase
 {
     const PASSWORD = '0123456789';

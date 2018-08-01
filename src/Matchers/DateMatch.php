@@ -6,7 +6,6 @@ use ZxcvbnPhp\Matcher;
 
 class DateMatch extends Match
 {
-
     const NUM_YEARS = 119; // Years match against 1900 - 2019
     const NUM_MONTHS = 12;
     const NUM_DAYS = 31;
@@ -136,6 +135,7 @@ class DateMatch extends Match
      * Find dates with separators in a password.
      *
      * @param string $password
+     *
      * @return array
      */
     protected static function datesWithSeparators($password)
@@ -181,6 +181,7 @@ class DateMatch extends Match
      * Find dates without separators in a password.
      *
      * @param string $password
+     *
      * @return array
      */
     protected static function datesWithoutSeparators($password)

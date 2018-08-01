@@ -8,6 +8,9 @@ use ZxcvbnPhp\Matchers\RepeatMatch;
 use ZxcvbnPhp\Matchers\SequenceMatch;
 use ZxcvbnPhp\Scorer;
 
+/**
+ * @covers \ZxcvbnPhp\Matchers\RepeatMatch
+ */
 class RepeatTest extends AbstractMatchTest
 {
     public function testEmpty()

@@ -40,17 +40,14 @@ class Zxcvbn
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
      *
-     * @param string $password
-     *   Password to measure.
-     * @param array $userInputs
-     *   Optional user inputs.
+     * @param string $password   Password to measure
+     * @param array  $userInputs Optional user inputs
      *
-     * @return array
-     *   Strength result array with keys:
-     *     password
-     *     entropy
-     *     match_sequence
-     *     score
+     * @return array Strength result array with keys:
+     *               password
+     *               entropy
+     *               match_sequence
+     *               score
      */
     public function passwordStrength($password, array $userInputs = [])
     {

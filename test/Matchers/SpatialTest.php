@@ -5,6 +5,9 @@ namespace ZxcvbnPhp\Test\Matchers;
 use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Matchers\SpatialMatch;
 
+/**
+ * @covers \ZxcvbnPhp\Matchers\SpatialMatch
+ */
 class SpatialTest extends AbstractMatchTest
 {
     public function shortPatternDataProvider()
