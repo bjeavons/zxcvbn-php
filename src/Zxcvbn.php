@@ -68,8 +68,6 @@ class Zxcvbn
         // doing this immutably makes more sense and is a bit easier
         $matches = $this->matcher->getMatches($password, $sanitizedInputs);
 
-        // 1.0 rewrite: Although upstream has a single variable for $result,
-        // this is opaque and I'd rather do it a clearer, more transparent way
         $result = $this->scorer->getMostGuessableMatchSequence($password, $matches);
         $attackTimes = $this->timeEstimator->estimateAttackTimes($result['guesses']);
         $feedback = $this->feedback->getFeedback($attackTimes['score'], $result['sequence']);
