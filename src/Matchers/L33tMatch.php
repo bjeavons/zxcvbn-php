@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
  * @package ZxcvbnPhp\Matchers
@@ -45,14 +47,23 @@ class L33tMatch extends DictionaryMatch
             /** @var L33tMatch[] $results */
             $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
             foreach ($results as $match) {
-                $token = substr($password, $match->begin, $match->end - $match->begin + 1);
-                if (strtolower($token) === $match->token) {
+                $token = mb_substr($password, $match->begin, $match->end - $match->begin + 1);
+
+                # only return the matches that contain an actual substitution
+                if (mb_strtolower($token) === $match->matchedWord) {
+                    continue;
+                }
+
+                # filter single-character l33t matches to reduce noise.
+                # otherwise '1' matches 'i', '4' matches 'a', both very common English words
+                # with low dictionary rank.
+                if (mb_strlen($token) === 1) {
                     continue;
                 }
 
                 $display = [];
                 foreach ($map as $i => $t) {
-                    if (strpos($token, (string)$i) !== false) {
+                    if (mb_strpos($token, (string)$i) !== false) {
                         $match->sub[$i] = $t;
                         $display[] = "$i -> $t";
                     }
@@ -64,6 +75,7 @@ class L33tMatch extends DictionaryMatch
             }
         }
 
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
         return $matches;
     }
 
@@ -122,7 +134,8 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tSubtable($password)
     {
-        $passwordChars = array_unique(str_split($password));
+        // The preg_split call below is a multibyte compatible version of str_split
+        $passwordChars = array_unique(preg_split('//u', $password, null, PREG_SPLIT_NO_EMPTY));
 
         $subTable = [];
 
@@ -140,22 +153,58 @@ class L33tMatch extends DictionaryMatch
 
     protected static function getL33tSubstitutions($subtable)
     {
-        $result = [[]];
-        foreach ($subtable as $letter => $substitutions) {
-            $tmp = [];
-            foreach ($result as $result_item) {
-                foreach ($substitutions as $substitutedCharacter) {
-                    $tmp[] = $result_item + [$substitutedCharacter => $letter];
-                }
-            }
-            $result = $tmp;
-        }
-        return $result;
+        $keys = array_keys($subtable);
+        $substitutions = self::substitutionTableHelper($subtable, $keys, [[]]);
+
+        // Converts the substitution arrays from [ [a, b], [c, d] ] to [ a => b, c => d ]
+        $substitutions = array_map(function ($subArray) {
+            return array_combine(array_column($subArray, 0), array_column($subArray, 1));
+        }, $substitutions);
+
+        return $substitutions;
     }
 
-    public function getGuesses()
+    protected static function substitutionTableHelper($table, $keys, $subs)
     {
-        return parent::getGuesses() * $this->getL33tVariations();
+        if (empty($keys)) {
+            return $subs;
+        }
+
+        $firstKey = array_shift($keys);
+        $otherKeys = $keys;
+        $nextSubs = [];
+
+        foreach ($table[$firstKey] as $l33tCharacter) {
+            foreach ($subs as $sub) {
+                $dupL33tIndex = false;
+                foreach ($sub as $index => $char) {
+                    if ($char[0] === $l33tCharacter) {
+                        $dupL33tIndex = $index;
+                        break;
+                    }
+                }
+
+                if ($dupL33tIndex === false) {
+                    $subExtension = $sub;
+                    $subExtension[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $subExtension;
+                } else {
+                    $subAlternative = $sub;
+                    array_splice($subAlternative, $dupL33tIndex, 1);
+                    $subAlternative[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $sub;
+                    $nextSubs[] = $subAlternative;
+                }
+            }
+        }
+
+        $nextSubs = array_unique($nextSubs, SORT_REGULAR);
+        return self::substitutionTableHelper($table, $otherKeys, $nextSubs);
+    }
+
+    protected function getRawGuesses()
+    {
+        return parent::getRawGuesses() * $this->getL33tVariations();
     }
 
     protected function getL33tVariations()
@@ -163,7 +212,7 @@ class L33tMatch extends DictionaryMatch
         $variations = 1;
 
         foreach ($this->sub as $substitution => $letter) {
-            $characters = str_split(strtolower($this->token));
+            $characters = preg_split('//u', mb_strtolower($this->token), null, PREG_SPLIT_NO_EMPTY);
 
             $subbed = count(array_filter($characters, function ($character) use ($substitution) {
                 return (string)$character === (string)$substitution;

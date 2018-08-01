@@ -27,7 +27,7 @@ class SequenceMatch extends Match
     public static function match($password, array $userInputs = [])
     {
         $matches = [];
-        $passwordLength = strlen($password);
+        $passwordLength = mb_strlen($password);
 
         if ($passwordLength === 1) {
             return [];
@@ -37,7 +37,7 @@ class SequenceMatch extends Match
         $lastDelta = null;
 
         for ($index = 1; $index < $passwordLength; $index++) {
-            $delta = ord($password[$index]) - ord($password[$index - 1]);
+            $delta = mb_ord(mb_substr($password, $index, 1)) - mb_ord(mb_substr($password, $index - 1, 1));
             if ($lastDelta === null) {
                 $lastDelta = $delta;
             }
@@ -59,14 +59,14 @@ class SequenceMatch extends Match
     {
         if ($end - $begin > 1 || abs($delta) === 1) {
             if (abs($delta) > 0 && abs($delta) <= self::MAX_DELTA) {
-                $token = substr($password, $begin, $end - $begin + 1);
-                if (preg_match('/^[a-z]+$/', $token)) {
+                $token = mb_substr($password, $begin, $end - $begin + 1);
+                if (preg_match('/^[a-z]+$/u', $token)) {
                     $sequenceName = 'lower';
                     $sequenceSpace = 26;
-                } elseif (preg_match('/^[A-Z]+$/', $token)) {
+                } elseif (preg_match('/^[A-Z]+$/u', $token)) {
                     $sequenceName = 'upper';
                     $sequenceSpace = 26;
-                } elseif (preg_match('/^\d+$/', $token)) {
+                } elseif (preg_match('/^\d+$/u', $token)) {
                     $sequenceName = 'digits';
                     $sequenceSpace = 10;
                 } else {
@@ -111,9 +111,9 @@ class SequenceMatch extends Match
         }
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
-        $firstCharacter = $this->token[0];
+        $firstCharacter = mb_substr($this->token, 0, 1);
         $guesses = 0;
 
         if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
@@ -132,6 +132,6 @@ class SequenceMatch extends Match
             $guesses *= 2;
         }
 
-        return $guesses * strlen($this->token);
+        return $guesses * mb_strlen($this->token);
     }
 }

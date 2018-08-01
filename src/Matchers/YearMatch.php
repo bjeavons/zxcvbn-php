@@ -2,12 +2,15 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 class YearMatch extends Match
 {
 
     const NUM_YEARS = 119;
 
-    public $pattern = 'year';
+    public $pattern = 'regex';
+    public $regexName = 'recent_year';
 
     /**
      * Match occurences of years in a password
@@ -19,10 +22,11 @@ class YearMatch extends Match
     public static function match($password, array $userInputs = [])
     {
         $matches = [];
-        $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/");
+        $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/u");
         foreach ($groups as $captures) {
             $matches[] = new static($password, $captures[1]['begin'], $captures[1]['end'], $captures[1]['token']);
         }
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
         return $matches;
     }
 
@@ -37,7 +41,7 @@ class YearMatch extends Match
         ];
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());
         return max($yearSpace, DateMatch::MIN_YEAR_SPACE);

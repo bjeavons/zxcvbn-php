@@ -3,6 +3,7 @@
 namespace ZxcvbnPhp\Test;
 
 use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Matchers\DictionaryMatch;
 
 class MatcherTest extends \PHPUnit_Framework_TestCase
 {
@@ -44,5 +45,18 @@ class MatcherTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertEmpty($expectedMatches, "matches multiple patterns");
+    }
+
+    /**
+     * There's a similar test in DictionaryTest for this as well, but this specific test is for ensuring that the
+     * user input gets passed from the Matcher class through to DictionaryMatch function.
+     */
+    public function testUserDefinedWords()
+    {
+        $matcher = new Matcher();
+        $matches = $matcher->getMatches('_wQbgL491', ['PJnD', 'WQBG', 'ZhwZ']);
+
+        $this->assertInstanceOf(DictionaryMatch::class, $matches[0], "user input match is correct class");
+        $this->assertEquals('wQbg', $matches[0]->token, "user input match has correct token");
     }
 }

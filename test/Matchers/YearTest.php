@@ -31,7 +31,7 @@ class YearTest extends AbstractMatchTest
         $this->checkMatches(
             "matches recent year",
             YearMatch::match($password),
-            'year',
+            'regex',
             [$password],
             [[0, strlen($password) - 1]],
             []
@@ -67,7 +67,7 @@ class YearTest extends AbstractMatchTest
             $this->checkMatches(
                 "identifies years surrounded by words",
                 YearMatch::match($password),
-                'year',
+                'regex',
                 [$pattern],
                 [[$i, $j]],
                 []
@@ -86,7 +86,7 @@ class YearTest extends AbstractMatchTest
         $this->checkMatches(
             "matches year within other numbers",
             YearMatch::match($password),
-            'year',
+            'regex',
             ['1900'],
             [[1, 4]],
             []
@@ -126,6 +126,29 @@ class YearTest extends AbstractMatchTest
             20, // DateMatch::MIN_YEAR_SPACE
             $match->getGuesses(),
             "guesses of MIN_YEAR_SPACE for a year close to REFERENCE_YEAR"
+        );
+    }
+
+    public function testFeedback()
+    {
+        $token = '2010';
+        $match = new YearMatch($token, 0, strlen($token) - 1, $token);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Recent years are easy to guess',
+            $feedback['warning'],
+            "year match gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid recent years',
+            $feedback['suggestions'],
+            "year match gives correct suggestion #1"
+        );
+        $this->assertContains(
+            'Avoid years that are associated with you',
+            $feedback['suggestions'],
+            "year match gives correct suggestion #2"
         );
     }
 }

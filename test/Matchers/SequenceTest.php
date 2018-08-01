@@ -125,6 +125,40 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
+    public function testMultibytePassword()
+    {
+        $pattern = 'muÃeca';
+
+        $this->checkMatches(
+            'detects sequence in a multibyte password',
+            SequenceMatch::match($pattern),
+            'sequence',
+            ['eca'],
+            [[3, 5]],
+            [
+                'sequenceName' => ['lower'],
+                'ascending' => [false],
+            ]
+        );
+    }
+
+    public function testMultibyteSequence()
+    {
+        $pattern = 'αβγδεζ';
+
+        $this->checkMatches(
+            'detects sequence consisting of multibyte characters',
+            SequenceMatch::match($pattern),
+            'sequence',
+            [$pattern],
+            [[0, 5]],
+            [
+                'sequenceName' => ['unicode'],
+                'ascending' => [true],
+            ]
+        );
+    }
+
     public function guessProvider()
     {
         return array(
@@ -149,6 +183,24 @@ class SequenceTest extends AbstractMatchTest
             $expectedGuesses,
             $match->getGuesses(),
             "the sequence pattern '$token' has guesses of $expectedGuesses"
+        );
+    }
+
+    public function testFeedback()
+    {
+        $token = 'rstuvw';
+        $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => true]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Sequences like abc or 6543 are easy to guess',
+            $feedback['warning'],
+            "sequence gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid sequences',
+            $feedback['suggestions'],
+            "sequence gives correct suggestion"
         );
     }
 }

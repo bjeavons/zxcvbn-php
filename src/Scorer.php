@@ -11,7 +11,7 @@ use ZxcvbnPhp\Matchers\Match;
  *
  * @see zxcvbn/src/scoring.coffee
  */
-class Scorer implements ScorerInterface
+class Scorer
 {
     const MIN_GUESSES_BEFORE_GROWING_SEQUENCE = 10000;
     const MIN_SUBMATCH_GUESSES_SINGLE_CHAR = 10;
@@ -63,8 +63,8 @@ class Scorer implements ScorerInterface
         $this->password = $password;
         $this->excludeAdditive = $excludeAdditive;
 
-        $length = strlen($password);
-        $emptyArray = array_fill(0, $length, []);
+        $length = mb_strlen($password);
+        $emptyArray = $length > 0 ? array_fill(0, $length, []) : [];
 
         // partition matches into sublists according to ending index j
         $matchesByEndIndex = $emptyArray;
@@ -111,12 +111,13 @@ class Scorer implements ScorerInterface
             $this->bruteforceUpdate($k);
         }
 
-        $optimalSequence = $this->unwind($length);
-        $optimalSequenceLength = count($optimalSequence);
 
         if ($length === 0) {
             $guesses = 1;
+            $optimalSequence = [];
         } else {
+            $optimalSequence = $this->unwind($length);
+            $optimalSequenceLength = count($optimalSequence);
             $guesses = $this->optimal['g'][$length - 1][$optimalSequenceLength];
         }
 
@@ -170,6 +171,12 @@ class Scorer implements ScorerInterface
         $this->optimal['g'][$k][$length] = $g;
         $this->optimal['m'][$k][$length] = $match;
         $this->optimal['pi'][$k][$length] = $pi;
+
+        // Sort the arrays by key after each insert to match how JavaScript objects work
+        // Failing to do this results in slightly different matches in some scenarios
+        ksort($this->optimal['g'][$k]);
+        ksort($this->optimal['m'][$k]);
+        ksort($this->optimal['pi'][$k]);
     }
 
     /**
@@ -211,7 +218,7 @@ class Scorer implements ScorerInterface
      */
     protected function makeBruteforceMatch($begin, $end)
     {
-        return new Bruteforce($this->password, $begin, $end, substr($this->password, $begin, $end - $begin + 1));
+        return new Bruteforce($this->password, $begin, $end, mb_substr($this->password, $begin, $end - $begin + 1));
     }
 
     /**

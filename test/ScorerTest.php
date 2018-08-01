@@ -16,6 +16,13 @@ class ScorerTest extends \PHPUnit_Framework_TestCase
     {
         $this->scorer = new Scorer();
     }
+    public function testBlankPassword()
+    {
+        $result = $this->scorer->getMostGuessableMatchSequence('', []);
+        $this->assertEquals(1, $result['guesses']);
+        $this->assertEmpty($result['sequence']);
+    }
+
     public function testEmptyMatchSequence()
     {
         $result = $this->scorer->getMostGuessableMatchSequence(self::PASSWORD, []);

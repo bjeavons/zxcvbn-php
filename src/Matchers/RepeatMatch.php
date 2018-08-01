@@ -2,11 +2,14 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Scorer;
+
 class RepeatMatch extends Match
 {
-    const GREEDY_MATCH = '/(.+)\1+/';
-    const LAZY_MATCH = '/(.+?)\1+/';
-    const ANCHORED_LAZY_MATCH = '/^(.+?)\1+$/';
+    const GREEDY_MATCH = '/(.+)\1+/u';
+    const LAZY_MATCH = '/(.+?)\1+/u';
+    const ANCHORED_LAZY_MATCH = '/^(.+?)\1+$/u';
 
     public $pattern = 'repeat';
 
@@ -34,7 +37,7 @@ class RepeatMatch extends Match
         $matches = [];
         $lastIndex = 0;
 
-        while ($lastIndex < strlen($password)) {
+        while ($lastIndex < mb_strlen($password)) {
             $greedyMatches = self::findAll($password, self::GREEDY_MATCH, $lastIndex);
             $lazyMatches = self::findAll($password, self::LAZY_MATCH, $lastIndex);
 
@@ -42,7 +45,7 @@ class RepeatMatch extends Match
                 break;
             }
 
-            if (strlen($greedyMatches[0][0]['token']) > strlen($lazyMatches[0][0]['token'])) {
+            if (mb_strlen($greedyMatches[0][0]['token']) > mb_strlen($lazyMatches[0][0]['token'])) {
                 $match = $greedyMatches[0];
                 preg_match(self::ANCHORED_LAZY_MATCH, $match[0]['token'], $anchoredMatch);
                 $repeatedChar = $anchoredMatch[1];
@@ -51,16 +54,14 @@ class RepeatMatch extends Match
                 $repeatedChar = $match[1]['token'];
             }
 
-            // @TODO: most_guessable_match_sequence not yet implemented. See Scorer::mostGuessableMatchSequence
+            $scorer = new Scorer();
+            $matcher = new Matcher();
 
-            //  const base_analysis = scoring.most_guessable_match_sequence(
-            //          base_token,
-            //          this.omnimatch(base_token)
-            //      );
-            //  const base_matches = base_analysis.sequence;
-            //  const base_guesses = base_analysis.guesses;
+            $baseAnalysis = $scorer->getMostGuessableMatchSequence($repeatedChar, $matcher->getMatches($repeatedChar));
+            $baseMatches = $baseAnalysis['sequence'];
+            $baseGuesses = $baseAnalysis['guesses'];
 
-            $repeatCount = strlen($match[0]['token']) / strlen($repeatedChar);
+            $repeatCount = mb_strlen($match[0]['token']) / mb_strlen($repeatedChar);
 
             $matches[] = new static(
                 $password,
@@ -69,8 +70,8 @@ class RepeatMatch extends Match
                 $match[0]['token'],
                 [
                     'repeated_char' => $repeatedChar,
-                    'base_guesses' => null,
-                    'base_matches' => [],
+                    'base_guesses' => $baseGuesses,
+                    'base_matches' => $baseMatches,
                     'repeat_count' => $repeatCount
                 ]
             );
@@ -83,7 +84,7 @@ class RepeatMatch extends Match
 
     public function getFeedback($isSoleMatch)
     {
-        $warning = strlen($this->repeatedChar) == 1
+        $warning = mb_strlen($this->repeatedChar) == 1
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
@@ -113,7 +114,7 @@ class RepeatMatch extends Match
         }
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
         return $this->baseGuesses * $this->repeatCount;
     }

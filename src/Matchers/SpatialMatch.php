@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 class SpatialMatch extends Match
 {
     const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
@@ -22,6 +24,9 @@ class SpatialMatch extends Match
 
     /** @var string The keyboard layout that the token is a spatial match on. */
     public $graph;
+
+    /** @var array A cache of the adjacency_graphs json file */
+    protected static $adjacencyGraphs = [];
 
     /**
      * Match spatial patterns based on keyboard layouts (e.g. qwerty, dvorak, keypad).
@@ -45,6 +50,7 @@ class SpatialMatch extends Match
                 $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
         return $matches;
     }
 
@@ -91,7 +97,7 @@ class SpatialMatch extends Match
         $result = [];
         $i = 0;
 
-        $passwordLength = strlen($password);
+        $passwordLength = mb_strlen($password);
 
         while ($i < $passwordLength - 1) {
             $j = $i + 1;
@@ -101,20 +107,20 @@ class SpatialMatch extends Match
 
             // Check if the initial character is shifted
             if ($graphName === 'qwerty' || $graphName === 'dvorak') {
-                if (strpos(self::SHIFTED_CHARACTERS, $password[0]) !== false) {
+                if (mb_strpos(self::SHIFTED_CHARACTERS, mb_substr($password, $i, 1)) !== false) {
                     $shiftedCount++;
                 }
             }
 
             while (true) {
-                $prevChar = $password[$j - 1];
+                $prevChar = mb_substr($password, $j - 1, 1);
                 $found = false;
                 $curDirection = -1;
                 $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : [];
 
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
-                    $curChar = $password[$j];
+                    $curChar = mb_substr($password, $j, 1);
                     foreach ($adjacents as $adj) {
                         $curDirection += 1;
                         $curCharPos = static::indexOf($adj, $curChar);
@@ -150,7 +156,7 @@ class SpatialMatch extends Match
                         $result[] = [
                             'begin' => $i,
                             'end' => $j - 1,
-                            'token' => substr($password, $i, $j - $i),
+                            'token' => mb_substr($password, $i, $j - $i),
                             'turns' => $turns,
                             'shifted_count' => $shiftedCount
                         ];
@@ -175,29 +181,8 @@ class SpatialMatch extends Match
      */
     protected static function indexOf($string, $char)
     {
-        $pos = strpos($string, $char);
+        $pos = mb_strpos($string, $char);
         return ($pos === false ? -1 : $pos);
-    }
-
-    /**
-     * Calculate the average degree for all keys in a adjancency graph.
-     *
-     * @param array $graph
-     *
-     * @return float
-     */
-    protected static function calcAverageDegree($graph)
-    {
-        $sum = 0;
-        foreach ($graph as $neighbors) {
-            foreach ($neighbors as $neighbor) {
-                // Ignore empty neighbors.
-                if (!is_null($neighbor)) {
-                    $sum++;
-                }
-            }
-        }
-        return $sum / count(array_keys($graph));
     }
 
     /**
@@ -207,13 +192,28 @@ class SpatialMatch extends Match
      */
     public static function getAdjacencyGraphs()
     {
-        $data = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
-        return json_decode($data, true);
+        if (empty(self::$adjacencyGraphs)) {
+            $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
+            $data = json_decode($json, true);
+
+            // This seems pointless, but the data file is not guaranteed to be in any particular order.
+            // We want to be in the exact order below so as to match most closely with upstream, because when a match
+            // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
+            $data = [
+                'qwerty' => $data['qwerty'],
+                'dvorak' => $data['dvorak'],
+                'keypad' => $data['keypad'],
+                'mac_keypad' => $data['mac_keypad'],
+            ];
+            self::$adjacencyGraphs = $data;
+        }
+
+        return self::$adjacencyGraphs;
     }
 
-    public function getGuesses()
+    protected function getRawGuesses()
     {
-        if ($this->graph === 'qwerty' || $this->graph === 'dvoark') {
+        if ($this->graph === 'qwerty' || $this->graph === 'dvorak') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;
             $averageDegree = self::KEYBOARD_AVERAGE_DEGREES;
         } else {
@@ -222,7 +222,7 @@ class SpatialMatch extends Match
         }
 
         $guesses = 0;
-        $length = strlen($this->token);
+        $length = mb_strlen($this->token);
         $turns = $this->turns;
 
         // estimate the number of possible patterns w/ length L or less with t turns or less.
@@ -250,6 +250,6 @@ class SpatialMatch extends Match
             }
         }
 
-        return (int)$guesses;
+        return $guesses;
     }
 }

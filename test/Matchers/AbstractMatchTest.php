@@ -66,14 +66,6 @@ abstract class AbstractMatchTest extends \PHPUnit_Framework_TestCase
             $patternNames = array_fill(0, count($patterns), $patternNames);
         }
 
-        // TODO: Port the next few lines to PHP
-        //
-        // is_equal_len_args = pattern_names.length == patterns.length == ijs.length
-        // for prop, lst of props
-        //   # props is structured as: keys that points to list of values
-        //   is_equal_len_args = is_equal_len_args and (lst.length == patterns.length)
-        // throw 'unequal argument lists to check_matches' unless is_equal_len_args
-
         $this->assertEquals(
             count($patterns),
             count($matches),

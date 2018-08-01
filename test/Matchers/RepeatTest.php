@@ -2,8 +2,11 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\RepeatMatch;
 use ZxcvbnPhp\Matchers\SequenceMatch;
+use ZxcvbnPhp\Scorer;
 
 class RepeatTest extends AbstractMatchTest
 {
@@ -143,8 +146,6 @@ class RepeatTest extends AbstractMatchTest
 
     public function testBaseGuesses()
     {
-        $this->markTestSkipped('Base guesses have not yet been implemented.');
-
         $pattern = 'abcabc';
         $this->checkMatches(
             'calculates the correct number of guesses for the base token',
@@ -160,10 +161,42 @@ class RepeatTest extends AbstractMatchTest
         );
     }
 
+    public function testMultibyteRepeat()
+    {
+        $pattern = '🙂🙂🙂';
+
+        $this->checkMatches(
+            'detects repeated multibyte characters',
+            RepeatMatch::match($pattern),
+            'repeat',
+            [$pattern],
+            [[0, 2]],
+            [
+                'repeatedChar' => ['🙂'],
+                'repeatCount' => [3]
+            ]
+        );
+    }
+
+    public function testRepeatAfterMultibyteCharacters()
+    {
+        $pattern = 'niÃ±abella';
+
+        $this->checkMatches(
+            'detects repeat with correct offset after multibyte characters',
+            RepeatMatch::match($pattern),
+            'repeat',
+            ['ll'],
+            [[7, 8]],
+            [
+                'repeatedChar' => ['l'],
+                'repeatCount' => [2]
+            ]
+        );
+    }
+
     public function testBaseMatches()
     {
-        $this->markTestSkipped('Base matches have not yet been implemented.');
-
         $pattern = 'abcabc';
         $match = RepeatMatch::match($pattern)[0];
 
@@ -172,14 +205,44 @@ class RepeatTest extends AbstractMatchTest
         $this->assertInstanceOf(SequenceMatch::class, $baseMatches[0]);
     }
 
+    public function testBaseMatchesRecursive()
+    {
+        $pattern = 'mqmqmqltltltmqmqmqltltlt';
+        $match = RepeatMatch::match($pattern)[0];
+        $this->assertEquals('mqmqmqltltlt', $match->repeatedChar);
+
+        $baseMatches = $match->baseMatches;
+        $this->assertInstanceOf(RepeatMatch::class, $baseMatches[0]);
+        $this->assertEquals('mq', $baseMatches[0]->repeatedChar);
+
+        $this->assertInstanceOf(RepeatMatch::class, $baseMatches[1]);
+        $this->assertEquals('lt', $baseMatches[1]->repeatedChar);
+    }
+
+    public function testDuplicateRepeatsInPassword()
+    {
+        $pattern = 'scoobydoo';
+        $this->checkMatches(
+            'duplicate repeats in the password are identified correctly',
+            RepeatMatch::match($pattern),
+            'repeat',
+            ['oo', 'oo'],
+            [[2, 3], [7, 8]],
+            [
+                'repeatedChar' => ['o', 'o'],
+                'repeatCount' => [2, 2]
+            ]
+        );
+    }
+
     public function guessesProvider()
     {
         return array(
-            [ 'aa',   'a',  2],
-            [ '999',  '9',  3],
-            [ '$$$$', '$',  4],
-            [ 'abab', 'ab', 2],
-            [ 'batterystaplebatterystaplebatterystaple', 'batterystaple', 3]
+            [ 'aa',   'a',  2,  24],
+            [ '999',  '9',  3,  36],
+            [ '$$$$', '$',  4,  48],
+            [ 'abab', 'ab', 2,  18],
+            [ 'batterystaplebatterystaplebatterystaple', 'batterystaple', 3,  85277994]
         );
     }
 
@@ -188,9 +251,63 @@ class RepeatTest extends AbstractMatchTest
      * @param $token
      * @param $repeatedChar
      * @param $repeatCount
+     * @param $expectedGuesses
      */
-    public function testGuesses($token, $repeatedChar, $repeatCount)
+    public function testGuesses($token, $repeatedChar, $repeatCount, $expectedGuesses)
     {
-        $this->markTestIncomplete("Test not yet written, requires other functionality that's yet to be ported");
+        $scorer = new Scorer();
+        $matcher = new Matcher();
+        $baseAnalysis = $scorer->getMostGuessableMatchSequence($repeatedChar, $matcher->getMatches($repeatedChar));
+        $baseGuesses = $baseAnalysis['guesses'];
+
+        $match = new RepeatMatch($token, 0, strlen($token) - 1, $token, [
+            'repeated_char' => $repeatedChar,
+            'repeat_count' => $repeatCount,
+            'base_guesses' => $baseGuesses,
+        ]);
+
+        self::assertEquals($expectedGuesses, $match->getGuesses(), "the repeat pattern {$token} has guesses of {$expectedGuesses}");
+    }
+
+    public function testFeedbackSingleCharacterRepeat()
+    {
+        $token = 'bbbbbb';
+        $match = new RepeatMatch($token, 0, strlen($token) - 1, $token, [
+            'repeated_char' => 'b',
+            'repeat_count' => 6,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Repeats like "aaa" are easy to guess',
+            $feedback['warning'],
+            "one repeated character gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid repeated words and characters',
+            $feedback['suggestions'],
+            "one repeated character gives correct suggestion"
+        );
+    }
+
+    public function testFeedbackMultipleCharacterRepeat()
+    {
+        $token = 'bababa';
+        $match = new RepeatMatch($token, 0, strlen($token) - 1, $token, [
+            'repeated_char' => 'ba',
+            'repeat_count' => 3,
+        ]);
+        $feedback = $match->getFeedback(true);
+
+        $this->assertEquals(
+            'Repeats like "abcabcabc" are only slightly harder to guess than "abc"',
+            $feedback['warning'],
+            "multiple repeated characters gives correct warning"
+        );
+        $this->assertContains(
+            'Avoid repeated words and characters',
+            $feedback['suggestions'],
+            "multiple repeated characters gives correct suggestion"
+        );
     }
 }
