@@ -11,7 +11,7 @@ use ZxcvbnPhp\Matchers\Match;
  *
  * @see zxcvbn/src/scoring.coffee
  */
-class Scorer implements ScorerInterface
+class Scorer
 {
     const MIN_GUESSES_BEFORE_GROWING_SEQUENCE = 10000;
     const MIN_SUBMATCH_GUESSES_SINGLE_CHAR = 10;
