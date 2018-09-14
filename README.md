@@ -4,7 +4,8 @@ Zxcvbn-PHP is a password strength estimator using pattern matching and minimum e
 
 [![Build Status](https://travis-ci.org/mkopinsky/zxcvbn-php.png?branch=master)](https://travis-ci.org/mkopinsky/zxcvbn-php)
 [![Coverage Status](https://coveralls.io/repos/github/mkopinsky/zxcvbn-php/badge.svg?branch=master)](https://coveralls.io/github/mkopinsky/zxcvbn-php?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/mkopinsky/zxcvbn-php/v/stable.png)](https://packagist.org/packages/mkopinsky/zxcvbn-php)
+[![Latest Stable Version](https://poser.pugx.org/mkopinsky/zxcvbn-php/v/stable)](https://packagist.org/packages/mkopinsky/zxcvbn-php)
+[![License](https://poser.pugx.org/mkopinsky/zxcvbn-php/license)](https://packagist.org/packages/mkopinsky/zxcvbn-php)
 
 ## Installation
 
