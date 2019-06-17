@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Feedback\FeedbackProvider;
+
 class Zxcvbn
 {
     /**
@@ -19,11 +21,17 @@ class Zxcvbn
      */
     protected $matcher;
 
+	/**
+	 * @var FeedbackProvider
+	 */
+    protected $feedBackProvider;
+
     public function __construct()
     {
         $this->scorer = new Scorer();
         $this->searcher = new Searcher();
         $this->matcher = new Matcher();
+        $this->feedBackProvider = new FeedbackProvider();
     }
 
     /**
@@ -78,11 +86,17 @@ class Zxcvbn
      */
     protected function result($password, $entropy, $matches, $score, $params = [])
     {
+    	$feedback = $this->feedBackProvider->getFeedback($score, ...$matches);
+
         $r = [
             'password' => $password,
             'entropy' => $entropy,
             'match_sequence' => $matches,
             'score' => $score,
+			'feedback' => [
+				'warning' => $feedback->getWarning(),
+				'suggestions' => $feedback->getSuggestions(),
+			],
         ];
 
         return array_merge($params, $r);
