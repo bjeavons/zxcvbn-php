@@ -1,0 +1,14 @@
+{
+	"dictionaries" : {
+		"en_wiki_film" : 12000,
+        "passwords" : 20000,
+        "us_names" :	10500,
+        "cs_passwords" : 20000,
+        "sk_passwords" : 25000,
+        "sk_wikipedia" : 8000,
+        "sk_subtitles" : 4000
+	},
+	"keyboards" : [ 
+		"qwerty", "qwertzsk", "keypad", "mac_keypad"
+	]
+}
