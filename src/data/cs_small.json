@@ -1,0 +1,11 @@
+{
+	"dictionaries" : {
+        "passwords" : 15000,
+        "cs_names" : 10000,
+        "cs_passwords" : 15000,
+        "cs_wikipedia" : 8000
+	},
+	"keyboards" : [ 
+		"qwerty", "qwertzcs", "keypad", "mac_keypad"
+	]
+}
