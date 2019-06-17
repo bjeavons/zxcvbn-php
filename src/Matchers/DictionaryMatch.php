@@ -185,18 +185,9 @@ class DictionaryMatch extends BaseMatch
      */
     protected static function getRankedDictionaries(): array
     {
-        if (empty(self::$rankedDictionaries)) {
-            $json = file_get_contents(dirname(__FILE__) . '/frequency_lists.json');
-            $data = json_decode($json, true);
+		$data = file_get_contents(__DIR__.'/cs_ranked_frequency_list.json');
 
-            $rankedLists = [];
-            foreach ($data as $name => $words) {
-                $rankedLists[$name] = array_combine($words, range(1, count($words)));
-            }
-            self::$rankedDictionaries = $rankedLists;
-        }
-
-        return self::$rankedDictionaries;
+		return json_decode($data, true);
     }
 
     protected function getRawGuesses(): float

@@ -1,0 +1,13 @@
+{
+	"dictionaries" : {
+		"us_tv_and_film" : 30000,
+		"english_wikipedia" : 29500,
+        "passwords" : 27500,
+        "surnames" : 10000,
+        "male_names" : null,
+        "female_names" : null
+	},
+	"keyboards" : [ 
+		"qwerty", "dvorak", "keypad", "mac_keypad"
+	]
+}

@@ -36,7 +36,7 @@ class Zxcvbn
         $this->matcher = new \ZxcvbnPhp\Matcher();
         $this->scorer = new \ZxcvbnPhp\Scorer();
         $this->timeEstimator = new \ZxcvbnPhp\TimeEstimator();
-        $this->feedback = new \ZxcvbnPhp\Feedback();
+        $this->feedback = new \ZxcvbnPhp\Feedback\FeedbackProvider();
     }
 
     public function addMatcher(string $className): self
@@ -76,13 +76,16 @@ class Zxcvbn
 
         $result = $this->scorer->getMostGuessableMatchSequence($password, $matches);
         $attackTimes = $this->timeEstimator->estimateAttackTimes($result['guesses']);
-        $feedback = $this->feedback->getFeedback($attackTimes['score'], $result['sequence']);
+        $feedback = $this->feedback->getFeedback($attackTimes['score'], ...$result['sequence']);
 
         return array_merge(
             $result,
             $attackTimes,
             [
-                'feedback'  => $feedback,
+                'feedback' => [
+                    'warning' => $feedback->getWarning(),
+                    'suggestions' => $feedback->getSuggestions(),
+                ],
                 'calc_time' => microtime(true) - $timeStart
             ]
         );

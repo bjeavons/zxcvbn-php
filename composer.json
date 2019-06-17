@@ -1,14 +1,14 @@
 {
-    "name": "bjeavons/zxcvbn-php",
+    "name": "vojtechbuba/zxcvbn-php-cz-sk",
     "type": "library",
     "description": "Realistic password strength estimation PHP library based on Zxcvbn JS",
     "keywords": ["zxcvbn","password"],
-    "homepage": "https://github.com/bjeavons/zxcvbn-php",
+    "homepage": "https://github.com/VojtechBuba/zxcvbn-php-cz-sk",
     "license": "MIT",
     "authors": [
         {
             "name": "See contributors",
-            "homepage": "https://github.com/bjeavons/zxcvbn-php"
+            "homepage": "https://github.com/VojtechBuba/zxcvbn-php-cz-sk"
         }
     ],
     "require": {
