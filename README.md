@@ -2,9 +2,6 @@ Zxcvbn-PHP is a password strength estimator using pattern matching and minimum e
 
 >zxcvbn attempts to give sound password advice through pattern matching and conservative entropy calculations. It finds 10k common passwords, common American names and surnames, common English words, and common patterns like dates, repeats (aaa), sequences (abcd), and QWERTY patterns.
 
-[![Build Status](https://travis-ci.org/bjeavons/zxcvbn-php.png?branch=master)](https://travis-ci.org/bjeavons/zxcvbn-php)
-[![Coverage Status](https://coveralls.io/repos/bjeavons/zxcvbn-php/badge.png?branch=master)](https://coveralls.io/r/bjeavons/zxcvbn-php?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/bjeavons/zxcvbn-php/v/stable.png)](https://packagist.org/packages/bjeavons/zxcvbn-php)
 
 ## Installation
 
@@ -13,7 +10,7 @@ The library can be installed with [Composer](http://getcomposer.org) by adding i
 ```json
 {
     "require": {
-        "bjeavons/zxcvbn-php": "^0.4"
+        "vojtechbuba/zxcvbn-php-cz-sk": "^0.5.1"
     }
 }
 ```
@@ -28,21 +25,7 @@ require_once 'vendor/autoload.php';
 ## Usage
 
 ```php
-use ZxcvbnPhp\Zxcvbn;
-
-$userData = [
-  'Marco',
-  'marco@example.com'
-];
-
-$zxcvbn = new Zxcvbn();
-$strength = $zxcvbn->passwordStrength('password', $userData);
-echo $strength['score'];
-// will print 0
-
-$strength = $zxcvbn->passwordStrength('correct horse battery staple');
-echo $strength['score'];
-// will print 4
+TODO
 ```
 
 ### Acknowledgements
