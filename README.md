@@ -18,7 +18,7 @@ Or in your composer.json add
 ```json
 {
     "require": {
-        "bjeavons/zxcvbn-php": "^1.0"
+      "vojtechbuba/zxcvbn-php-cz-sk": "^1.0"
     }
 }
 ```
