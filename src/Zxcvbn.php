@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Feedback\FeedbackMessageProvider;
 use ZxcvbnPhp\Feedback\FeedbackProvider;
 
 class Zxcvbn
@@ -26,12 +27,16 @@ class Zxcvbn
 	 */
     protected $feedBackProvider;
 
-    public function __construct()
+    public function __construct(
+		FeedbackMessageProvider $feedbackMessageProvider = NULL
+	)
     {
         $this->scorer = new Scorer();
         $this->searcher = new Searcher();
         $this->matcher = new Matcher();
-        $this->feedBackProvider = new FeedbackProvider();
+        $this->feedBackProvider = new FeedbackProvider(
+        	$feedbackMessageProvider
+		);
     }
 
     /**

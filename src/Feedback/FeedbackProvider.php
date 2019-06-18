@@ -18,9 +18,7 @@ class FeedbackProvider
 		FeedbackMessageProvider $messageProvider = NULL
 	)
 	{
-		if ( ! $messageProvider) {
-			$this->messageProvider = new StaticFeedbackMessageProvider();
-		}
+		$this->messageProvider = $messageProvider ?: new StaticFeedbackMessageProvider();
 	}
 
 
@@ -139,6 +137,8 @@ class FeedbackProvider
 				} else {
 					$warning = 'common_names_are_easy';
 				}
+			} else if ($dictionaryName === 'user_inputs') {
+				$warning = 'found_user_input';
 			} else if ($isSoleMatch) {
 				$warning = 'a_word_is_easy';
 			}
