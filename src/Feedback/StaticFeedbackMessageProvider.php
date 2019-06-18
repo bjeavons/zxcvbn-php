@@ -36,6 +36,7 @@ class StaticFeedbackMessageProvider implements FeedbackMessageProvider
 		"all_uppercase_doesnt_help" => 'Použítí velkých písmen nezlepší bezpečnost hesla',
 		"reverse_doesnt_help" => 'Slova pozpátku je lehké uhádnout',
 		"substitution_doesnt_help" => 'Běžné substituce jako \'@\' místo \'a\' příliš nezlepší hesla',
+		'found_user_input' => 'Hodnoty formuláře by se neměly používat jako heslo.'
 	];
 
 	/**
