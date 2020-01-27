@@ -11,7 +11,7 @@ use ZxcvbnPhp\Test\Matchers\MockMatch;
  */
 class ScorerTest extends TestCase
 {
-    const PASSWORD = '0123456789';
+    public const PASSWORD = '0123456789';
 
     /** @var Scorer */
     private $scorer;

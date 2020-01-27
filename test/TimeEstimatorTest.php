@@ -1,4 +1,5 @@
 <?php
+
 namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
