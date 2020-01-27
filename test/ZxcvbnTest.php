@@ -2,11 +2,12 @@
 
 namespace ZxcvbnPhp\Test;
 
+use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
 use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Zxcvbn;
 
-class ZxcvbnTest extends \PHPUnit_Framework_TestCase
+class ZxcvbnTest extends TestCase
 {
     /** @var Zxcvbn */
     private $zxcvbn;
