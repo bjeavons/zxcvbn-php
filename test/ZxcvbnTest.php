@@ -75,7 +75,7 @@ class ZxcvbnTest extends \PHPUnit_Framework_TestCase
             ['fortitude22',        2, ['dictionary', 'repeat',                 ], '2 minutes',          1140700],
             ['absoluteadnap',      2, ['dictionary', 'dictionary',             ], '25 minutes',         15187504],
             ['knifeandspoon',      3, ['dictionary', 'dictionary', 'dictionary'], '1 day',              1108057600],
-            ['h1dden_26191',       3, ['dictionary', 'bruteforce', 'date'      ], '3 days',             2467565200],
+            ['h1dden_26191',       3, ['dictionary', 'bruteforce', 'date'      ], '3 days',             2642940400],
             ['4rfv1236yhn!',       4, ['spatial',    'sequence',   'bruteforce'], '1 month',            38980000000.414],
             ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',                  ], 'centuries',          10000000000010000],
         ];
