@@ -2,37 +2,49 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\Bruteforce;
 
-/**
- * @covers \ZxcvbnPhp\Matchers\Bruteforce
- */
-class BruteforceTest extends TestCase
+class BruteforceTest extends AbstractMatchTest
 {
-    public function testCardinality()
+    public function testMatch()
     {
-        $match = new Bruteforce('99', 0, 1, '99');
-        $this->assertSame(10, $match->getCardinality());
+        $password = 'uH2nvQbugW';
 
-        $match = new Bruteforce('aa', 0, 1, 'aa');
-        $this->assertSame(26, $match->getCardinality());
-
-        $match = new Bruteforce('!', 0, 0, '!');
-        $this->assertSame(33, $match->getCardinality());
-
-        $match = new Bruteforce('Ab', 0, 1, 'Ab');
-        $this->assertSame(52, $match->getCardinality());
+        $this->checkMatches(
+            "matches entire string",
+            Bruteforce::match($password),
+            'bruteforce',
+            [$password],
+            [[0, 9]],
+            []
+        );
     }
 
-    public function testEntropy()
+    public function testMultibyteMatch()
     {
-        $match = new Bruteforce('99', 0, 1, '99');
-        $this->assertSame(log(10 ** 2, 2), $match->getEntropy());
+        $password = '中华人民共和国';
 
-        $password = 'aB1*';
-        $match = new Bruteforce($password, 0, 3, $password);
-        $this->assertSame(95, $match->getCardinality());
-        $this->assertSame(log(95 ** 4, 2), $match->getEntropy());
+        $this->checkMatches(
+            "matches entire string with multibyte characters",
+            Bruteforce::match($password),
+            'bruteforce',
+            [$password],
+            [[0, 6]], // should be 0, 6 and not 0, 20
+            []
+        );
+    }
+
+    public function testGuessesMax()
+    {
+        $token = str_repeat('a', 1000);
+        $match = new Bruteforce($token, 0, 999, $token);
+        $this->assertNotEquals(INF, $match->getGuesses(), "long string doesn't return infinite guesses");
+    }
+
+    public function testGuessesMultibyteCharacter()
+    {
+        $token = '🙂'; // smiley face emoji
+        $match = new Bruteforce($token, 0, 1, $token);
+        $this->assertEquals(11, $match->getGuesses(), "multibyte character treated as one character");
     }
 }

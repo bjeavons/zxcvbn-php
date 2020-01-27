@@ -8,13 +8,16 @@ php:
   - hhvm
 
 matrix:
-    fast_finish: true
-    allow_failures:
-        - php: 5.6
-        - php: hhvm
+  fast_finish: true
+  allow_failures:
+    - php: hhvm
 
 before_script:
   - composer update --prefer-dist
 
+script:
+  - ./vendor/bin/phpcs .
+  - ./vendor/bin/phpunit
+
 after_script:
-  - php vendor/bin/coveralls -v
+  - php vendor/bin/php-coveralls -v

@@ -2,61 +2,58 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 class DictionaryMatch extends Match
 {
-    /**
-     * @var
-     */
+
+    public $pattern = 'dictionary';
+
+    /** @var string The name of the dictionary that the token was found in. */
     public $dictionaryName;
 
-    /**
-     * @var
-     */
+    /** @var int The rank of the token in the dictionary. */
     public $rank;
 
-    /**
-     * @var
-     */
+    /** @var string The word that was matched from the dictionary. */
     public $matchedWord;
 
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
-     */
-    public function __construct($password, $begin, $end, $token, $params = [])
-    {
-        parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'dictionary';
-        if (!empty($params)) {
-            $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
-            $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
-            $this->rank = isset($params['rank']) ? $params['rank'] : null;
-        }
-    }
+    /** @var bool Whether or not the matched word was reversed in the token. */
+    public $reversed = false;
+
+    /** @var bool Whether or not the token contained l33t substitutions. */
+    public $l33t = false;
+
+    /** @var array A cache of the frequency_lists json file */
+    protected static $rankedDictionaries = [];
+
+    const START_UPPER = "/^[A-Z][^A-Z]+$/u";
+    const END_UPPER = "/^[^A-Z]+[A-Z]$/u";
+    const ALL_UPPER = "/^[^a-z]+$/u";
+    const ALL_LOWER = "/^[^A-Z]+$/u";
 
     /**
      * Match occurences of dictionary words in password.
      *
-     * @copydoc Match::match()
-     *
-     * @param       $password
+     * @param string $password
      * @param array $userInputs
-     *
-     * @return array
+     * @param array $rankedDictionaries
+     * @return DictionaryMatch[]
      */
-    public static function match($password, array $userInputs = [])
+    public static function match($password, array $userInputs = [], $rankedDictionaries = [])
     {
         $matches = [];
-        $dicts = static::getRankedDictionaries();
+        if ($rankedDictionaries) {
+            $dicts = $rankedDictionaries;
+        } else {
+            $dicts = static::getRankedDictionaries();
+        }
+
         if (!empty($userInputs)) {
             $dicts['user_inputs'] = [];
             foreach ($userInputs as $rank => $input) {
-                $input_lower = strtolower($input);
-                $rank = is_numeric($rank) ? $rank : count($dicts['user_inputs']);
-                $dicts['user_inputs'][$input_lower] = max(1, $rank);
+                $input_lower = mb_strtolower($input);
+                $dicts['user_inputs'][$input_lower] = $rank + 1; // rank starts at 1, not 0
             }
         }
         foreach ($dicts as $name => $dict) {
@@ -66,90 +63,103 @@ class DictionaryMatch extends Match
                 $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
-
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
         return $matches;
     }
 
     /**
-     * @return float
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [dictionary_name, matched_word, rank].
      */
-    public function getEntropy()
+    public function __construct($password, $begin, $end, $token, array $params = [])
     {
-        return $this->log($this->rank) + $this->uppercaseEntropy();
+        parent::__construct($password, $begin, $end, $token);
+        if (!empty($params)) {
+            $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
+            $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
+            $this->rank = isset($params['rank']) ? $params['rank'] : null;
+        }
+    }
+
+    public function getFeedback($isSoleMatch)
+    {
+        $startUpper = '/^[A-Z][^A-Z]+$/u';
+        $allUpper = '/^[^a-z]+$/u';
+
+        $feedback = [
+            'warning' => $this->getFeedbackWarning($isSoleMatch),
+            'suggestions' => []
+        ];
+
+        if (preg_match($startUpper, $this->token)) {
+            $feedback['suggestions'][] = "Capitalization doesn't help very much";
+        } elseif (preg_match($allUpper, $this->token) && mb_strtolower($this->token) != $this->token) {
+            $feedback['suggestions'][] = "All-uppercase is almost as easy to guess as all-lowercase";
+        }
+
+        return $feedback;
+    }
+
+    public function getFeedbackWarning($isSoleMatch)
+    {
+        switch ($this->dictionaryName) {
+            case 'passwords':
+                if ($isSoleMatch && !$this->l33t && !$this->reversed) {
+                    if ($this->rank <= 10) {
+                        return 'This is a top-10 common password';
+                    } elseif ($this->rank <= 100) {
+                        return 'This is a top-100 common password';
+                    } else {
+                        return 'This is a very common password';
+                    }
+                } elseif ($this->getGuessesLog10() <= 4) {
+                    return 'This is similar to a commonly used password';
+                }
+                break;
+            case 'english_wikipedia':
+                if ($isSoleMatch) {
+                    return 'A word by itself is easy to guess';
+                }
+                break;
+            case 'surnames':
+            case 'male_names':
+            case 'female_names':
+                if ($isSoleMatch) {
+                    return 'Names and surnames by themselves are easy to guess';
+                } else {
+                    return 'Common names and surnames are easy to guess';
+                }
+        }
+
+        return '';
     }
 
     /**
-     * @return float
-     */
-    protected function uppercaseEntropy()
-    {
-        $token = $this->token;
-        // Return if token is all lowercase.
-        if ($token === strtolower($token)) {
-            return 0;
-        }
-
-        $startUpper = '/^[A-Z][^A-Z]+$/';
-        $endUpper = '/^[^A-Z]+[A-Z]$/';
-        $allUpper = '/^[A-Z]+$/';
-        // a capitalized word is the most common capitalization scheme, so it only doubles the search space
-        // (uncapitalized + capitalized): 1 extra bit of entropy. allcaps and end-capitalized are common enough to
-        // underestimate as 1 extra bit to be safe.
-        foreach ([$startUpper, $endUpper, $allUpper] as $regex) {
-            if (preg_match($regex, $token)) {
-                return 1;
-            }
-        }
-
-        // Otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters with U uppercase letters or
-        // less. Or, if there's more uppercase than lower (for e.g. PASSwORD), the number of ways to lowercase U+L letters
-        // with L lowercase letters or less.
-        $uLen = 0;
-        $lLen = 0;
-
-        foreach (str_split($token) as $x) {
-            $ord = ord($x);
-
-            if ($this->isUpper($ord)) {
-                ++$uLen;
-            }
-            if ($this->isLower($ord)) {
-                ++$lLen;
-            }
-        }
-
-        $possibilities = 0;
-        foreach (range(0, min($uLen, $lLen) + 1) as $i) {
-            $possibilities += $this->binom($uLen + $lLen, $i);
-        }
-
-        return $this->log($possibilities);
-    }
-
-    /**
-     * Match password in a dictionary.
+     * Attempts to find the provided password (as well as all possible substrings) in a dictionary.
      *
      * @param string $password
-     * @param array  $dict
-     *
+     * @param array $dict
      * @return array
      */
     protected static function dictionaryMatch($password, $dict)
     {
         $result = [];
-        $length = strlen($password);
+        $length = mb_strlen($password);
 
-        $pw_lower = strtolower($password);
+        $pw_lower = mb_strtolower($password);
 
         foreach (range(0, $length - 1) as $i) {
             foreach (range($i, $length - 1) as $j) {
-                $word = substr($pw_lower, $i, $j - $i + 1);
+                $word = mb_substr($pw_lower, $i, $j - $i + 1);
 
                 if (isset($dict[$word])) {
                     $result[] = [
                         'begin' => $i,
                         'end' => $j,
-                        'token' => substr($password, $i, $j - $i + 1),
+                        'token' => mb_substr($password, $i, $j - $i + 1),
                         'matched_word' => $word,
                         'rank' => $dict[$word],
                     ];
@@ -167,8 +177,60 @@ class DictionaryMatch extends Match
      */
     protected static function getRankedDictionaries()
     {
-        $data = file_get_contents(__DIR__.'/ranked_frequency_lists.json');
+        if (empty(self::$rankedDictionaries)) {
+            $json = file_get_contents(dirname(__FILE__) . '/frequency_lists.json');
+            $data = json_decode($json, true);
 
-        return json_decode($data, true);
+            $rankedLists = [];
+            foreach ($data as $name => $words) {
+                $rankedLists[$name] = array_combine($words, range(1, count($words)));
+            }
+            self::$rankedDictionaries = $rankedLists;
+        }
+
+        return self::$rankedDictionaries;
+    }
+
+    /**
+     * @return integer
+     */
+    protected function getRawGuesses()
+    {
+        $guesses = $this->rank;
+        $guesses *= $this->getUppercaseVariations();
+
+        return $guesses;
+    }
+
+    /**
+     * @return integer
+     */
+    protected function getUppercaseVariations()
+    {
+        $word = $this->token;
+        if (preg_match(self::ALL_LOWER, $word) || mb_strtolower($word) === $word) {
+            return 1;
+        }
+
+        // a capitalized word is the most common capitalization scheme,
+        // so it only doubles the search space (uncapitalized + capitalized).
+        // allcaps and end-capitalized are common enough too, underestimate as 2x factor to be safe.
+        foreach (array(self::START_UPPER, self::END_UPPER, self::ALL_UPPER) as $regex) {
+            if (preg_match($regex, $word)) {
+                return 2;
+            }
+        }
+
+        // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
+        // with U uppercase letters or less. or, if there's more uppercase than lower (for eg. PASSwORD),
+        // the number of ways to lowercase U+L letters with L lowercase letters or less.
+        $uppercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_upper'));
+        $lowercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_lower'));
+
+        $variations = 0;
+        for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {
+            $variations += static::binom($uppercase + $lowercase, $i);
+        }
+        return $variations;
     }
 }

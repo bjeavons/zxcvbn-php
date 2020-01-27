@@ -2,9 +2,10 @@ Zxcvbn-PHP is a password strength estimator using pattern matching and minimum e
 
 >zxcvbn attempts to give sound password advice through pattern matching and conservative entropy calculations. It finds 10k common passwords, common American names and surnames, common English words, and common patterns like dates, repeats (aaa), sequences (abcd), and QWERTY patterns.
 
-[![Build Status](https://travis-ci.org/bjeavons/zxcvbn-php.png?branch=master)](https://travis-ci.org/bjeavons/zxcvbn-php)
-[![Coverage Status](https://coveralls.io/repos/bjeavons/zxcvbn-php/badge.png?branch=master)](https://coveralls.io/r/bjeavons/zxcvbn-php?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/bjeavons/zxcvbn-php/v/stable.png)](https://packagist.org/packages/bjeavons/zxcvbn-php)
+[![Build Status](https://travis-ci.org/mkopinsky/zxcvbn-php.png?branch=master)](https://travis-ci.org/mkopinsky/zxcvbn-php)
+[![Coverage Status](https://coveralls.io/repos/github/mkopinsky/zxcvbn-php/badge.svg?branch=master)](https://coveralls.io/github/mkopinsky/zxcvbn-php?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/mkopinsky/zxcvbn-php/v/stable)](https://packagist.org/packages/mkopinsky/zxcvbn-php)
+[![License](https://poser.pugx.org/mkopinsky/zxcvbn-php/license)](https://packagist.org/packages/mkopinsky/zxcvbn-php)
 
 ## Installation
 
@@ -13,7 +14,7 @@ The library can be installed with [Composer](http://getcomposer.org) by adding i
 ```json
 {
     "require": {
-        "bjeavons/zxcvbn-php": "^0.4"
+        "mkopinsky/zxcvbn-php": "^4.4.2"
     }
 }
 ```
@@ -46,5 +47,9 @@ echo $strength['score'];
 ```
 
 ### Acknowledgements
-Thanks to @lowe for the original [Javascript Zxcvbn](https://github.com/lowe/zxcvbn)
-and [@Dreyer's port](https://github.com/Dreyer/php-zxcvbn) for reference.
+Thanks to:
+* @lowe for the original [Javascript Zxcvbn](https://github.com/lowe/zxcvbn)
+* [@Dreyer's port](https://github.com/Dreyer/php-zxcvbn) for reference for initial implementation
+* [bjeavon's implementation](https://github.com/bjeavons/zxcvbn-php) for building out zxcvbn-php as a solid initial port of the Dropbox library with composer support and unit tests
+
+

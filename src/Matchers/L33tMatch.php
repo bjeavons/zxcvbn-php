@@ -2,151 +2,121 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Matcher;
+
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
+ * @package ZxcvbnPhp\Matchers
  */
 class L33tMatch extends DictionaryMatch
 {
-    /**
-     * @var
-     */
-    public $sub;
 
-    /**
-     * @var
-     */
+    /** @var array An array of substitutions made to get from the token to the dictionary word. */
+    public $sub = [];
+
+    /** @var string A user-readable string that shows which substitutions were detected. */
     public $subDisplay;
 
-    /**
-     * @var
-     */
-    public $l33t;
+    /** @var bool Whether or not the token contained l33t substitutions. */
+    public $l33t = true;
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * Match occurences of l33t words in password to dictionary words.
+     *
+     * @param string $password
+     * @param array $userInputs
+     * @param array $rankedDictionaries
+     * @return L33tMatch[]
+     */
+    public static function match($password, array $userInputs = [], $rankedDictionaries = [])
+    {
+        // Translate l33t password and dictionary match the translated password.
+        $maps = array_filter(static::getL33tSubstitutions(static::getL33tSubtable($password)));
+        if (empty($maps)) {
+            return [];
+        }
+
+        $matches = [];
+        if (!$rankedDictionaries) {
+            $rankedDictionaries = static::getRankedDictionaries();
+        }
+
+        foreach ($maps as $map) {
+            $translatedWord = static::translate($password, $map);
+
+            /** @var L33tMatch[] $results */
+            $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
+            foreach ($results as $match) {
+                $token = mb_substr($password, $match->begin, $match->end - $match->begin + 1);
+
+                # only return the matches that contain an actual substitution
+                if (mb_strtolower($token) === $match->matchedWord) {
+                    continue;
+                }
+
+                # filter single-character l33t matches to reduce noise.
+                # otherwise '1' matches 'i', '4' matches 'a', both very common English words
+                # with low dictionary rank.
+                if (mb_strlen($token) === 1) {
+                    continue;
+                }
+
+                $display = [];
+                foreach ($map as $i => $t) {
+                    if (mb_strpos($token, (string)$i) !== false) {
+                        $match->sub[$i] = $t;
+                        $display[] = "$i -> $t";
+                    }
+                }
+                $match->token = $token;
+                $match->subDisplay = implode(', ', $display);
+
+                $matches[] = $match;
+            }
+        }
+
+        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
+        return $matches;
+    }
+
+    /**
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [sub, sub_display].
      */
     public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token, $params);
-        $this->l33t = true;
         if (!empty($params)) {
             $this->sub = isset($params['sub']) ? $params['sub'] : null;
             $this->subDisplay = isset($params['sub_display']) ? $params['sub_display'] : null;
         }
     }
 
-    /**
-     * Match occurences of l33t words in password to dictionary words.
-     *
-     * @copydoc Match::match()
-     *
-     * @param       $password
-     * @param array $userInputs
-     *
-     * @return array
-     */
-    public static function match($password, array $userInputs = [])
+    public function getFeedback($isSoleMatch)
     {
-        // Translate l33t password and dictionary match the translated password.
-        $map = static::getSubstitutions($password);
-        $indexSubs = array_filter($map);
-        if (empty($indexSubs)) {
-            return [];
-        }
-        $translatedWord = static::translate($password, $map);
+        $feedback = parent::getFeedback($isSoleMatch);
 
-        $matches = [];
-        $dicts = static::getRankedDictionaries();
-        foreach ($dicts as $name => $dict) {
-            $results = static::dictionaryMatch($translatedWord, $dict);
-            foreach ($results as $result) {
-                // Set substituted elements.
-                $result['sub'] = [];
-                $result['sub_display'] = [];
-                foreach ($indexSubs as $i => $t) {
-                    $result['sub'][$password[$i]] = $t;
-                    $result['sub_display'][] = "{$password[$i]} -> ${t}";
-                }
-                $result['sub_display'] = implode(', ', $result['sub_display']);
-                $result['dictionary_name'] = $name;
-                // Replace translated token with orignal password token.
-                $token = substr($password, $result['begin'], $result['end'] - $result['begin'] + 1);
-                $matches[] = new static($password, $result['begin'], $result['end'], $token, $result);
-            }
-        }
+        $feedback['suggestions'][] = "Predictable substitutions like '@' instead of 'a' don't help very much";
 
-        return $matches;
-    }
-
-    /**
-     * @return float
-     */
-    public function getEntropy()
-    {
-        return parent::getEntropy() + $this->l33tEntropy();
-    }
-
-    /**
-     * @return float
-     */
-    protected function l33tEntropy()
-    {
-        $possibilities = 0;
-        foreach ($this->sub as $subbed => $unsubbed) {
-            $sLen = 0;
-            $uLen = 0;
-            // Count occurences of substituted and unsubstituted characters in the token.
-            foreach (str_split($this->token) as $char) {
-                if ($char === (string) $subbed) {
-                    ++$sLen;
-                }
-                if ($char === (string) $unsubbed) {
-                    ++$uLen;
-                }
-            }
-            foreach (range(0, min($uLen, $sLen)) as $i) {
-                $possibilities += $this->binom($uLen + $sLen, $i);
-            }
-        }
-
-        // corner: return 1 bit for single-letter subs, like 4pple -> apple, instead of 0.
-        if ($possibilities <= 1) {
-            return 1;
-        }
-
-        return $this->log($possibilities);
+        return $feedback;
     }
 
     /**
      * @param string $string
      * @param array  $map
-     *
      * @return string
      */
     protected static function translate($string, $map)
     {
-        $out = '';
-        foreach (range(0, strlen($string) - 1) as $i) {
-            $out .= !empty($map[$i]) ? $map[$i] : $string[$i];
-        }
-
-        return $out;
+        return str_replace(array_keys($map), array_values($map), $string);
     }
 
-    /**
-     * @param string $password
-     *
-     * @return array
-     */
-    protected static function getSubstitutions($password)
+    protected static function getL33tTable()
     {
-        $map = [];
-
-        $l33t = [
+        return [
             'a' => ['4', '@'],
             'b' => ['8'],
             'c' => ['(', '{', '[', '<'],
@@ -160,39 +130,110 @@ class L33tMatch extends DictionaryMatch
             'x' => ['%'],
             'z' => ['2'],
         ];
-        // Simplified l33t table to reduce duplicates.
-        $l33t = [
-            'a' => ['4', '@'],
-            'b' => ['8'],
-            'c' => ['(', '{', '[', '<'],
-            'e' => ['3'],
-            'g' => ['6', '9'],
-            'i' => ['1', '!'],
-            'l' => ['|', '7'],
-            'o' => ['0'],
-            's' => ['$', '5'],
-            't' => ['+', '7'],
-            'x' => ['%'],
-            'z' => ['2'],
-        ];
+    }
 
-        /*$chars = array_unique(str_split($password));
-        foreach ($l33t as $letter => $subs) {
-            $relevent_subs = array_intersect($subs, $chars);
-            if (!empty($relevent_subs)) {
-                $map[] = $relevent_subs;
-            }
-        }*/
+    protected static function getL33tSubtable($password)
+    {
+        // The preg_split call below is a multibyte compatible version of str_split
+        $passwordChars = array_unique(preg_split('//u', $password, null, PREG_SPLIT_NO_EMPTY));
 
-        foreach (range(0, strlen($password) - 1) as $i) {
-            $map[$i] = null;
-            foreach ($l33t as $char => $subs) {
-                if (in_array($password[$i], $subs, true)) {
-                    $map[$i] = $char;
+        $subTable = [];
+
+        $table = static::getL33tTable();
+        foreach ($table as $letter => $substitutions) {
+            foreach ($substitutions as $sub) {
+                if (in_array($sub, $passwordChars)) {
+                    $subTable[$letter][] = $sub;
                 }
             }
         }
 
-        return $map;
+        return $subTable;
+    }
+
+    protected static function getL33tSubstitutions($subtable)
+    {
+        $keys = array_keys($subtable);
+        $substitutions = self::substitutionTableHelper($subtable, $keys, [[]]);
+
+        // Converts the substitution arrays from [ [a, b], [c, d] ] to [ a => b, c => d ]
+        $substitutions = array_map(function ($subArray) {
+            return array_combine(array_column($subArray, 0), array_column($subArray, 1));
+        }, $substitutions);
+
+        return $substitutions;
+    }
+
+    protected static function substitutionTableHelper($table, $keys, $subs)
+    {
+        if (empty($keys)) {
+            return $subs;
+        }
+
+        $firstKey = array_shift($keys);
+        $otherKeys = $keys;
+        $nextSubs = [];
+
+        foreach ($table[$firstKey] as $l33tCharacter) {
+            foreach ($subs as $sub) {
+                $dupL33tIndex = false;
+                foreach ($sub as $index => $char) {
+                    if ($char[0] === $l33tCharacter) {
+                        $dupL33tIndex = $index;
+                        break;
+                    }
+                }
+
+                if ($dupL33tIndex === false) {
+                    $subExtension = $sub;
+                    $subExtension[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $subExtension;
+                } else {
+                    $subAlternative = $sub;
+                    array_splice($subAlternative, $dupL33tIndex, 1);
+                    $subAlternative[] = [$l33tCharacter, $firstKey];
+                    $nextSubs[] = $sub;
+                    $nextSubs[] = $subAlternative;
+                }
+            }
+        }
+
+        $nextSubs = array_unique($nextSubs, SORT_REGULAR);
+        return self::substitutionTableHelper($table, $otherKeys, $nextSubs);
+    }
+
+    protected function getRawGuesses()
+    {
+        return parent::getRawGuesses() * $this->getL33tVariations();
+    }
+
+    protected function getL33tVariations()
+    {
+        $variations = 1;
+
+        foreach ($this->sub as $substitution => $letter) {
+            $characters = preg_split('//u', mb_strtolower($this->token), null, PREG_SPLIT_NO_EMPTY);
+
+            $subbed = count(array_filter($characters, function ($character) use ($substitution) {
+                return (string)$character === (string)$substitution;
+            }));
+            $unsubbed = count(array_filter($characters, function ($character) use ($letter) {
+                return (string)$character === (string)$letter;
+            }));
+
+            if ($subbed === 0 || $unsubbed === 0) {
+                // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
+                // treat that as doubling the space (attacker needs to try fully subbed chars in addition to
+                // unsubbed.)
+                $variations *= 2;
+            } else {
+                $possibilities = 0;
+                for ($i = 1; $i <= min($subbed, $unsubbed); $i++) {
+                    $possibilities += static::binom($subbed + $unsubbed, $i);
+                }
+                $variations *= $possibilities;
+            }
+        }
+        return $variations;
     }
 }

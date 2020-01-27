@@ -4,36 +4,106 @@ namespace ZxcvbnPhp\Matchers;
 
 class SequenceMatch extends Match
 {
-    const LOWER = 'abcdefghijklmnopqrstuvwxyz';
-    const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const DIGITS = '0123456789';
+    const MAX_DELTA = 5;
 
-    /**
-     * @var
-     */
+    public $pattern = 'sequence';
+
+    /** @var string The name of the detected sequence. */
     public $sequenceName;
 
-    /**
-     * @var
-     */
+    /** @var int The number of characters in the complete sequence space. */
     public $sequenceSpace;
 
-    /**
-     * @var
-     */
+    /** @var bool True if the sequence is ascending, and false if it is descending. */
     public $ascending;
 
     /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     * @param array $params
+     * Match sequences of three or more characters.
+     *
+     * @param string $password
+     * @param array $userInputs
+     * @return SequenceMatch[]
+     */
+    public static function match($password, array $userInputs = [])
+    {
+        $matches = [];
+        $passwordLength = mb_strlen($password);
+
+        if ($passwordLength === 1) {
+            return [];
+        }
+
+        $begin = 0;
+        $lastDelta = null;
+
+        for ($index = 1; $index < $passwordLength; $index++) {
+            $delta = mb_ord(mb_substr($password, $index, 1)) - mb_ord(mb_substr($password, $index - 1, 1));
+            if ($lastDelta === null) {
+                $lastDelta = $delta;
+            }
+            if ($lastDelta === $delta) {
+                continue;
+            }
+
+            static::findSequenceMatch($password, $begin, $index - 1, $lastDelta, $matches);
+            $begin = $index - 1;
+            $lastDelta = $delta;
+        }
+
+        static::findSequenceMatch($password, $begin, $passwordLength - 1, $lastDelta, $matches);
+
+        return $matches;
+    }
+
+    public static function findSequenceMatch($password, $begin, $end, $delta, &$matches)
+    {
+        if ($end - $begin > 1 || abs($delta) === 1) {
+            if (abs($delta) > 0 && abs($delta) <= self::MAX_DELTA) {
+                $token = mb_substr($password, $begin, $end - $begin + 1);
+                if (preg_match('/^[a-z]+$/u', $token)) {
+                    $sequenceName = 'lower';
+                    $sequenceSpace = 26;
+                } elseif (preg_match('/^[A-Z]+$/u', $token)) {
+                    $sequenceName = 'upper';
+                    $sequenceSpace = 26;
+                } elseif (preg_match('/^\d+$/u', $token)) {
+                    $sequenceName = 'digits';
+                    $sequenceSpace = 10;
+                } else {
+                    $sequenceName = 'unicode';
+                    $sequenceSpace = 26;
+                }
+
+                $matches[] = new static($password, $begin, $end, $token, [
+                    'sequenceName' => $sequenceName,
+                    'sequenceSpace' => $sequenceSpace,
+                    'ascending' => $delta > 0,
+                ]);
+                return;
+            }
+        }
+    }
+
+    public function getFeedback($isSoleMatch)
+    {
+        return [
+            'warning' => "Sequences like abc or 6543 are easy to guess",
+            'suggestions' => [
+                'Avoid sequences'
+            ]
+        ];
+    }
+
+    /**
+     * @param string $password
+     * @param int $begin
+     * @param int $end
+     * @param string $token
+     * @param array $params An array with keys: [sequenceName, sequenceSpace, ascending].
      */
     public function __construct($password, $begin, $end, $token, $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
-        $this->pattern = 'sequence';
         if (!empty($params)) {
             $this->sequenceName = isset($params['sequenceName']) ? $params['sequenceName'] : null;
             $this->sequenceSpace = isset($params['sequenceSpace']) ? $params['sequenceSpace'] : null;
@@ -41,167 +111,27 @@ class SequenceMatch extends Match
         }
     }
 
-    /**
-     * Match sequences of three or more characters.
-     *
-     * @copydoc Match::match()
-     *
-     * @param       $password
-     * @param array $userInputs
-     *
-     * @return array
-     */
-    public static function match($password, array $userInputs = [])
+    protected function getRawGuesses()
     {
-        $matches = [];
-        $passwordLength = strlen($password);
+        $firstCharacter = mb_substr($this->token, 0, 1);
+        $guesses = 0;
 
-        $sequences = self::LOWER.self::UPPER.self::DIGITS;
-        $revSequences = strrev($sequences);
-
-        for ($i = 0; $i < $passwordLength; ++$i) {
-            $pattern = false;
-            $j = $i + 2;
-            // Check for sequence sizes of 3 or more.
-            if ($j < $passwordLength) {
-                $pattern = substr($password, $i, 3);
-            }
-            // Find beginning of pattern and then extract full sequences intersection.
-            if ($pattern && false !== ($pos = strpos($sequences, $pattern))) {
-                // Match only remaining password characters.
-                $remainder = substr($password, $j + 1);
-                $pattern .= static::intersect($sequences, $remainder, $pos + 3);
-                $params = [
-                    'ascending' => true,
-                    'sequenceName' => static::getSequenceName($pos),
-                    'sequenceSpace' => static::getSequenceSpace($pos),
-                ];
-                $matches[] = new static($password, $i, $i + strlen($pattern) - 1, $pattern, $params);
-                // Skip intersecting characters on next loop.
-                $i += strlen($pattern) - 1;
-            }
-            // Search the reverse sequence for pattern.
-            elseif ($pattern && false !== ($pos = strpos($revSequences, $pattern))) {
-                $remainder = substr($password, $j + 1);
-                $pattern .= static::intersect($revSequences, $remainder, $pos + 3);
-                $params = [
-                    'ascending' => false,
-                    'sequenceName' => static::getSequenceName($pos),
-                    'sequenceSpace' => static::getSequenceSpace($pos),
-                ];
-                $matches[] = new static($password, $i, $i + strlen($pattern) - 1, $pattern, $params);
-                $i += strlen($pattern) - 1;
-            }
-        }
-
-        return $matches;
-    }
-
-    /**
-     * @copydoc Match::getEntropy()
-     */
-    public function getEntropy()
-    {
-        $char = $this->token[0];
-        if ('a' === $char || '1' === $char) {
-            $entropy = 1;
+        if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
+            $guesses += 4;  // lower guesses for obvious starting points
+        } elseif (ctype_digit($firstCharacter)) {
+            $guesses += 10; // digits
         } else {
-            $ord = ord($char);
-
-            if ($this->isDigit($ord)) {
-                $entropy = $this->log(10);
-            } elseif ($this->isLower($ord)) {
-                $entropy = $this->log(26);
-            } else {
-                $entropy = $this->log(26) + 1; // Extra bit for upper.
-            }
+            // could give a higher base for uppercase,
+            // assigning 26 to both upper and lower sequences is more conservative
+            $guesses += 26;
         }
 
-        if (empty($this->ascending)) {
-            ++$entropy; // Extra bit for descending instead of ascending
+        if (!$this->ascending) {
+            // need to try a descending sequence in addition to every ascending sequence ->
+            // 2x guesses
+            $guesses *= 2;
         }
 
-        return $entropy + $this->log(strlen($this->token));
-    }
-
-    /**
-     * Find sub-string intersection in a string.
-     *
-     * @param string $string
-     * @param string $subString
-     * @param int    $start
-     *
-     * @return string
-     */
-    protected static function intersect($string, $subString, $start)
-    {
-        $cut = str_split(substr($string, $start, strlen($subString)));
-        $comp = str_split($subString);
-        foreach ($cut as $i => $c) {
-            if ($comp[$i] === $c) {
-                $intersect[] = $c;
-            } else {
-                break; // Stop loop since intersection ends.
-            }
-        }
-        if (!empty($intersect)) {
-            return implode('', $intersect);
-        }
-
-        return '';
-    }
-
-    /**
-     * @param $pos
-     * @param bool $reverse
-     *
-     * @return int
-     */
-    protected static function getSequenceSpace($pos, $reverse = false)
-    {
-        $name = static::getSequenceName($pos, $reverse);
-        switch ($name) {
-            case 'lower':
-                return strlen(self::LOWER);
-            case 'upper':
-                return strlen(self::UPPER);
-            case 'digits':
-                return strlen(self::DIGITS);
-        }
-    }
-
-    /**
-     * Name of sequence a sequences position belongs to.
-     *
-     * @param int  $pos
-     * @param bool $reverse
-     *
-     * @return string
-     */
-    protected static function getSequenceName($pos, $reverse = false)
-    {
-        $sequences = self::LOWER.self::UPPER.self::DIGITS;
-        $end = strlen($sequences);
-        if (!$reverse && $pos < strlen(self::LOWER)) {
-            return 'lower';
-        }
-
-        if (!$reverse && $pos <= $end - strlen(self::DIGITS)) {
-            return 'upper';
-        }
-
-        if (!$reverse) {
-            return 'digits';
-        }
-
-        if ($pos < strlen(self::DIGITS)) {
-            return 'digits';
-        }
-
-        if ($pos <= $end - strlen(self::LOWER)) {
-            return 'upper';
-        }
-
-        return 'lower';
+        return $guesses * mb_strlen($this->token);
     }
 }

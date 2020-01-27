@@ -17,10 +17,12 @@ interface MatchInterface
     public static function match($password, array $userInputs = []);
 
     /**
-     * Get entropy for this match's token.
-     *
-     * @return float
-     *               Entropy of the matched token in the password
+     * @return integer
      */
-    public function getEntropy();
+    public function getGuesses();
+
+    /**
+     * @return float
+     */
+    public function getGuessesLog10();
 }

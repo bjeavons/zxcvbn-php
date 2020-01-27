@@ -1,3 +1,2 @@
 service_name: travis-ci
-src_dir: src
 coverage_clover: build/logs/clover.xml
