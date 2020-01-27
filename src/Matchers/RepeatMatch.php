@@ -7,9 +7,9 @@ use ZxcvbnPhp\Scorer;
 
 class RepeatMatch extends Match
 {
-    const GREEDY_MATCH = '/(.+)\1+/u';
-    const LAZY_MATCH = '/(.+?)\1+/u';
-    const ANCHORED_LAZY_MATCH = '/^(.+?)\1+$/u';
+    public const GREEDY_MATCH = '/(.+)\1+/u';
+    public const LAZY_MATCH = '/(.+?)\1+/u';
+    public const ANCHORED_LAZY_MATCH = '/^(.+?)\1+$/u';
 
     public $pattern = 'repeat';
 

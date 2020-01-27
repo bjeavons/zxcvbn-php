@@ -27,10 +27,10 @@ class DictionaryMatch extends Match
     /** @var array A cache of the frequency_lists json file */
     protected static $rankedDictionaries = [];
 
-    const START_UPPER = "/^[A-Z][^A-Z]+$/u";
-    const END_UPPER = "/^[^A-Z]+[A-Z]$/u";
-    const ALL_UPPER = "/^[^a-z]+$/u";
-    const ALL_LOWER = "/^[^A-Z]+$/u";
+    protected const START_UPPER = "/^[A-Z][^A-Z]+$/u";
+    protected const END_UPPER = "/^[^A-Z]+[A-Z]$/u";
+    protected const ALL_UPPER = "/^[^a-z]+$/u";
+    protected const ALL_LOWER = "/^[^A-Z]+$/u";
 
     /**
      * Match occurences of dictionary words in password.
