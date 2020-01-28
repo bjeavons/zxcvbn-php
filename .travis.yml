@@ -1,15 +1,18 @@
 language: php
 
 php:
+  - 7.4
   - 7.3
   - 7.2
   - 7.1
   - hhvm
+  - nightly
 
 matrix:
   fast_finish: true
   allow_failures:
     - php: hhvm
+    - php: nightly
 
 before_script:
   - composer update --prefer-dist
