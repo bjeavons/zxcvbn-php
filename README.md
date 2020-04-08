@@ -41,14 +41,22 @@ $userData = [
 ];
 
 $zxcvbn = new Zxcvbn();
-$strength = $zxcvbn->passwordStrength('password', $userData);
-echo $strength['score'];
-// will print 0
+$weak = $zxcvbn->passwordStrength('password', $userData);
+echo $weak['score']; // will print 0
 
-$strength = $zxcvbn->passwordStrength('correct horse battery staple');
-echo $strength['score'];
-// will print 4
+$strong = $zxcvbn->passwordStrength('correct horse battery staple');
+echo $strong['score']; // will print 4
+
+echo $weak['feedback']['warning']; // will print user-facing feedback on the password, set only when score <= 2
+// $weak['feedback']['suggestions'] may contain user-facing suggestions to improve the score
 ```
+
+Scores are integers from 0 to 4:
+* 0 means the password is extremely guessable (within 10^3 guesses), dictionary words like 'password' or 'mother' score a 0
+* 1 is still very guessable (guesses < 10^6), an extra character on a dictionary word can score a 1
+* 2 is somewhat guessable (guesses < 10^8), provides some protection from unthrottled online attacks
+* 3 is safely unguessable (guesses < 10^10), offers moderate protection from offline slow-hash scenario
+* 4 is very unguessable (guesses >= 10^10) and provides strong protection from offline slow-hash scenario
 
 ### Acknowledgements
 Thanks to:
