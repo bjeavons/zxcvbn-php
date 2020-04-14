@@ -115,7 +115,7 @@ class FeedbackTest extends TestCase
         ]);
         $feedback = $this->feedback->getFeedback(0, [$match]);
 
-        $this->assertEquals('This is easy to guess based on the other inputs', $feedback['warning'], 'no warning for user input');
-        $this->assertNotEmpty($feedback['suggestions'], 'no suggestions for user intpu');
+        $this->assertEquals('This is similar to, or incorporates parts of, other input', $feedback['warning'], 'no warning for user input');
+        $this->assertNotEmpty($feedback['suggestions'], 'no suggestions for user input');
     }
 }

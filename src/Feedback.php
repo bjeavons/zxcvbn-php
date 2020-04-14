@@ -17,7 +17,10 @@ class Feedback
     /**
      * @param int $score
      * @param MatchInterface[] $sequence
-     * @return array
+     * @return array{
+     *      warning: string,
+     *      suggestions: string[]
+     * }
      */
     public function getFeedback(int $score, array $sequence): array
     {
