@@ -114,6 +114,8 @@ class DictionaryMatch extends BaseMatch
     public function getFeedbackWarning(bool $isSoleMatch): string
     {
         switch ($this->dictionaryName) {
+            case 'user_inputs':
+                return 'This is easy to guess based on the other inputs';
             case 'passwords':
                 if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
