@@ -20,7 +20,7 @@ class Feedback
     public function getFeedback($score, array $sequence)
     {
         // starting feedback
-        if (count($sequence) == 0) {
+        if (count($sequence) === 0) {
             return [
                 'warning' => '',
                 'suggestions' => [
@@ -46,7 +46,7 @@ class Feedback
             }
         }
 
-        $feedback = $longestMatch->getFeedback(count($sequence) == 1);
+        $feedback = $longestMatch->getFeedback(count($sequence) === 1);
         $extraFeedback = 'Add another word or two. Uncommon words are better.';
 
         array_unshift($feedback['suggestions'], $extraFeedback);

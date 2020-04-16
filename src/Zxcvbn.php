@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp;
 
+use ZxcvbnPhp\Matchers\MatchInterface;
+
 /**
  * The main entry point.
  *
@@ -35,6 +37,13 @@ class Zxcvbn
         $this->scorer = new \ZxcvbnPhp\Scorer();
         $this->timeEstimator = new \ZxcvbnPhp\TimeEstimator();
         $this->feedback = new \ZxcvbnPhp\Feedback();
+    }
+
+    public function addMatcher(string $className)
+    {
+        $this->matcher->addMatcher($className);
+
+        return $this;
     }
 
     /**
