@@ -2,8 +2,6 @@
 
 namespace ZxcvbnPhp;
 
-use ZxcvbnPhp\Matchers\MatchInterface;
-
 /**
  * The main entry point.
  *
