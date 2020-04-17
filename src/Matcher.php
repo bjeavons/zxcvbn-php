@@ -7,7 +7,7 @@ use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
 {
-    private $defaultMatchers = [
+    private const DEFAULT_MATCHERS = [
         Matchers\DateMatch::class,
         Matchers\DictionaryMatch::class,
         Matchers\ReverseDictionaryMatch::class,
@@ -50,7 +50,7 @@ class Matcher
 
     public function addMatcher(string $className)
     {
-        if (!in_array(MatchInterface::class, class_implements($className), true)) {
+        if (!is_a($className, MatchInterface::class, true)) {
             throw new \InvalidArgumentException(sprintf('Matcher class must implement %s', MatchInterface::class));
         }
 
@@ -105,6 +105,9 @@ class Matcher
      */
     protected function getMatchers()
     {
-        return array_merge($this->defaultMatchers, $this->additionalMatchers);
+        return array_merge(
+            self::DEFAULT_MATCHERS,
+            array_values($this->additionalMatchers)
+        );
     }
 }
