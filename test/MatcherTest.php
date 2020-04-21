@@ -65,7 +65,7 @@ class MatcherTest extends TestCase
         $this->assertEquals('wQbg', $matches[0]->token, "user input match has correct token");
     }
 
-    public function testAddMatcher_willThrowException()
+    public function testAddMatcherWillThrowException()
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -75,7 +75,7 @@ class MatcherTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testAddMatcher_willReturnSelf()
+    public function testAddMatcherWillReturnSelf()
     {
         $matcher = new Matcher();
         $result = $matcher->addMatcher(Bruteforce::class);

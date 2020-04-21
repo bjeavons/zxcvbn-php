@@ -132,7 +132,7 @@ class ZxcvbnTest extends TestCase
         $this->assertEquals('المفاتيح', $result['sequence'][0]->token, "user input match has correct token");
     }
 
-    public function testAddMatcher_willThrowException()
+    public function testAddMatcherWillThrowException()
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -141,7 +141,7 @@ class ZxcvbnTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function testAddMatcher_willReturnSelf()
+    public function testAddMatcherWillReturnSelf()
     {
         $result = $this->zxcvbn->addMatcher(Bruteforce::class);
 
