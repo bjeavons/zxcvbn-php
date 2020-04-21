@@ -6,7 +6,6 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
          bootstrap="test/config/bootstrap.php">
 
     <testsuites>
@@ -22,9 +21,9 @@
     </filter>
 
     <logging>
-      <log type="coverage-html" target="build/coverage" charset="UTF-8"/>
-      <log type="coverage-clover" target="build/logs/clover.xml" charset="UTF-8"/>
-      <log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false"/>
+      <log type="coverage-html" target="build/coverage"/>
+      <log type="coverage-clover" target="build/logs/clover.xml"/>
+      <log type="junit" target="build/logs/junit.xml"/>
     </logging>
 
 </phpunit>

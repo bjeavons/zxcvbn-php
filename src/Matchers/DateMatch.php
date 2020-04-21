@@ -14,7 +14,7 @@ class DateMatch extends Match
     public const MAX_YEAR = 2050;
 
     public const MIN_YEAR_SPACE = 20;
-    
+
     public $pattern = 'date';
 
     private static $DATE_SPLITS = [
@@ -369,13 +369,15 @@ class DateMatch extends Match
     {
         if ($year > 99) {
             return $year;
-        } elseif ($year > 50) {
+        }
+
+        if ($year > 50) {
             // 87 -> 1987
             return $year + 1900;
-        } else {
-            // 15 -> 2015
-            return $year + 2000;
         }
+
+        // 15 -> 2015
+        return $year + 2000;
     }
 
     /**

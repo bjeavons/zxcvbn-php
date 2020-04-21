@@ -4,6 +4,7 @@ namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
 
 /**
@@ -62,5 +63,23 @@ class MatcherTest extends TestCase
 
         $this->assertInstanceOf(DictionaryMatch::class, $matches[0], "user input match is correct class");
         $this->assertEquals('wQbg', $matches[0]->token, "user input match has correct token");
+    }
+
+    public function testAddMatcher_willThrowException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $matcher = new Matcher();
+        $matcher->addMatcher('invalid className');
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testAddMatcher_willReturnSelf()
+    {
+        $matcher = new Matcher();
+        $result = $matcher->addMatcher(Bruteforce::class);
+
+        $this->assertSame($matcher, $result);
     }
 }
