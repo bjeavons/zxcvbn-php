@@ -3,6 +3,7 @@
 namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
+use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
 use ZxcvbnPhp\Matchers\Match;
 use ZxcvbnPhp\Zxcvbn;
@@ -129,5 +130,21 @@ class ZxcvbnTest extends TestCase
 
         $this->assertInstanceOf(DictionaryMatch::class, $result['sequence'][0], "user input match is correct class");
         $this->assertEquals('المفاتيح', $result['sequence'][0]->token, "user input match has correct token");
+    }
+
+    public function testAddMatcherWillThrowException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->zxcvbn->addMatcher('invalid className');
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testAddMatcherWillReturnSelf()
+    {
+        $result = $this->zxcvbn->addMatcher(Bruteforce::class);
+
+        $this->assertSame($this->zxcvbn, $result);
     }
 }

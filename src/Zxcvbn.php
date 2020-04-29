@@ -37,6 +37,13 @@ class Zxcvbn
         $this->feedback = new \ZxcvbnPhp\Feedback();
     }
 
+    public function addMatcher(string $className)
+    {
+        $this->matcher->addMatcher($className);
+
+        return $this;
+    }
+
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
      *

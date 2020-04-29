@@ -38,20 +38,26 @@ class TimeEstimator
         if ($guesses < 1e3 + $DELTA) {
             # risky password: "too guessable"
             return 0;
-        } elseif ($guesses < 1e6 + $DELTA) {
+        }
+
+        if ($guesses < 1e6 + $DELTA) {
             # modest protection from throttled online attacks: "very guessable"
             return 1;
-        } elseif ($guesses < 1e8 + $DELTA) {
+        }
+
+        if ($guesses < 1e8 + $DELTA) {
             # modest protection from unthrottled online attacks: "somewhat guessable"
             return 2;
-        } elseif ($guesses < 1e10 + $DELTA) {
+        }
+
+        if ($guesses < 1e10 + $DELTA) {
             # modest protection from offline attacks: "safely unguessable"
             # assuming a salted, slow hash function like bcrypt, scrypt, PBKDF2, argon, etc
             return 3;
-        } else {
-            # strong protection from offline attacks under same scenario: "very unguessable"
-            return 4;
         }
+
+        # strong protection from offline attacks under same scenario: "very unguessable"
+        return 4;
     }
 
     protected function displayTime($seconds)
@@ -66,33 +72,45 @@ class TimeEstimator
 
             if ($seconds < 1) {
                 return [null, 'less than a second'];
-            } elseif ($seconds < $minute) {
+            }
+
+            if ($seconds < $minute) {
                 $base = round($seconds);
                 return [$base, "$base second"];
-            } elseif ($seconds < $hour) {
+            }
+
+            if ($seconds < $hour) {
                 $base = round($seconds / $minute);
                 return [$base, "$base minute"];
-            } elseif ($seconds < $day) {
+            }
+
+            if ($seconds < $day) {
                 $base = round($seconds / $hour);
                 return [$base, "$base hour"];
-            } elseif ($seconds < $month) {
+            }
+
+            if ($seconds < $month) {
                 $base = round($seconds / $day);
                 return [$base, "$base day"];
-            } elseif ($seconds < $year) {
+            }
+
+            if ($seconds < $year) {
                 $base = round($seconds / $month);
                 return [$base, "$base month"];
-            } elseif ($seconds < $century) {
+            }
+
+            if ($seconds < $century) {
                 $base = round($seconds / $year);
                 return [$base, "$base year"];
-            } else {
-                return [null, 'centuries'];
             }
+
+            return [null, 'centuries'];
         };
 
         list($display_num, $display_str) = $callback($seconds);
 
         if ($display_num > 1) {
-            $display_str .= "s";
+            $display_str .= 's';
         }
 
         return $display_str;

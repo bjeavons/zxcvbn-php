@@ -3,9 +3,23 @@
 namespace ZxcvbnPhp;
 
 use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
 {
+    private const DEFAULT_MATCHERS = [
+        Matchers\DateMatch::class,
+        Matchers\DictionaryMatch::class,
+        Matchers\ReverseDictionaryMatch::class,
+        Matchers\L33tMatch::class,
+        Matchers\RepeatMatch::class,
+        Matchers\SequenceMatch::class,
+        Matchers\SpatialMatch::class,
+        Matchers\YearMatch::class,
+    ];
+
+    private $additionalMatchers = [];
+
     /**
      * Get matches for a password.
      *
@@ -24,12 +38,25 @@ class Matcher
         foreach ($this->getMatchers() as $matcher) {
             $matched = $matcher::match($password, $userInputs);
             if (is_array($matched) && !empty($matched)) {
-                $matches = array_merge($matches, $matched);
+                $matches[] = $matched;
             }
         }
 
+        $matches = array_merge([], ...$matches);
         self::usortStable($matches, [$this, 'compareMatches']);
+
         return $matches;
+    }
+
+    public function addMatcher(string $className)
+    {
+        if (!is_a($className, MatchInterface::class, true)) {
+            throw new \InvalidArgumentException(sprintf('Matcher class must implement %s', MatchInterface::class));
+        }
+
+        $this->additionalMatchers[$className] = $className;
+
+        return $this;
     }
 
     /**
@@ -46,14 +73,14 @@ class Matcher
      * @param callable $value_compare_func
      * @return bool
      */
-    public static function usortStable(array &$array, $value_compare_func)
+    public static function usortStable(array &$array, callable $value_compare_func)
     {
         $index = 0;
         foreach ($array as &$item) {
             $item = array($index++, $item);
         }
         $result = usort($array, function ($a, $b) use ($value_compare_func) {
-            $result = call_user_func($value_compare_func, $a[1], $b[1]);
+            $result = $value_compare_func($a[1], $b[1]);
             return $result == 0 ? $a[0] - $b[0] : $result;
         });
         foreach ($array as &$item) {
@@ -78,16 +105,9 @@ class Matcher
      */
     protected function getMatchers()
     {
-        // @todo change to dynamic
-        return [
-            Matchers\DateMatch::class,
-            Matchers\DictionaryMatch::class,
-            Matchers\ReverseDictionaryMatch::class,
-            Matchers\L33tMatch::class,
-            Matchers\RepeatMatch::class,
-            Matchers\SequenceMatch::class,
-            Matchers\SpatialMatch::class,
-            Matchers\YearMatch::class,
-        ];
+        return array_merge(
+            self::DEFAULT_MATCHERS,
+            array_values($this->additionalMatchers)
+        );
     }
 }
