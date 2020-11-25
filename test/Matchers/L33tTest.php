@@ -282,7 +282,7 @@ class L33tTest extends AbstractMatchTest
             "extra guesses are added for both capitalization and common l33t substitutions"
         );
     }
-    
+
     public function variationsProvider()
     {
         return array(
