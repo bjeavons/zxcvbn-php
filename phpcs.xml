@@ -5,6 +5,7 @@
     </rule>
 
     <arg name="ignore" value="vendor/"/>
+    <arg name="ignore" value="build/"/>
 </ruleset>
 
 
