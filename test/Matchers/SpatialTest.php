@@ -125,7 +125,7 @@ class SpatialTest extends AbstractMatchTest
             ]
         );
     }
-    
+
     protected function getBaseGuessCount($token)
     {
         // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)

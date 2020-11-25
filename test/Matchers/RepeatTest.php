@@ -22,7 +22,7 @@ class RepeatTest extends AbstractMatchTest
             );
         }
     }
-    
+
     public function testSingleCharacterEmbeddedRepeats()
     {
         $prefixes = ['@', 'y4@'];
