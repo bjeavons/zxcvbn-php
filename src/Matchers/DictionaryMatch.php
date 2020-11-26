@@ -106,6 +106,8 @@ class DictionaryMatch extends Match
     public function getFeedbackWarning($isSoleMatch)
     {
         switch ($this->dictionaryName) {
+            case 'user_inputs':
+                return 'This is similar to, or incorporates parts of, other input';
             case 'passwords':
                 if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
