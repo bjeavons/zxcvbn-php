@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         backupGlobals="false"
          backupStaticAttributes="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
@@ -8,22 +10,21 @@
          stopOnFailure="false"
          bootstrap="test/config/bootstrap.php">
 
-    <testsuites>
-       <testsuite name="Zxcvbn-PHP">
-         <directory suffix="Test.php">test/</directory>
-       </testsuite>
-    </testsuites>
-
-    <filter>
-      <whitelist processUncoveredFilesFromWhitelist="true">
-        <directory suffix=".php">src</directory>
-      </whitelist>
-    </filter>
-
-    <logging>
-      <log type="coverage-html" target="build/coverage"/>
-      <log type="coverage-clover" target="build/logs/clover.xml"/>
-      <log type="junit" target="build/logs/junit.xml"/>
-    </logging>
-
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <report>
+      <clover outputFile="build/logs/clover.xml"/>
+      <html outputDirectory="build/coverage"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Zxcvbn-PHP">
+      <directory suffix="Test.php">test/</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <junit outputFile="build/logs/junit.xml"/>
+  </logging>
 </phpunit>
