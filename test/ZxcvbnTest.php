@@ -13,7 +13,7 @@ class ZxcvbnTest extends TestCase
     /** @var Zxcvbn */
     private $zxcvbn;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->zxcvbn = new Zxcvbn();
     }
@@ -39,7 +39,7 @@ class ZxcvbnTest extends TestCase
             ['crack_times_seconds', 'array'],
             ['crack_times_display', 'array'],
             ['feedback', 'array'],
-            ['calc_time', 'numeric']
+            ['calc_time', 'numeric'],
         ];
     }
 
@@ -87,11 +87,11 @@ class ZxcvbnTest extends TestCase
      * Some basic sanity checks. All of the underlying functionality is tested in more details in their specific
      * classes, but this is just to check that it's all tied together correctly at the end.
      * @dataProvider sanityCheckDataProvider
-     * @param string   $password
-     * @param int      $score
+     * @param string $password
+     * @param int $score
      * @param string[] $patterns
-     * @param string   $slowHashingDisplay
-     * @param float    $guesses
+     * @param string $slowHashingDisplay
+     * @param float $guesses
      */
     public function testZxcvbnSanityCheck($password, $score, $patterns, $slowHashingDisplay, $guesses)
     {
