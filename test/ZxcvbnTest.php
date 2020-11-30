@@ -13,7 +13,7 @@ class ZxcvbnTest extends TestCase
     /** @var Zxcvbn */
     private $zxcvbn;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->zxcvbn = new Zxcvbn();
     }
@@ -39,7 +39,7 @@ class ZxcvbnTest extends TestCase
             ['crack_times_seconds', 'array'],
             ['crack_times_display', 'array'],
             ['feedback', 'array'],
-            ['calc_time', 'numeric']
+            ['calc_time', 'numeric'],
         ];
     }
 
@@ -69,17 +69,17 @@ class ZxcvbnTest extends TestCase
     public function sanityCheckDataProvider()
     {
         return [
-            ['password',           0, ['dictionary',                           ], 'less than a second', 3],
-            ['65432',              0, ['sequence',                             ], 'less than a second', 101],
-            ['sdfgsdfg',           1, ['repeat',                               ], 'less than a second', 2595.0000000276],
-            ['fortitude',          1, ['dictionary',                           ], '1 second',           11308],
-            ['dfjkym',             1, ['bruteforce',                           ], '2 minutes',          1000001],
-            ['fortitude22',        2, ['dictionary', 'repeat',                 ], '2 minutes',          1140700],
-            ['absoluteadnap',      2, ['dictionary', 'dictionary',             ], '25 minutes',         15187504],
-            ['knifeandspoon',      3, ['dictionary', 'dictionary', 'dictionary'], '1 day',              1108057600],
-            ['h1dden_26191',       3, ['dictionary', 'bruteforce', 'date'      ], '3 days',             2642940400],
-            ['4rfv1236yhn!',       4, ['spatial',    'sequence',   'bruteforce'], '1 month',            38980000000.414],
-            ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',                  ], 'centuries',          10000000000010000],
+            ['password', 0, ['dictionary',], 'less than a second', 3],
+            ['65432', 0, ['sequence',], 'less than a second', 101],
+            ['sdfgsdfg', 1, ['repeat',], 'less than a second', 2595.0000000276],
+            ['fortitude', 1, ['dictionary',], '1 second', 11308],
+            ['dfjkym', 1, ['bruteforce',], '2 minutes', 1000001],
+            ['fortitude22', 2, ['dictionary', 'repeat',], '2 minutes', 1140700],
+            ['absoluteadnap', 2, ['dictionary', 'dictionary',], '25 minutes', 15187504],
+            ['knifeandspoon', 3, ['dictionary', 'dictionary', 'dictionary'], '1 day', 1108057600],
+            ['h1dden_26191', 3, ['dictionary', 'bruteforce', 'date'], '3 days', 2642940400],
+            ['4rfv1236yhn!', 4, ['spatial', 'sequence', 'bruteforce'], '1 month', 38980000000.414],
+            ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',], 'centuries', 10000000000010000],
         ];
     }
 
@@ -87,11 +87,11 @@ class ZxcvbnTest extends TestCase
      * Some basic sanity checks. All of the underlying functionality is tested in more details in their specific
      * classes, but this is just to check that it's all tied together correctly at the end.
      * @dataProvider sanityCheckDataProvider
-     * @param string   $password
-     * @param int      $score
+     * @param string $password
+     * @param int $score
      * @param string[] $patterns
-     * @param string   $slowHashingDisplay
-     * @param float    $guesses
+     * @param string $slowHashingDisplay
+     * @param float $guesses
      */
     public function testZxcvbnSanityCheck($password, $score, $patterns, $slowHashingDisplay, $guesses)
     {

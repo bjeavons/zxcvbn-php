@@ -16,10 +16,11 @@ class ScorerTest extends TestCase
     /** @var Scorer */
     private $scorer;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->scorer = new Scorer();
     }
+
     public function testBlankPassword()
     {
         $result = $this->scorer->getMostGuessableMatchSequence('', []);

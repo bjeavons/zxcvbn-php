@@ -3,3 +3,4 @@ build/
 phpunit.xml
 .idea/
 composer.lock
+.phpunit.result.cache
