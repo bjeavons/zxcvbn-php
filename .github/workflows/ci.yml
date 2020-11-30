@@ -15,6 +15,7 @@ jobs:
           - '7.2'
           - '7.3'
           - '7.4'
+          - '8.0'
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout

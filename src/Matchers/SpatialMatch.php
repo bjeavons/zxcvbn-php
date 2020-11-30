@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Matcher;
 
-class SpatialMatch extends Match
+class SpatialMatch extends BaseMatch
 {
     public const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
 

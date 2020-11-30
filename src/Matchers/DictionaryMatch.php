@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Matcher;
 
-class DictionaryMatch extends Match
+class DictionaryMatch extends BaseMatch
 {
 
     public $pattern = 'dictionary';

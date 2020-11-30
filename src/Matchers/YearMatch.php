@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Matcher;
 
-class YearMatch extends Match
+class YearMatch extends BaseMatch
 {
 
     public const NUM_YEARS = 119;

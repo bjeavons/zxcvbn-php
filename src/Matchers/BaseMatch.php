@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Scorer;
 
-abstract class Match implements MatchInterface
+abstract class BaseMatch implements MatchInterface
 {
 
     /**

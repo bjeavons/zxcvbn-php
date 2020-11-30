@@ -2,9 +2,9 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\BaseMatch;
 
-class MockMatch extends Match
+class MockMatch extends BaseMatch
 {
     protected $guesses;
 
