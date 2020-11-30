@@ -5,7 +5,7 @@ namespace ZxcvbnPhp\Test;
 use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\MatchInterface;
 use ZxcvbnPhp\Zxcvbn;
 
 class ZxcvbnTest extends TestCase
@@ -20,7 +20,7 @@ class ZxcvbnTest extends TestCase
 
     public function testMinimumGuessesForMultipleMatches()
     {
-        /** @var Match[] $matches */
+        /** @var MatchInterface[] $matches */
         $matches = $this->zxcvbn->passwordStrength('rockyou')['sequence'];
 
         // zxcvbn will return two matches: 'rock' (rank 359) and 'you' (rank 1).
@@ -69,17 +69,17 @@ class ZxcvbnTest extends TestCase
     public function sanityCheckDataProvider()
     {
         return [
-            ['password',           0, ['dictionary',                           ], 'less than a second', 3],
-            ['65432',              0, ['sequence',                             ], 'less than a second', 101],
-            ['sdfgsdfg',           1, ['repeat',                               ], 'less than a second', 2595.0000000276],
-            ['fortitude',          1, ['dictionary',                           ], '1 second',           11308],
-            ['dfjkym',             1, ['bruteforce',                           ], '2 minutes',          1000001],
-            ['fortitude22',        2, ['dictionary', 'repeat',                 ], '2 minutes',          1140700],
-            ['absoluteadnap',      2, ['dictionary', 'dictionary',             ], '25 minutes',         15187504],
-            ['knifeandspoon',      3, ['dictionary', 'dictionary', 'dictionary'], '1 day',              1108057600],
-            ['h1dden_26191',       3, ['dictionary', 'bruteforce', 'date'      ], '3 days',             2642940400],
-            ['4rfv1236yhn!',       4, ['spatial',    'sequence',   'bruteforce'], '1 month',            38980000000.414],
-            ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',                  ], 'centuries',          10000000000010000],
+            ['password', 0, ['dictionary',], 'less than a second', 3],
+            ['65432', 0, ['sequence',], 'less than a second', 101],
+            ['sdfgsdfg', 1, ['repeat',], 'less than a second', 2595.0000000276],
+            ['fortitude', 1, ['dictionary',], '1 second', 11308],
+            ['dfjkym', 1, ['bruteforce',], '2 minutes', 1000001],
+            ['fortitude22', 2, ['dictionary', 'repeat',], '2 minutes', 1140700],
+            ['absoluteadnap', 2, ['dictionary', 'dictionary',], '25 minutes', 15187504],
+            ['knifeandspoon', 3, ['dictionary', 'dictionary', 'dictionary'], '1 day', 1108057600],
+            ['h1dden_26191', 3, ['dictionary', 'bruteforce', 'date'], '3 days', 2642940400],
+            ['4rfv1236yhn!', 4, ['spatial', 'sequence', 'bruteforce'], '1 month', 38980000000.414],
+            ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',], 'centuries', 10000000000010000],
         ];
     }
 

@@ -3,7 +3,8 @@
 namespace ZxcvbnPhp;
 
 use ZxcvbnPhp\Matchers\Bruteforce;
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\BaseMatch;
+use ZxcvbnPhp\Matchers\MatchInterface;
 
 /**
  * scorer - takes a list of potential matches, ranks and evaluates them,
@@ -54,7 +55,7 @@ class Scorer
      *    D^(l-1) approximates Sum(D^i for i in [1..l-1]
      *
      * @param string $password
-     * @param Match[] $matches
+     * @param MatchInterface[] $matches
      * @param bool $excludeAdditive
      * @return array Returns an array with these keys: [password, guesses, guesses_log10, sequence]
      */
@@ -75,8 +76,8 @@ class Scorer
         // small detail: for deterministic output, sort each sublist by i.
         foreach ($matchesByEndIndex as &$matches) {
             usort($matches, function ($a, $b) {
-                /** @var $a Match */
-                /** @var $b Match */
+                /** @var $a BaseMatch */
+                /** @var $b BaseMatch */
                 return $a->begin - $b->begin;
             });
         }
@@ -97,7 +98,7 @@ class Scorer
         ];
 
         for ($k = 0; $k < $length; $k++) {
-            /** @var Match $match */
+            /** @var BaseMatch $match */
             foreach ($matchesByEndIndex[$k] as $match) {
                 if ($match->begin > 0) {
                     foreach ($this->optimal['m'][$match->begin - 1] as $l => $null) {
@@ -132,7 +133,7 @@ class Scorer
     /**
      * helper: considers whether a length-l sequence ending at match m is better (fewer guesses)
      * than previously encountered sequences, updating state if so.
-     * @param Match $match
+     * @param BaseMatch $match
      * @param int $length
      */
     protected function update($match, $length)
@@ -224,7 +225,7 @@ class Scorer
     /**
      * helper: step backwards through optimal.m starting at the end, constructing the final optimal match sequence.
      * @param int $n
-     * @return Match[] array
+     * @return MatchInterface[]
      */
     protected function unwind($n)
     {

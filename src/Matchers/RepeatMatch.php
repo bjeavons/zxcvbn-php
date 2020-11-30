@@ -5,7 +5,7 @@ namespace ZxcvbnPhp\Matchers;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Scorer;
 
-class RepeatMatch extends Match
+class RepeatMatch extends BaseMatch
 {
     public const GREEDY_MATCH = '/(.+)\1+/u';
     public const LAZY_MATCH = '/(.+?)\1+/u';
@@ -13,7 +13,7 @@ class RepeatMatch extends Match
 
     public $pattern = 'repeat';
 
-    /** @var Match[] An array of matches for the repeated section itself. */
+    /** @var MatchInterface[] An array of matches for the repeated section itself. */
     public $baseMatches = [];
 
     /** @var int The number of guesses required for the repeated section itself. */
@@ -70,9 +70,9 @@ class RepeatMatch extends Match
                 $match[0]['token'],
                 [
                     'repeated_char' => $repeatedChar,
-                    'base_guesses' => $baseGuesses,
-                    'base_matches' => $baseMatches,
-                    'repeat_count' => $repeatCount
+                    'base_guesses'  => $baseGuesses,
+                    'base_matches'  => $baseMatches,
+                    'repeat_count'  => $repeatCount,
                 ]
             );
 
@@ -89,10 +89,10 @@ class RepeatMatch extends Match
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
         return [
-            'warning' => $warning,
+            'warning'     => $warning,
             'suggestions' => [
-                'Avoid repeated words and characters'
-            ]
+                'Avoid repeated words and characters',
+            ],
         ];
     }
 

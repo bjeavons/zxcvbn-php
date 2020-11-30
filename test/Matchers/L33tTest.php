@@ -4,7 +4,7 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use ReflectionClass;
 use ZxcvbnPhp\Matchers\L33tMatch;
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\BaseMatch;
 
 class L33tTest extends AbstractMatchTest
 {
@@ -295,9 +295,9 @@ class L33tTest extends AbstractMatchTest
             [ 'a8cet', 2, ['8' => 'b'] ],
             [ 'abce+', 2, ['+' => 't'] ],
             [ '48cet', 4, ['4' => 'a', '8' => 'b'] ],
-            [ 'a4a4aa',  Match::binom(6, 2) + Match::binom(6, 1), ['4' => 'a'] ],
-            [ '4a4a44',  Match::binom(6, 2) + Match::binom(6, 1), ['4' => 'a'] ],
-            [ 'a44att+', (Match::binom(4, 2) + Match::binom(4, 1)) * Match::binom(3, 1), ['4' => 'a', '+' => 't'] ]
+            ['a4a4aa', BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1), ['4' => 'a'] ],
+            ['4a4a44', BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1), ['4' => 'a'] ],
+            ['a44att+', (BaseMatch::binom(4, 2) + BaseMatch::binom(4, 1)) * BaseMatch::binom(3, 1), ['4' => 'a', '+' => 't'] ]
         );
     }
 
@@ -325,7 +325,7 @@ class L33tTest extends AbstractMatchTest
     {
         $token = 'Aa44aA';
         $match = new L33tMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1, 'sub' => ['4' => 'a']]);
-        $expected = Match::binom(6, 2) + Match::binom(6, 1);
+        $expected = BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1);
 
         $class = new ReflectionClass('\\ZxcvbnPhp\\Matchers\\L33tMatch');
         $method = $class->getMethod('getL33tVariations');

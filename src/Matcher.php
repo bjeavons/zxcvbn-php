@@ -2,7 +2,7 @@
 
 namespace ZxcvbnPhp;
 
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\BaseMatch;
 use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
@@ -23,14 +23,14 @@ class Matcher
     /**
      * Get matches for a password.
      *
-     * @see zxcvbn/src/matching.coffee::omnimatch
-     *
-     * @param string $password   Password string to match
-     * @param array  $userInputs Array of values related to the user (optional)
+     * @param string $password  Password string to match
+     * @param array $userInputs Array of values related to the user (optional)
      * @code array('Alice Smith')
      * @endcode
      *
-     * @return Match[] Array of Match objects.
+     * @return MatchInterface[] Array of Match objects.
+     *
+     * @see  zxcvbn/src/matching.coffee::omnimatch
      */
     public function getMatches($password, array $userInputs = [])
     {
@@ -77,7 +77,7 @@ class Matcher
     {
         $index = 0;
         foreach ($array as &$item) {
-            $item = array($index++, $item);
+            $item = [$index++, $item];
         }
         $result = usort($array, function ($a, $b) use ($value_compare_func) {
             $result = $value_compare_func($a[1], $b[1]);
@@ -89,7 +89,7 @@ class Matcher
         return $result;
     }
 
-    public static function compareMatches(Match $a, Match $b)
+    public static function compareMatches(BaseMatch $a, BaseMatch $b)
     {
         $beginDiff = $a->begin - $b->begin;
         if ($beginDiff) {

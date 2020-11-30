@@ -2,7 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
-class SequenceMatch extends Match
+class SequenceMatch extends BaseMatch
 {
     public const MAX_DELTA = 5;
 

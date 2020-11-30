@@ -2,7 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use ZxcvbnPhp\Matchers\Match;
+use ZxcvbnPhp\Matchers\BaseMatch;
 use ZxcvbnPhp\Matchers\SpatialMatch;
 
 /**
@@ -162,7 +162,7 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $this->assertEquals(
-            $this->getBaseGuessCount($token) * (Match::binom(6, 2) + Match::binom(6, 1)),
+            $this->getBaseGuessCount($token) * (BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1)),
             $match->getGuesses(),
             "guesses is added for shifted keys, similar to capitals in dictionary matching"
         );
