@@ -7,6 +7,7 @@ use ZxcvbnPhp\Matcher;
 class SpatialMatch extends BaseMatch
 {
     public const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
+    public const AZERTY_SHIFTED_CHARACTERS = '1234567890°+AZERTYUIOP"£QSDFGHJKLM%µWXCVBN?./§';
 
     // Preset properties since adjacency graph is constant for qwerty keyboard and keypad.
     public const KEYBOARD_STARTING_POSITION = 94;
@@ -106,8 +107,9 @@ class SpatialMatch extends BaseMatch
             $shiftedCount = 0;
 
             // Check if the initial character is shifted
-            if ($graphName === 'qwerty' || $graphName === 'dvorak') {
-                if (mb_strpos(self::SHIFTED_CHARACTERS, mb_substr($password, $i, 1)) !== false) {
+            if ($graphName === 'qwerty' || $graphName === 'dvorak' || $graphName === 'azerty') {
+                $shiftedCharacters = $graphName === 'azerty' ? self::AZERTY_SHIFTED_CHARACTERS : self::SHIFTED_CHARACTERS;
+                if (mb_strpos($shiftedCharacters, mb_substr($password, $i, 1)) !== false) {
                     $shiftedCount++;
                 }
             }
@@ -202,6 +204,7 @@ class SpatialMatch extends BaseMatch
             $data = [
                 'qwerty' => $data['qwerty'],
                 'dvorak' => $data['dvorak'],
+                'azerty' => $data['azerty'],
                 'keypad' => $data['keypad'],
                 'mac_keypad' => $data['mac_keypad'],
             ];
@@ -213,7 +216,7 @@ class SpatialMatch extends BaseMatch
 
     protected function getRawGuesses()
     {
-        if ($this->graph === 'qwerty' || $this->graph === 'dvorak') {
+        if ($this->graph === 'qwerty' || $this->graph === 'dvorak' || $this->graph === 'azerty') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;
             $averageDegree = self::KEYBOARD_AVERAGE_DEGREES;
         } else {

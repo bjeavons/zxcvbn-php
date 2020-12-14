@@ -81,6 +81,14 @@ class SpatialTest extends AbstractMatchTest
             ['*-632.0214',   'mac_keypad', 9, 0],
             ['aoEP%yIxkjq:', 'dvorak',     4, 5],
             [';qoaOQ:Aoq;a', 'dvorak',    11, 4],
+            ['12345',        'azerty',     1, 5],
+            ['éZSX',         'azerty',     1, 3],
+            ['2ZSX',         'azerty',     1, 4],
+            ['6tfGHJ',       'azerty',     2, 4],
+            ['hGFd',         'azerty',     1, 2],
+            ['!mp09876yhn',  'azerty',     3, 5],
+            ['Xdr5',         'azerty',     1, 2],
+            ['=$*ù!/',       'azerty',     4, 1],
         ];
     }
 
@@ -100,7 +108,7 @@ class SpatialTest extends AbstractMatchTest
             SpatialMatch::match($password, [], $graphs),
             'spatial',
             [$password],
-            [[0, strlen($password) - 1]],
+            [[0, mb_strlen($password) - 1]],
             [
                 'graph' => [$keyboard],
                 'turns' => [$turns],
@@ -113,15 +121,15 @@ class SpatialTest extends AbstractMatchTest
     {
         $password = "!QAZ1qaz";
         $this->checkMatches(
-            "shifted count is correct for two matches in a row",
+            "shifted count is correct for four matches in a row",
             SpatialMatch::match($password),
             'spatial',
-            ['!QAZ', '1qaz'],
-            [[0, 3], [4, 7]],
+            ['!QAZ', 'QAZ', '1qaz', 'qaz'],
+            [[0, 3], [1, 3], [4, 7], [5, 7]],
             [
-                'graph' => ['qwerty', 'qwerty'],
-                'turns' => [1, 1],
-                'shiftedCount' => [4, 0],
+                'graph' => ['qwerty', 'azerty', 'qwerty', 'azerty'],
+                'turns' => [1, 2, 1, 2],
+                'shiftedCount' => [4, 3, 0, 0],
             ]
         );
     }

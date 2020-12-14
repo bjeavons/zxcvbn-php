@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 import sys
 import json as simplejson
 
@@ -22,6 +23,13 @@ dvorak = r'''
     '" ,< .> pP yY fF gG cC rR lL /? =+ \|
      aA oO eE uU iI dD hH tT nN sS -_
       ;: qQ jJ kK xX bB mM wW vV zZ
+'''
+
+azerty = u'''
+²² &1 é2 "3 '4 (5 -6 è7 _8 ç9 à0 )° =+
+    aA zZ eE rR tT yY uU iI oO pP ^" $£
+     qQ sS dD fF gG hH jJ kK lL mM ù% *µ
+      wW xX cC vV bB nN ,? ;. :/ !§
 '''
 
 keypad = r'''
@@ -97,6 +105,7 @@ if __name__ == '__main__':
         data = {
             'qwerty':     build_graph(qwerty, True),
             'dvorak':     build_graph(dvorak, True),
+            'azerty':     build_graph(azerty, True),
             'keypad':     build_graph(keypad, False),
             'mac_keypad': build_graph(mac_keypad, False),
         }
