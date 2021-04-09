@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Scorer;
 
@@ -88,7 +89,12 @@ class RepeatMatch extends BaseMatch
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
+        $code = mb_strlen($this->repeatedChar) == 1
+            ? Feedback::FEEDBACK_CODE_GUESSABLE_REPEATED_CHARACTER
+            : Feedback::FEEDBACK_CODE_GUESSABLE_REPEATED_STRING;
+
         return [
+            'code'        => $code,
             'warning'     => $warning,
             'suggestions' => [
                 'Avoid repeated words and characters',

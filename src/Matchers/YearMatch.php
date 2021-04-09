@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matcher;
 
 class YearMatch extends BaseMatch
@@ -33,6 +34,7 @@ class YearMatch extends BaseMatch
     public function getFeedback($isSoleMatch)
     {
         return [
+            'code' => Feedback::FEEDBACK_CODE_GUESSABLE_YEARS,
             'warning' => "Recent years are easy to guess",
             'suggestions' => [
                 'Avoid recent years',

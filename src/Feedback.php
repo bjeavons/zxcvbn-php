@@ -12,6 +12,22 @@ use ZxcvbnPhp\Matchers\MatchInterface;
  */
 class Feedback
 {
+    const FEEDBACK_CODE_EMPTY = 'empty';
+    const FEEDBACK_CODE_COMMON = 'common';
+    const FEEDBACK_CODE_COMMON_SIMILAR = 'common_similar';
+    const FEEDBACK_CODE_COMMON_TOP_10 = 'common_top_10';
+    const FEEDBACK_CODE_COMMON_TOP_100 = 'common_top_100';
+    const FEEDBACK_CODE_GUESSABLE_DATES = 'guessable_dates';
+    const FEEDBACK_CODE_GUESSABLE_NAME = 'guessable_name';
+    const FEEDBACK_CODE_GUESSABLE_NAMES = 'guessable_names';
+    const FEEDBACK_CODE_GUESSABLE_REPEATED_CHARACTER = 'guessable_repeated_character';
+    const FEEDBACK_CODE_GUESSABLE_REPEATED_STRING = 'guessable_repeated_string';
+    const FEEDBACK_CODE_GUESSABLE_SEQUENCE = 'guessable_sequence';
+    const FEEDBACK_CODE_GUESSABLE_SPATIAL_ROW = 'guessable_spatial_row';
+    const FEEDBACK_CODE_GUESSABLE_SPATIAL_PATTERN = 'guessable_spatial_pattern';
+    const FEEDBACK_CODE_GUESSABLE_WORD = 'guessable_word';
+    const FEEDBACK_CODE_GUESSABLE_YEARS = 'guessable_years';
+
     /**
      * @param int $score
      * @param MatchInterface[] $sequence
@@ -22,6 +38,7 @@ class Feedback
         // starting feedback
         if (count($sequence) === 0) {
             return [
+                'code'        => static::FEEDBACK_CODE_EMPTY,
                 'warning'     => '',
                 'suggestions' => [
                     "Use a few words, avoid common phrases",
@@ -33,6 +50,7 @@ class Feedback
         // no feedback if score is good or great.
         if ($score > 2) {
             return [
+                'code'        => '',
                 'warning'     => '',
                 'suggestions' => [],
             ];

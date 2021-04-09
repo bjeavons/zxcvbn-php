@@ -153,5 +153,10 @@ class YearTest extends AbstractMatchTest
             $feedback['suggestions'],
             "year match gives correct suggestion #2"
         );
+        $this->assertEquals(
+            'guessable_years',
+            $feedback['code'],
+            "year match gives correct code"
+        );
     }
 }

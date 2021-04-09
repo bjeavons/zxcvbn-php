@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matchers\DateMatch;
 
 class DateTest extends AbstractMatchTest
@@ -310,6 +311,11 @@ class DateTest extends AbstractMatchTest
             'Avoid dates and years that are associated with you',
             $feedback['suggestions'],
             "date match gives correct suggestion"
+        );
+        $this->assertEquals(
+            'guessable_dates',
+            $feedback['code'],
+            "date match gives correct code"
         );
     }
 }
