@@ -2,6 +2,8 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
+
 class SequenceMatch extends BaseMatch
 {
     public const MAX_DELTA = 5;
@@ -87,6 +89,7 @@ class SequenceMatch extends BaseMatch
     public function getFeedback($isSoleMatch)
     {
         return [
+            'code' => Feedback::FEEDBACK_CODE_GUESSABLE_SEQUENCE,
             'warning' => "Sequences like abc or 6543 are easy to guess",
             'suggestions' => [
                 'Avoid sequences'

@@ -33,6 +33,7 @@ class Bruteforce extends BaseMatch
     public function getFeedback($isSoleMatch)
     {
         return [
+            'code' => "",
             'warning' => "",
             'suggestions' => [
             ]

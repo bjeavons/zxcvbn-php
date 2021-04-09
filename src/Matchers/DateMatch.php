@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matcher;
 
 class DateMatch extends BaseMatch
@@ -108,6 +109,7 @@ class DateMatch extends BaseMatch
     public function getFeedback($isSoleMatch)
     {
         return [
+            'code' => Feedback::FEEDBACK_CODE_GUESSABLE_DATES,
             'warning' => "Dates are often easy to guess",
             'suggestions' => [
                 'Avoid dates and years that are associated with you'

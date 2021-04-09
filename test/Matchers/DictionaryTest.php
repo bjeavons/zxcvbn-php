@@ -267,6 +267,11 @@ class DictionaryTest extends AbstractMatchTest
     {
         $feedback = $this->getFeedbackForToken('password', 'passwords', 2, true);
         $this->assertEquals(
+            'common_top_10',
+            $feedback['code'],
+            'dictionary match returns code for top-10 password'
+        );
+        $this->assertEquals(
             'This is a top-10 common password',
             $feedback['warning'],
             "dictionary match warns about top-10 password"
@@ -276,6 +281,11 @@ class DictionaryTest extends AbstractMatchTest
     public function testFeedbackTop100Password()
     {
         $feedback = $this->getFeedbackForToken('hunter', 'passwords', 37, true);
+        $this->assertEquals(
+            'common_top_100',
+            $feedback['code'],
+            'dictionary match returns code for top-100 password'
+        );
         $this->assertEquals(
             'This is a top-100 common password',
             $feedback['warning'],
@@ -287,6 +297,11 @@ class DictionaryTest extends AbstractMatchTest
     {
         $feedback = $this->getFeedbackForToken('mytruck', 'passwords', 19324, true);
         $this->assertEquals(
+            'common',
+            $feedback['code'],
+            'dictionary match returns code for common password'
+        );
+        $this->assertEquals(
             'This is a very common password',
             $feedback['warning'],
             "dictionary match warns about common password"
@@ -296,6 +311,11 @@ class DictionaryTest extends AbstractMatchTest
     public function testFeedbackTopPasswordNotSoleMatch()
     {
         $feedback = $this->getFeedbackForToken('browndog', 'passwords', 7014, false);
+        $this->assertEquals(
+            'common_similar',
+            $feedback['code'],
+            'dictionary match returns code for common password (not a sole match)'
+        );
         $this->assertEquals(
             'This is similar to a commonly used password',
             $feedback['warning'],
@@ -308,6 +328,11 @@ class DictionaryTest extends AbstractMatchTest
         $feedback = $this->getFeedbackForToken('mytruck', 'passwords', 19324, false);
         $this->assertEquals(
             '',
+            $feedback['code'],
+            'no warning code for a non-sole match in the password dictionary'
+        );
+        $this->assertEquals(
+            '',
             $feedback['warning'],
             "no warning for a non-sole match in the password dictionary"
         );
@@ -316,6 +341,11 @@ class DictionaryTest extends AbstractMatchTest
     public function testFeedbackWikipediaWordSoleMatch()
     {
         $feedback = $this->getFeedbackForToken('university', 'english_wikipedia', 69, true);
+        $this->assertEquals(
+            'guessable_word',
+            $feedback['code'],
+            'dictionary match returns code for Wikipedia word (sole match)'
+        );
         $this->assertEquals(
             'A word by itself is easy to guess',
             $feedback['warning'],
@@ -328,6 +358,11 @@ class DictionaryTest extends AbstractMatchTest
         $feedback = $this->getFeedbackForToken('university', 'english_wikipedia', 69, false);
         $this->assertEquals(
             '',
+            $feedback['code'],
+            'dictionary match doesn\'t rerurn code for Wikipedia word (not a sole match)'
+        );
+        $this->assertEquals(
+            '',
             $feedback['warning'],
             "dictionary match doesn't warn about Wikipedia word (not a sole match)"
         );
@@ -336,6 +371,11 @@ class DictionaryTest extends AbstractMatchTest
     public function testFeedbackNameSoleMatch()
     {
         $feedback = $this->getFeedbackForToken('rodriguez', 'surnames', 21, true);
+        $this->assertEquals(
+            'guessable_name',
+            $feedback['code'],
+            'dictionary match returns code for surname (sole match)'
+        );
         $this->assertEquals(
             'Names and surnames by themselves are easy to guess',
             $feedback['warning'],
@@ -347,6 +387,11 @@ class DictionaryTest extends AbstractMatchTest
     {
         $feedback = $this->getFeedbackForToken('rodriguez', 'surnames', 21, false);
         $this->assertEquals(
+            'guessable_names',
+            $feedback['code'],
+            'dictionary match returns code for surname (not a sole match)'
+        );
+        $this->assertEquals(
             'Common names and surnames are easy to guess',
             $feedback['warning'],
             "dictionary match warns about surname (not a sole match)"
@@ -356,6 +401,11 @@ class DictionaryTest extends AbstractMatchTest
     public function testFeedbackTvAndFilmDictionary()
     {
         $feedback = $this->getFeedbackForToken('know', 'us_tv_and_film', 9, true);
+        $this->assertEquals(
+            '',
+            $feedback['code'],
+            'dictionary match returns code for match from us_tv_and_film dictionary'
+        );
         $this->assertEquals(
             '',
             $feedback['warning'],

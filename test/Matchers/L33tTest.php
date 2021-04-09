@@ -355,6 +355,11 @@ class L33tTest extends AbstractMatchTest
             $feedback['suggestions'],
             "l33t match gives correct suggestion"
         );
+        $this->assertEquals(
+            'guessable_word',
+            $feedback['code'],
+            "l33t match gives correct code"
+        );
     }
 
     public function testFeedbackTop100Password()

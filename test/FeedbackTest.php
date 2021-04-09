@@ -33,6 +33,11 @@ class FeedbackTest extends TestCase
             $feedback['suggestions'],
             "default suggestion #1"
         );
+        $this->assertEquals(
+            'empty',
+            $feedback['code'],
+            "default warning code"
+        );
     }
 
     public function testHighScoringSequence()
@@ -42,6 +47,7 @@ class FeedbackTest extends TestCase
 
         $this->assertEquals('', $feedback['warning'], "no warning for good score");
         $this->assertEmpty($feedback['suggestions'], "no suggestions for good score");
+        $this->assertEquals('', $feedback['code'], "no code for good score");
     }
 
     public function testLongestMatchGetsFeedback()
@@ -69,6 +75,11 @@ class FeedbackTest extends TestCase
             'Avoid sequences',
             $feedback['suggestions'],
             "no suggestion provided for the shorter match"
+        );
+        $this->assertEquals(
+            'guessable_dates',
+            $feedback['code'],
+            "code provided for the longest match"
         );
     }
 

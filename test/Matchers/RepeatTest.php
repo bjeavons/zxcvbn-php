@@ -291,6 +291,11 @@ class RepeatTest extends AbstractMatchTest
             $feedback['suggestions'],
             "one repeated character gives correct suggestion"
         );
+        $this->assertEquals(
+            'guessable_repeated_character',
+            $feedback['code'],
+            "one repeated character gives correct code"
+        );
     }
 
     public function testFeedbackMultipleCharacterRepeat()
@@ -311,6 +316,11 @@ class RepeatTest extends AbstractMatchTest
             'Avoid repeated words and characters',
             $feedback['suggestions'],
             "multiple repeated characters gives correct suggestion"
+        );
+        $this->assertEquals(
+            'guessable_repeated_string',
+            $feedback['code'],
+            "multiple repeated characters gives correct code"
         );
     }
 }

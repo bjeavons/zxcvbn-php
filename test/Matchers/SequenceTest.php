@@ -205,5 +205,10 @@ class SequenceTest extends AbstractMatchTest
             $feedback['suggestions'],
             "sequence gives correct suggestion"
         );
+        $this->assertEquals(
+            'guessable_sequence',
+            $feedback['code'],
+            "sequence gives correct code"
+        );
     }
 }

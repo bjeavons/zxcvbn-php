@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matcher;
 
 class DictionaryMatch extends BaseMatch
@@ -89,8 +90,11 @@ class DictionaryMatch extends BaseMatch
         $startUpper = '/^[A-Z][^A-Z]+$/u';
         $allUpper = '/^[^a-z]+$/u';
 
+        list($code, $warning) = $this->getFeedbackWarning($isSoleMatch);
+
         $feedback = [
-            'warning' => $this->getFeedbackWarning($isSoleMatch),
+            'code' => $code,
+            'warning' => $warning,
             'suggestions' => []
         ];
 
@@ -109,32 +113,53 @@ class DictionaryMatch extends BaseMatch
             case 'passwords':
                 if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
-                        return 'This is a top-10 common password';
+                        return [
+                            Feedback::FEEDBACK_CODE_COMMON_TOP_10,
+                            'This is a top-10 common password',
+                        ];
                     } elseif ($this->rank <= 100) {
-                        return 'This is a top-100 common password';
+                        return [
+                            Feedback::FEEDBACK_CODE_COMMON_TOP_100,
+                            'This is a top-100 common password',
+                        ];
                     } else {
-                        return 'This is a very common password';
+                        return [
+                            Feedback::FEEDBACK_CODE_COMMON,
+                            'This is a very common password'
+                        ];
                     }
                 } elseif ($this->getGuessesLog10() <= 4) {
-                    return 'This is similar to a commonly used password';
+                    return [
+                        Feedback::FEEDBACK_CODE_COMMON_SIMILAR,
+                        'This is similar to a commonly used password',
+                    ];
                 }
                 break;
             case 'english_wikipedia':
                 if ($isSoleMatch) {
-                    return 'A word by itself is easy to guess';
+                    return [
+                        Feedback::FEEDBACK_CODE_GUESSABLE_WORD,
+                        'A word by itself is easy to guess',
+                    ];
                 }
                 break;
             case 'surnames':
             case 'male_names':
             case 'female_names':
                 if ($isSoleMatch) {
-                    return 'Names and surnames by themselves are easy to guess';
+                    return [
+                        Feedback::FEEDBACK_CODE_GUESSABLE_NAME,
+                        'Names and surnames by themselves are easy to guess',
+                    ];
                 } else {
-                    return 'Common names and surnames are easy to guess';
+                    return [
+                        Feedback::FEEDBACK_CODE_GUESSABLE_NAMES,
+                        'Common names and surnames are easy to guess',
+                    ];
                 }
         }
 
-        return '';
+        return ['', ''];
     }
 
     /**

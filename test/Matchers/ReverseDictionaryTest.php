@@ -60,6 +60,11 @@ class RerverseDictionaryTest extends AbstractMatchTest
             $feedback['suggestions'],
             "reverse dictionary match gives correct suggestion"
         );
+        $this->assertEquals(
+            'guessable_word',
+            $feedback['code'],
+            "reverse dictionary match gives correct code"
+        );
     }
 
     public function testFeedbackTop100Password()
@@ -75,6 +80,11 @@ class RerverseDictionaryTest extends AbstractMatchTest
             'This is similar to a commonly used password',
             $feedback['warning'],
             "reverse dictionary match doesn't give top-100 warning"
+        );
+        $this->assertEquals(
+            'common_similar',
+            $feedback['code'],
+            "reverse dictionary match doesn't give top-100 code"
         );
     }
 
@@ -96,6 +106,11 @@ class RerverseDictionaryTest extends AbstractMatchTest
             'Reversed words aren\'t much harder to guess',
             $feedback['suggestions'],
             "reverse dictionary match doesn't give suggestion for short token"
+        );
+        $this->assertEquals(
+            'guessable_word',
+            $feedback['code'],
+            "reverse dictionary match doesn't give code for short token"
         );
     }
 }

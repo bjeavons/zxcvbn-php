@@ -2,6 +2,7 @@
 
 namespace ZxcvbnPhp\Matchers;
 
+use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matcher;
 
 class SpatialMatch extends BaseMatch
@@ -60,7 +61,12 @@ class SpatialMatch extends BaseMatch
             ? 'Straight rows of keys are easy to guess'
             : 'Short keyboard patterns are easy to guess';
 
+        $code = $this->turns == 1
+            ? Feedback::FEEDBACK_CODE_GUESSABLE_SPATIAL_ROW
+            : Feedback::FEEDBACK_CODE_GUESSABLE_SPATIAL_PATTERN;
+
         return [
+            'code' => $code,
             'warning' => $warning,
             'suggestions' => [
                 'Use a longer keyboard pattern with more turns'
