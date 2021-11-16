@@ -208,6 +208,7 @@ class SpatialMatch extends BaseMatch
             // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
             $data = [
                 'qwerty' => $data['qwerty'],
+                'azerty' => $data['azerty'],
                 'dvorak' => $data['dvorak'],
                 'keypad' => $data['keypad'],
                 'mac_keypad' => $data['mac_keypad'],
