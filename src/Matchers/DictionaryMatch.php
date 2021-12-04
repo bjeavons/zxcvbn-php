@@ -78,9 +78,9 @@ class DictionaryMatch extends BaseMatch
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
-            $this->dictionaryName = isset($params['dictionary_name']) ? $params['dictionary_name'] : null;
-            $this->matchedWord = isset($params['matched_word']) ? $params['matched_word'] : null;
-            $this->rank = isset($params['rank']) ? $params['rank'] : null;
+            $this->dictionaryName = $params['dictionary_name'] ?? null;
+            $this->matchedWord = $params['matched_word'] ?? null;
+            $this->rank = $params['rank'] ?? null;
         }
     }
 

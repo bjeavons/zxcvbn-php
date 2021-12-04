@@ -104,9 +104,9 @@ class SequenceMatch extends BaseMatch
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
-            $this->sequenceName = isset($params['sequenceName']) ? $params['sequenceName'] : null;
-            $this->sequenceSpace = isset($params['sequenceSpace']) ? $params['sequenceSpace'] : null;
-            $this->ascending = isset($params['ascending']) ? $params['ascending'] : null;
+            $this->sequenceName = $params['sequenceName'] ?? null;
+            $this->sequenceSpace = $params['sequenceSpace'] ?? null;
+            $this->ascending = $params['ascending'] ?? null;
         }
     }
 

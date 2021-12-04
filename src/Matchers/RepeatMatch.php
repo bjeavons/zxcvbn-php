@@ -107,10 +107,10 @@ class RepeatMatch extends BaseMatch
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
-            $this->repeatedChar = isset($params['repeated_char']) ? $params['repeated_char'] : null;
-            $this->baseGuesses = isset($params['base_guesses']) ? $params['base_guesses'] : null;
-            $this->baseMatches = isset($params['base_matches']) ? $params['base_matches'] : null;
-            $this->repeatCount = isset($params['repeat_count']) ? $params['repeat_count'] : null;
+            $this->repeatedChar = $params['repeated_char'] ?? null;
+            $this->baseGuesses = $params['base_guesses'] ?? null;
+            $this->baseMatches = $params['base_matches'] ?? null;
+            $this->repeatCount = $params['repeat_count'] ?? null;
         }
     }
 

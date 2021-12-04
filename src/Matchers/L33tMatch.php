@@ -90,8 +90,8 @@ class L33tMatch extends DictionaryMatch
     {
         parent::__construct($password, $begin, $end, $token, $params);
         if (!empty($params)) {
-            $this->sub = isset($params['sub']) ? $params['sub'] : null;
-            $this->subDisplay = isset($params['sub_display']) ? $params['sub_display'] : null;
+            $this->sub = $params['sub'] ?? null;
+            $this->subDisplay = $params['sub_display'] ?? null;
         }
     }
 

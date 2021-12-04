@@ -80,8 +80,8 @@ class SpatialMatch extends BaseMatch
         parent::__construct($password, $begin, $end, $token);
         $this->graph = $params['graph'];
         if (!empty($params)) {
-            $this->shiftedCount = isset($params['shifted_count']) ? $params['shifted_count'] : null;
-            $this->turns = isset($params['turns']) ? $params['turns'] : null;
+            $this->shiftedCount = $params['shifted_count'] ?? null;
+            $this->turns = $params['turns'] ?? null;
         }
     }
 
@@ -116,7 +116,7 @@ class SpatialMatch extends BaseMatch
                 $prevChar = mb_substr($password, $j - 1, 1);
                 $found = false;
                 $curDirection = -1;
-                $adjacents = isset($graph[$prevChar]) ? $graph[$prevChar] : [];
+                $adjacents = $graph[$prevChar] ?? [];
 
                 // Consider growing pattern by one character if j hasn't gone over the edge.
                 if ($j < $passwordLength) {
