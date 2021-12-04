@@ -114,7 +114,7 @@ class RepeatMatch extends BaseMatch
         }
     }
 
-    protected function getRawGuesses(): float
+    protected function getRawGuesses(): int
     {
         return $this->baseGuesses * $this->repeatCount;
     }

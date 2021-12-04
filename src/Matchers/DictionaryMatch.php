@@ -191,10 +191,7 @@ class DictionaryMatch extends BaseMatch
         return self::$rankedDictionaries;
     }
 
-    /**
-     * @return integer
-     */
-    protected function getRawGuesses(): float
+    protected function getRawGuesses(): int
     {
         $guesses = $this->rank;
         $guesses *= $this->getUppercaseVariations();

@@ -214,7 +214,7 @@ class SpatialMatch extends BaseMatch
         return self::$adjacencyGraphs;
     }
 
-    protected function getRawGuesses(): float
+    protected function getRawGuesses(): int
     {
         if ($this->graph === 'qwerty' || $this->graph === 'dvorak') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;

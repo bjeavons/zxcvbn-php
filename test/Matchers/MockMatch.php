@@ -26,10 +26,7 @@ class MockMatch extends BaseMatch
         return [];
     }
 
-    /**
-     * @return integer
-     */
-    public function getRawGuesses(): float
+    public function getRawGuesses(): int
     {
         return $this->guesses;
     }

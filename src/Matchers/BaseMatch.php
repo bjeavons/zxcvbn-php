@@ -139,9 +139,9 @@ abstract class BaseMatch implements MatchInterface
         return $res;
     }
 
-    abstract protected function getRawGuesses(): float;
+    abstract protected function getRawGuesses(): int;
 
-    public function getGuesses(): float
+    public function getGuesses(): int
     {
         return max($this->getRawGuesses(), $this->getMinimumGuesses());
     }

@@ -16,13 +16,7 @@ interface MatchInterface
      */
     public static function match(string $password, array $userInputs = []): array;
 
-    /**
-     * @return integer
-     */
-    public function getGuesses(): float;
+    public function getGuesses(): int;
 
-    /**
-     * @return float
-     */
     public function getGuessesLog10(): float;
 }
