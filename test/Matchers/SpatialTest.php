@@ -131,9 +131,9 @@ class SpatialTest extends AbstractMatchTest
         // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
         // - 1 term because: not counting spatial patterns of length 1
         // eg for length==6, multiplier is 5 for needing to try len2,len3,..,len6
-        return SpatialMatch::KEYBOARD_STARTING_POSITION
+        return (int)(SpatialMatch::KEYBOARD_STARTING_POSITION
             * SpatialMatch::KEYBOARD_AVERAGE_DEGREES
-            * (strlen($token) - 1);
+            * (strlen($token) - 1));
     }
 
     public function testGuessesBasic()

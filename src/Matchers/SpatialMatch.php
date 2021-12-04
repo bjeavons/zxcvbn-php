@@ -253,6 +253,6 @@ class SpatialMatch extends BaseMatch
             }
         }
 
-        return $guesses;
+        return (int)$guesses;
     }
 }
