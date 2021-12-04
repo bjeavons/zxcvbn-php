@@ -32,7 +32,7 @@ class RepeatMatch extends BaseMatch
      * @param array $userInputs
      * @return RepeatMatch[]
      */
-    public static function match($password, array $userInputs = [])
+    public static function match(string $password, array $userInputs = []): array
     {
         $matches = [];
         $lastIndex = 0;
@@ -82,7 +82,7 @@ class RepeatMatch extends BaseMatch
         return $matches;
     }
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         $warning = mb_strlen($this->repeatedChar) == 1
             ? 'Repeats like "aaa" are easy to guess'
@@ -103,7 +103,7 @@ class RepeatMatch extends BaseMatch
      * @param string $token
      * @param array $params An array with keys: [repeated_char, base_guesses, base_matches, repeat_count].
      */
-    public function __construct($password, $begin, $end, $token, $params = [])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
@@ -114,7 +114,7 @@ class RepeatMatch extends BaseMatch
         }
     }
 
-    protected function getRawGuesses()
+    protected function getRawGuesses(): float
     {
         return $this->baseGuesses * $this->repeatCount;
     }

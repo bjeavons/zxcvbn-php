@@ -40,7 +40,7 @@ class DictionaryMatch extends BaseMatch
      * @param array $rankedDictionaries
      * @return DictionaryMatch[]
      */
-    public static function match($password, array $userInputs = [], $rankedDictionaries = [])
+    public static function match(string $password, array $userInputs = [], array $rankedDictionaries = []): array
     {
         $matches = [];
         if ($rankedDictionaries) {
@@ -74,7 +74,7 @@ class DictionaryMatch extends BaseMatch
      * @param string $token
      * @param array $params An array with keys: [dictionary_name, matched_word, rank].
      */
-    public function __construct($password, $begin, $end, $token, array $params = [])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
@@ -84,7 +84,7 @@ class DictionaryMatch extends BaseMatch
         }
     }
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         $startUpper = '/^[A-Z][^A-Z]+$/u';
         $allUpper = '/^[^a-z]+$/u';
@@ -103,7 +103,7 @@ class DictionaryMatch extends BaseMatch
         return $feedback;
     }
 
-    public function getFeedbackWarning($isSoleMatch)
+    public function getFeedbackWarning(bool $isSoleMatch): string
     {
         switch ($this->dictionaryName) {
             case 'passwords':
@@ -144,7 +144,7 @@ class DictionaryMatch extends BaseMatch
      * @param array $dict
      * @return array
      */
-    protected static function dictionaryMatch($password, $dict)
+    protected static function dictionaryMatch(string $password, array $dict): array
     {
         $result = [];
         $length = mb_strlen($password);
@@ -175,7 +175,7 @@ class DictionaryMatch extends BaseMatch
      *
      * @return array
      */
-    protected static function getRankedDictionaries()
+    protected static function getRankedDictionaries(): array
     {
         if (empty(self::$rankedDictionaries)) {
             $json = file_get_contents(dirname(__FILE__) . '/frequency_lists.json');
@@ -194,7 +194,7 @@ class DictionaryMatch extends BaseMatch
     /**
      * @return integer
      */
-    protected function getRawGuesses()
+    protected function getRawGuesses(): float
     {
         $guesses = $this->rank;
         $guesses *= $this->getUppercaseVariations();
@@ -205,7 +205,7 @@ class DictionaryMatch extends BaseMatch
     /**
      * @return integer
      */
-    protected function getUppercaseVariations()
+    protected function getUppercaseVariations(): int
     {
         $word = $this->token;
         if (preg_match(self::ALL_LOWER, $word) || mb_strtolower($word) === $word) {

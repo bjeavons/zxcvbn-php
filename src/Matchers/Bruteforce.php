@@ -22,7 +22,7 @@ class Bruteforce extends BaseMatch
      * @param array $userInputs
      * @return Bruteforce[]
      */
-    public static function match($password, array $userInputs = [])
+    public static function match(string $password, array $userInputs = []): array
     {
         // Matches entire string.
         $match = new static($password, 0, mb_strlen($password) - 1, $password);
@@ -30,7 +30,7 @@ class Bruteforce extends BaseMatch
     }
 
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         return [
             'warning' => "",
@@ -39,7 +39,7 @@ class Bruteforce extends BaseMatch
         ];
     }
 
-    public function getRawGuesses()
+    public function getRawGuesses(): float
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, mb_strlen($this->token));
         if ($guesses === INF) {

@@ -8,7 +8,7 @@ class MockMatch extends BaseMatch
 {
     protected $guesses;
 
-    public function __construct($begin, $end, $guesses)
+    public function __construct(int $begin, int $end, int $guesses)
     {
         parent::__construct('', $begin, $end, '');
         $this->guesses = $guesses;
@@ -21,7 +21,7 @@ class MockMatch extends BaseMatch
      * @return array
      *   Associative array with warning (string) and suggestions (array of strings)
      */
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         return [];
     }
@@ -29,7 +29,7 @@ class MockMatch extends BaseMatch
     /**
      * @return integer
      */
-    public function getRawGuesses()
+    public function getRawGuesses(): float
     {
         return $this->guesses;
     }
@@ -47,7 +47,7 @@ class MockMatch extends BaseMatch
      * @return array
      *   Array of Match objects
      */
-    public static function match($password, array $userInputs = [])
+    public static function match(string $password, array $userInputs = []): array
     {
         return [];
     }

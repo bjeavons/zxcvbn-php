@@ -73,7 +73,7 @@ class DateMatch extends BaseMatch
      * @param array $userInputs
      * @return DateMatch[]
      */
-    public static function match($password, array $userInputs = [])
+    public static function match(string $password, array $userInputs = []): array
     {
         # a "date" is recognized as:
         #   any 3-tuple that starts or ends with a 2- or 4-digit year,
@@ -105,7 +105,7 @@ class DateMatch extends BaseMatch
         return $matches;
     }
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         return [
             'warning' => "Dates are often easy to guess",
@@ -122,7 +122,7 @@ class DateMatch extends BaseMatch
      * @param string $token
      * @param array $params An array with keys: [day, month, year, separator].
      */
-    public function __construct($password, $begin, $end, $token, array $params)
+    public function __construct(string $password, int $begin, int $end, string $token, array $params)
     {
         parent::__construct($password, $begin, $end, $token);
         $this->day = $params['day'];
@@ -138,7 +138,7 @@ class DateMatch extends BaseMatch
      *
      * @return array
      */
-    protected static function datesWithSeparators($password)
+    protected static function datesWithSeparators(string $password): array
     {
         $matches = [];
         $length = mb_strlen($password);
@@ -184,7 +184,7 @@ class DateMatch extends BaseMatch
      *
      * @return array
      */
-    protected static function datesWithoutSeparators($password)
+    protected static function datesWithoutSeparators(string $password): array
     {
         $matches = [];
         $length = mb_strlen($password);
@@ -256,12 +256,12 @@ class DateMatch extends BaseMatch
      * @param array $candidate
      * @return int Returns the number of years between the detected year and the current year for a candidate.
      */
-    protected static function getDistanceForMatchCandidate($candidate)
+    protected static function getDistanceForMatchCandidate(array $candidate): int
     {
         return abs((int)$candidate['year'] - static::getReferenceYear());
     }
 
-    public static function getReferenceYear()
+    public static function getReferenceYear(): int
     {
         return (int)date('Y');
     }
@@ -271,7 +271,7 @@ class DateMatch extends BaseMatch
      * @return array|bool Returns an associative array containing 'day', 'month' and 'year' keys, or false if the
      *                    provided date array is invalid.
      */
-    protected static function checkDate($ints)
+    protected static function checkDate(array $ints)
     {
         # given a 3-tuple, discard if:
         #   middle int is over 31 (for all dmy formats, years are never allowed in the middle)
@@ -347,7 +347,7 @@ class DateMatch extends BaseMatch
      * @return array|bool Returns an associative array containing 'day' and 'month' keys, or false if any combination
      *                    of the two numbers does not match a day and month.
      */
-    protected static function mapIntsToDayMonth($ints)
+    protected static function mapIntsToDayMonth(array $ints)
     {
         foreach ([$ints, array_reverse($ints)] as list($d, $m)) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
@@ -365,7 +365,7 @@ class DateMatch extends BaseMatch
      * @param int $year A two digit number representing a year.
      * @return int Returns the most likely four digit year for the provided number.
      */
-    protected static function twoToFourDigitYear($year)
+    protected static function twoToFourDigitYear(int $year): int
     {
         if ($year > 99) {
             return $year;
@@ -392,7 +392,7 @@ class DateMatch extends BaseMatch
      * @param array $matches An array of matches (not Match objects)
      * @return array The provided array of matches, but with matches that are strict substrings of others removed.
      */
-    protected static function removeRedundantMatches($matches)
+    protected static function removeRedundantMatches(array $matches): array
     {
         return array_filter($matches, function ($match) use ($matches) {
             foreach ($matches as $otherMatch) {
@@ -408,7 +408,7 @@ class DateMatch extends BaseMatch
         });
     }
 
-    protected function getRawGuesses()
+    protected function getRawGuesses(): float
     {
         // base guesses: (year distance from REFERENCE_YEAR) * num_days * num_years
         $yearSpace = max(abs($this->year - static::getReferenceYear()), static::MIN_YEAR_SPACE);

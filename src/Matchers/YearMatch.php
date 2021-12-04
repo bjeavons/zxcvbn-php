@@ -19,7 +19,7 @@ class YearMatch extends BaseMatch
      * @param array $userInputs
      * @return YearMatch[]
      */
-    public static function match($password, array $userInputs = [])
+    public static function match(string $password, array $userInputs = []): array
     {
         $matches = [];
         $groups = static::findAll($password, "/(19\d\d|200\d|201\d)/u");
@@ -30,7 +30,7 @@ class YearMatch extends BaseMatch
         return $matches;
     }
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         return [
             'warning' => "Recent years are easy to guess",
@@ -41,7 +41,7 @@ class YearMatch extends BaseMatch
         ];
     }
 
-    protected function getRawGuesses()
+    protected function getRawGuesses(): float
     {
         $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());
         return max($yearSpace, DateMatch::MIN_YEAR_SPACE);

@@ -36,7 +36,7 @@ class SpatialMatch extends BaseMatch
      * @param array $graphs
      * @return SpatialMatch[]
      */
-    public static function match($password, array $userInputs = [], array $graphs = [])
+    public static function match(string $password, array $userInputs = [], array $graphs = []): array
     {
 
         $matches = [];
@@ -54,7 +54,7 @@ class SpatialMatch extends BaseMatch
         return $matches;
     }
 
-    public function getFeedback($isSoleMatch)
+    public function getFeedback(bool $isSoleMatch): array
     {
         $warning = $this->turns == 1
             ? 'Straight rows of keys are easy to guess'
@@ -75,7 +75,7 @@ class SpatialMatch extends BaseMatch
      * @param string $token
      * @param array $params An array with keys: [graph (required), shifted_count, turns].
      */
-    public function __construct($password, $begin, $end, $token, $params = [])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         $this->graph = $params['graph'];
@@ -190,7 +190,7 @@ class SpatialMatch extends BaseMatch
      *
      * @return array
      */
-    public static function getAdjacencyGraphs()
+    public static function getAdjacencyGraphs(): array
     {
         if (empty(self::$adjacencyGraphs)) {
             $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
@@ -211,7 +211,7 @@ class SpatialMatch extends BaseMatch
         return self::$adjacencyGraphs;
     }
 
-    protected function getRawGuesses()
+    protected function getRawGuesses(): float
     {
         if ($this->graph === 'qwerty' || $this->graph === 'dvorak') {
             $startingPosition = self::KEYBOARD_STARTING_POSITION;

@@ -32,13 +32,7 @@ abstract class BaseMatch implements MatchInterface
      */
     public $pattern;
 
-    /**
-     * @param $password
-     * @param $begin
-     * @param $end
-     * @param $token
-     */
-    public function __construct($password, $begin, $end, $token)
+    public function __construct(string $password, int $begin, int $end, string $token)
     {
         $this->password = $password;
         $this->begin = $begin;
@@ -51,10 +45,11 @@ abstract class BaseMatch implements MatchInterface
      *
      * @param  bool $isSoleMatch
      *   Whether this is the only match in the password
-     * @return array
+     * @return array{warning: string, suggestions: array}
      *   Associative array with warning (string) and suggestions (array of strings)
      */
-    abstract public function getFeedback($isSoleMatch);
+    #
+    abstract public function getFeedback(bool $isSoleMatch): array;
 
     /**
      * Find all occurences of regular expression in a string.
@@ -78,7 +73,7 @@ abstract class BaseMatch implements MatchInterface
      *       )
      *     )
      */
-    public static function findAll($string, $regex, $offset = 0)
+    public static function findAll(string $string, string $regex, int $offset = 0): array
     {
         // $offset is the number of multibyte-aware number of characters to offset, but the offset parameter for
         // preg_match_all counts bytes, not characters: to correct this, we need to calculate the byte offset and pass
@@ -126,7 +121,7 @@ abstract class BaseMatch implements MatchInterface
      * @param $k
      * @return int
      */
-    public static function binom($n, $k)
+    public static function binom(int $n, int $k): int
     {
         $j = $res = 1;
 
@@ -144,14 +139,14 @@ abstract class BaseMatch implements MatchInterface
         return $res;
     }
 
-    abstract protected function getRawGuesses();
+    abstract protected function getRawGuesses(): float;
 
-    public function getGuesses()
+    public function getGuesses(): float
     {
         return max($this->getRawGuesses(), $this->getMinimumGuesses());
     }
 
-    protected function getMinimumGuesses()
+    protected function getMinimumGuesses(): int
     {
         if (mb_strlen($this->token) < mb_strlen($this->password)) {
             if (mb_strlen($this->token) === 1) {
@@ -163,7 +158,7 @@ abstract class BaseMatch implements MatchInterface
         return 0;
     }
 
-    public function getGuessesLog10()
+    public function getGuessesLog10(): float
     {
         return log10($this->getGuesses());
     }

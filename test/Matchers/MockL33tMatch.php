@@ -6,7 +6,7 @@ use ZxcvbnPhp\Matchers\L33tMatch;
 
 class MockL33tMatch extends L33tMatch
 {
-    protected static function getRankedDictionaries()
+    protected static function getRankedDictionaries(): array
     {
         return [
             'words' => [
@@ -21,7 +21,7 @@ class MockL33tMatch extends L33tMatch
         ];
     }
 
-    protected static function getL33tTable()
+    protected static function getL33tTable(): array
     {
         return [
             'a' => ['4', '@'],
