@@ -71,14 +71,14 @@ class ZxcvbnTest extends TestCase
         return [
             ['password', 0, ['dictionary',], 'less than a second', 3],
             ['65432', 0, ['sequence',], 'less than a second', 101],
-            ['sdfgsdfg', 1, ['repeat',], 'less than a second', 2595.0000000276],
+            ['sdfgsdfg', 1, ['repeat',], 'less than a second', 2595],
             ['fortitude', 1, ['dictionary',], '1 second', 11308],
             ['dfjkym', 1, ['bruteforce',], '2 minutes', 1000001],
             ['fortitude22', 2, ['dictionary', 'repeat',], '2 minutes', 1140700],
             ['absoluteadnap', 2, ['dictionary', 'dictionary',], '25 minutes', 15187504],
             ['knifeandspoon', 3, ['dictionary', 'dictionary', 'dictionary'], '1 day', 1108057600],
             ['h1dden_26191', 3, ['dictionary', 'bruteforce', 'date'], '3 days', 2642940400], // Failed asserting that 2730628000 matches expected 2642940400.
-            ['4rfv1236yhn!', 4, ['spatial', 'sequence', 'bruteforce'], '1 month', 38980000000.414],
+            ['4rfv1236yhn!', 4, ['spatial', 'sequence', 'bruteforce'], '1 month', 38980000000],
             ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',], 'centuries', 10000000000010000],
         ];
     }
