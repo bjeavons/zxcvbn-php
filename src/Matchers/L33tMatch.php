@@ -157,7 +157,7 @@ class L33tMatch extends DictionaryMatch
         $substitutions = self::substitutionTableHelper($subtable, $keys, [[]]);
 
         // Converts the substitution arrays from [ [a, b], [c, d] ] to [ a => b, c => d ]
-        $substitutions = array_map(function ($subArray) {
+        $substitutions = array_map(function (array $subArray): array {
             return array_combine(array_column($subArray, 0), array_column($subArray, 1));
         }, $substitutions);
 

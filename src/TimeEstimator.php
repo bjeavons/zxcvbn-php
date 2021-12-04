@@ -66,7 +66,7 @@ class TimeEstimator
 
     protected function displayTime(float $seconds): string
     {
-        $callback = function ($seconds) {
+        $callback = function (float $seconds): array {
             $minute = 60;
             $hour = $minute * 60;
             $day = $hour * 24;

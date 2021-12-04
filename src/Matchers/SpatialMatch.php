@@ -92,7 +92,7 @@ class SpatialMatch extends BaseMatch
      * @param string $graphName
      * @return array
      */
-    protected static function graphMatch($password, $graph, $graphName)
+    protected static function graphMatch(string $password, array $graph, string $graphName): array
     {
         $result = [];
         $i = 0;

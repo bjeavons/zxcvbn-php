@@ -285,7 +285,7 @@ class DateMatch extends BaseMatch
             return false;
         }
 
-        $invalidYear = count(array_filter($ints, function ($int) {
+        $invalidYear = count(array_filter($ints, function (int $int) {
             return ($int >= 100 && $int < static::MIN_YEAR)
                 || ($int > static::MAX_YEAR);
         }));
@@ -293,13 +293,13 @@ class DateMatch extends BaseMatch
             return false;
         }
 
-        $over12 = count(array_filter($ints, function ($int) {
+        $over12 = count(array_filter($ints, function (int $int) {
             return $int > 12;
         }));
-        $over31 = count(array_filter($ints, function ($int) {
+        $over31 = count(array_filter($ints, function (int $int) {
             return $int > 31;
         }));
-        $under1 = count(array_filter($ints, function ($int) {
+        $under1 = count(array_filter($ints, function (int $int) {
             return $int <= 0;
         }));
 
@@ -394,7 +394,7 @@ class DateMatch extends BaseMatch
      */
     protected static function removeRedundantMatches(array $matches): array
     {
-        return array_filter($matches, function ($match) use ($matches) {
+        return array_filter($matches, function (array $match) use ($matches): bool {
             foreach ($matches as $otherMatch) {
                 if ($match === $otherMatch) {
                     continue;
