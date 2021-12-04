@@ -29,7 +29,7 @@ class SequenceMatch extends BaseMatch
         $matches = [];
         $passwordLength = mb_strlen($password);
 
-        if ($passwordLength === 1) {
+        if ($passwordLength <= 1) {
             return [];
         }
 

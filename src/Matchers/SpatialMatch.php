@@ -123,8 +123,11 @@ class SpatialMatch extends BaseMatch
                     $curChar = mb_substr($password, $j, 1);
                     foreach ($adjacents as $adj) {
                         $curDirection += 1;
+                        if ($adj === null) {
+                            continue;
+                        }
                         $curCharPos = static::indexOf($adj, $curChar);
-                        if ($adj !== null && $curCharPos !== -1) {
+                        if ($curCharPos !== -1) {
                             $found = true;
                             $foundDirection = $curDirection;
 
@@ -179,7 +182,7 @@ class SpatialMatch extends BaseMatch
      *
      * @return int
      */
-    protected static function indexOf($string, $char)
+    protected static function indexOf(string $string, string $char): int
     {
         $pos = mb_strpos($string, $char);
         return ($pos === false ? -1 : $pos);

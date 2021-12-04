@@ -224,8 +224,8 @@ class DictionaryMatch extends BaseMatch
         // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
         // with U uppercase letters or less. or, if there's more uppercase than lower (for eg. PASSwORD),
         // the number of ways to lowercase U+L letters with L lowercase letters or less.
-        $uppercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_upper'));
-        $lowercase = count(array_filter(preg_split('//u', $word, null, PREG_SPLIT_NO_EMPTY), 'ctype_lower'));
+        $uppercase = count(array_filter(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY), 'ctype_upper'));
+        $lowercase = count(array_filter(preg_split('//u', $word, -1, PREG_SPLIT_NO_EMPTY), 'ctype_lower'));
 
         $variations = 0;
         for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {
