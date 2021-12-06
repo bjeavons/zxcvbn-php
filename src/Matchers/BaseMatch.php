@@ -48,7 +48,6 @@ abstract class BaseMatch implements MatchInterface
      * @return array{warning: string, suggestions: array}
      *   Associative array with warning (string) and suggestions (array of strings)
      */
-    #
     abstract public function getFeedback(bool $isSoleMatch): array;
 
     /**
