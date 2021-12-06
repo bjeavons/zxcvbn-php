@@ -199,9 +199,6 @@ class DictionaryMatch extends BaseMatch
         return $guesses;
     }
 
-    /**
-     * @return integer
-     */
     protected function getUppercaseVariations(): int
     {
         $word = $this->token;
