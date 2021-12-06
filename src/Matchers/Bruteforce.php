@@ -39,11 +39,11 @@ class Bruteforce extends BaseMatch
         ];
     }
 
-    public function getRawGuesses(): int
+    public function getRawGuesses(): float
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, mb_strlen($this->token));
-        if ($guesses > PHP_INT_MAX) {
-            return PHP_INT_MAX;
+        if ($guesses === INF) {
+            return PHP_FLOAT_MAX;
         }
 
         // small detail: make bruteforce matches at minimum one guess bigger than smallest allowed
@@ -54,6 +54,6 @@ class Bruteforce extends BaseMatch
             $minGuesses = Scorer::MIN_SUBMATCH_GUESSES_MULTI_CHAR + 1;
         }
 
-        return (int)max($guesses, $minGuesses);
+        return max($guesses, $minGuesses);
     }
 }

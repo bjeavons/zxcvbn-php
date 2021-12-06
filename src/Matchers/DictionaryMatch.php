@@ -191,7 +191,7 @@ class DictionaryMatch extends BaseMatch
         return self::$rankedDictionaries;
     }
 
-    protected function getRawGuesses(): int
+    protected function getRawGuesses(): float
     {
         $guesses = $this->rank;
         $guesses *= $this->getUppercaseVariations();
@@ -199,7 +199,7 @@ class DictionaryMatch extends BaseMatch
         return $guesses;
     }
 
-    protected function getUppercaseVariations(): int
+    protected function getUppercaseVariations(): float
     {
         $word = $this->token;
         if (preg_match(self::ALL_LOWER, $word) || mb_strtolower($word) === $word) {

@@ -202,12 +202,12 @@ class L33tMatch extends DictionaryMatch
         return self::substitutionTableHelper($table, $otherKeys, $nextSubs);
     }
 
-    protected function getRawGuesses(): int
+    protected function getRawGuesses(): float
     {
         return parent::getRawGuesses() * $this->getL33tVariations();
     }
 
-    protected function getL33tVariations(): int
+    protected function getL33tVariations(): float
     {
         $variations = 1;
 

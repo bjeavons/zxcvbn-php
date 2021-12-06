@@ -41,7 +41,7 @@ class YearMatch extends BaseMatch
         ];
     }
 
-    protected function getRawGuesses(): int
+    protected function getRawGuesses(): float
     {
         $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());
         return max($yearSpace, DateMatch::MIN_YEAR_SPACE);

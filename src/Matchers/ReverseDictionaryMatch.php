@@ -34,7 +34,7 @@ class ReverseDictionaryMatch extends DictionaryMatch
         return $matches;
     }
 
-    protected function getRawGuesses(): int
+    protected function getRawGuesses(): float
     {
         return parent::getRawGuesses() * 2;
     }

@@ -138,14 +138,14 @@ abstract class BaseMatch implements MatchInterface
         return $res;
     }
 
-    abstract protected function getRawGuesses(): int;
+    abstract protected function getRawGuesses(): float;
 
-    public function getGuesses(): int
+    public function getGuesses(): float
     {
         return max($this->getRawGuesses(), $this->getMinimumGuesses());
     }
 
-    protected function getMinimumGuesses(): int
+    protected function getMinimumGuesses(): float
     {
         if (mb_strlen($this->token) < mb_strlen($this->password)) {
             if (mb_strlen($this->token) === 1) {

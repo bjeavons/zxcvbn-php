@@ -6,9 +6,10 @@ use ZxcvbnPhp\Matchers\BaseMatch;
 
 class MockMatch extends BaseMatch
 {
+    /** @var float */
     protected $guesses;
 
-    public function __construct(int $begin, int $end, int $guesses)
+    public function __construct(int $begin, int $end, float $guesses)
     {
         parent::__construct('', $begin, $end, '');
         $this->guesses = $guesses;
@@ -26,7 +27,7 @@ class MockMatch extends BaseMatch
         return [];
     }
 
-    public function getRawGuesses(): int
+    public function getRawGuesses(): float
     {
         return $this->guesses;
     }

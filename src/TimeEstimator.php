@@ -35,7 +35,7 @@ class TimeEstimator
         ];
     }
 
-    protected function guessesToScore(float $guesses): int
+    protected function guessesToScore(float $guesses): float
     {
         $DELTA = 5;
 

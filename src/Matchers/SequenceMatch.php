@@ -110,7 +110,7 @@ class SequenceMatch extends BaseMatch
         }
     }
 
-    protected function getRawGuesses(): int
+    protected function getRawGuesses(): float
     {
         $firstCharacter = mb_substr($this->token, 0, 1);
         $guesses = 0;
