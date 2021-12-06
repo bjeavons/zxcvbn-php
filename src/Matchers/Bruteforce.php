@@ -42,9 +42,8 @@ class Bruteforce extends BaseMatch
     public function getRawGuesses(): int
     {
         $guesses = pow(self::BRUTEFORCE_CARDINALITY, mb_strlen($this->token));
-        if ($guesses === INF) {
-            // use 32bit max int if for some reason PHP_INT_MAX isn't defined
-            return defined('PHP_INT_MAX') ? PHP_INT_MAX : 2147483647;
+        if ($guesses > PHP_INT_MAX) {
+            return PHP_INT_MAX;
         }
 
         // small detail: make bruteforce matches at minimum one guess bigger than smallest allowed
