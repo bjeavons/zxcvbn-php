@@ -146,8 +146,8 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $this->assertEquals(
-            $this->getBaseGuessCount($token),
-            $match->getGuesses(),
+            (int)$this->getBaseGuessCount($token),
+            (int)$match->getGuesses(),
             "with no turns or shifts, guesses is starts * degree * (len-1)"
         );
     }
@@ -162,8 +162,8 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $this->assertEquals(
-            $this->getBaseGuessCount($token) * (BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1)),
-            $match->getGuesses(),
+            (int)$this->getBaseGuessCount($token) * (BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1)),
+            (int)$match->getGuesses(),
             "guesses is added for shifted keys, similar to capitals in dictionary matching"
         );
     }
@@ -178,8 +178,8 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $this->assertEquals(
-            $this->getBaseGuessCount($token) * 2,
-            $match->getGuesses(),
+            (int)$this->getBaseGuessCount($token) * 2,
+            (int)$match->getGuesses(),
             "when everything is shifted, guesses are double"
         );
     }
