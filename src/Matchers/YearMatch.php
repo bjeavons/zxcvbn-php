@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 
 class YearMatch extends BaseMatch
@@ -13,7 +16,7 @@ class YearMatch extends BaseMatch
     public $regexName = 'recent_year';
 
     /**
-     * Match occurences of years in a password
+     * Match occurrences of years in a password
      *
      * @param string $password
      * @param array $userInputs
@@ -30,6 +33,7 @@ class YearMatch extends BaseMatch
         return $matches;
     }
 
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
@@ -43,7 +47,7 @@ class YearMatch extends BaseMatch
 
     protected function getRawGuesses(): float
     {
-        $yearSpace = abs((int)$this->token - DateMatch::getReferenceYear());
+        $yearSpace = abs($this->token - DateMatch::getReferenceYear());
         return max($yearSpace, DateMatch::MIN_YEAR_SPACE);
     }
 }

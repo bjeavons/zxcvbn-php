@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 
 class DateMatch extends BaseMatch
@@ -105,6 +108,7 @@ class DateMatch extends BaseMatch
         return $matches;
     }
 
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
@@ -202,9 +206,9 @@ class DateMatch extends BaseMatch
 
                 $possibleSplits = static::$DATE_SPLITS[mb_strlen($token)];
                 foreach ($possibleSplits as $splitPositions) {
-                    $day = mb_substr($token, 0, $splitPositions[0]);
-                    $month = mb_substr($token, $splitPositions[0], $splitPositions[1] - $splitPositions[0]);
-                    $year = mb_substr($token, $splitPositions[1]);
+                    $day = (int)mb_substr($token, 0, $splitPositions[0]);
+                    $month = (int)mb_substr($token, $splitPositions[0], $splitPositions[1] - $splitPositions[0]);
+                    $year = (int)mb_substr($token, $splitPositions[1]);
 
                     $date = static::checkDate([$day, $month, $year]);
                     if ($date !== false) {
@@ -285,7 +289,7 @@ class DateMatch extends BaseMatch
             return false;
         }
 
-        $invalidYear = count(array_filter($ints, function (int $int) {
+        $invalidYear = count(array_filter($ints, function (int $int): bool {
             return ($int >= 100 && $int < static::MIN_YEAR)
                 || ($int > static::MAX_YEAR);
         }));
@@ -293,13 +297,13 @@ class DateMatch extends BaseMatch
             return false;
         }
 
-        $over12 = count(array_filter($ints, function (int $int) {
+        $over12 = count(array_filter($ints, function (int $int): bool {
             return $int > 12;
         }));
-        $over31 = count(array_filter($ints, function (int $int) {
+        $over31 = count(array_filter($ints, function (int $int): bool {
             return $int > 31;
         }));
-        $under1 = count(array_filter($ints, function (int $int) {
+        $under1 = count(array_filter($ints, function (int $int): bool {
             return $int <= 0;
         }));
 
@@ -313,7 +317,7 @@ class DateMatch extends BaseMatch
             [$ints[0], [$ints[1], $ints[2]]], // year first
         ];
 
-        foreach ($possibleYearSplits as list($year, $rest)) {
+        foreach ($possibleYearSplits as [$year, $rest]) {
             if ($year >= static::MIN_YEAR && $year <= static::MAX_YEAR) {
                 if ($dm = static::mapIntsToDayMonth($rest)) {
                     return [
@@ -329,7 +333,7 @@ class DateMatch extends BaseMatch
             }
         }
 
-        foreach ($possibleYearSplits as list($year, $rest)) {
+        foreach ($possibleYearSplits as [$year, $rest]) {
             if ($dm = static::mapIntsToDayMonth($rest)) {
                 return [
                     'year'  => static::twoToFourDigitYear($year),
@@ -349,7 +353,7 @@ class DateMatch extends BaseMatch
      */
     protected static function mapIntsToDayMonth(array $ints)
     {
-        foreach ([$ints, array_reverse($ints)] as list($d, $m)) {
+        foreach ([$ints, array_reverse($ints)] as [$d, $m]) {
             if ($d >= 1 && $d <= 31 && $m >= 1 && $m <= 12) {
                 return [
                     'day'   => $d,

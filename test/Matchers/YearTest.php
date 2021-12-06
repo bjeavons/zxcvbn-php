@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\DateMatch;
@@ -101,8 +103,8 @@ class YearTest extends AbstractMatchTest
         $token = '1972';
         $match = new YearMatch($token, 0, 3, $token);
 
-        $this->assertEquals(
-            DateMatch::getReferenceYear() - (int)$token,
+        $this->assertSame(
+            (float)(DateMatch::getReferenceYear() - (int)$token),
             $match->getGuesses(),
             "guesses of |year - REFERENCE_YEAR| for past year matches"
         );
@@ -113,8 +115,8 @@ class YearTest extends AbstractMatchTest
         $token = '2050';
         $match = new YearMatch($token, 0, 3, $token);
 
-        $this->assertEquals(
-            (int)$token - DateMatch::getReferenceYear(),
+        $this->assertSame(
+            (float)((int)$token - DateMatch::getReferenceYear()),
             $match->getGuesses(),
             "guesses of |year - REFERENCE_YEAR| for future year matches"
         );
@@ -125,8 +127,8 @@ class YearTest extends AbstractMatchTest
         $token = '2005';
         $match = new YearMatch($token, 0, 3, $token);
 
-        $this->assertEquals(
-            20, // DateMatch::MIN_YEAR_SPACE
+        $this->assertSame(
+            20.0, // DateMatch::MIN_YEAR_SPACE
             $match->getGuesses(),
             "guesses of MIN_YEAR_SPACE for a year close to REFERENCE_YEAR"
         );
@@ -138,7 +140,7 @@ class YearTest extends AbstractMatchTest
         $match = new YearMatch($token, 0, strlen($token) - 1, $token);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Recent years are easy to guess',
             $feedback['warning'],
             "year match gives correct warning"

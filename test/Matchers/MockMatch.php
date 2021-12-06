@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matchers\BaseMatch;
 
 class MockMatch extends BaseMatch
@@ -22,9 +25,13 @@ class MockMatch extends BaseMatch
      * @return array
      *   Associative array with warning (string) and suggestions (array of strings)
      */
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
-        return [];
+        return [
+            'warning' => '',
+            'suggestions' => [],
+        ];
     }
 
     public function getRawGuesses(): float

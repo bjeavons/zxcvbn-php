@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use PHPUnit\Framework\TestCase;
@@ -68,7 +70,7 @@ abstract class AbstractMatchTest extends TestCase
             $patternNames = array_fill(0, count($patterns), $patternNames);
         }
 
-        $this->assertEquals(
+        $this->assertSame(
             count($patterns),
             count($matches),
             $prefix . ": matches.length == " . count($patterns)
@@ -80,17 +82,17 @@ abstract class AbstractMatchTest extends TestCase
             $pattern = $patterns[$k];
             list($i, $j) = $ijs[$k];
 
-            $this->assertEquals(
+            $this->assertSame(
                 $patternName,
                 $match->pattern,
                 "$prefix matches[$k].pattern == '$patternName'"
             );
-            $this->assertEquals(
+            $this->assertSame(
                 [$i, $j],
                 [$match->begin, $match->end],
                 "$prefix matches[$k] should have [i, j] of [$i, $j]"
             );
-            $this->assertEquals(
+            $this->assertSame(
                 $pattern,
                 $match->token,
                 "$prefix matches[$k].token == '$pattern'"
@@ -99,7 +101,7 @@ abstract class AbstractMatchTest extends TestCase
             foreach ($props as $propName => $propList) {
                 $propMessage = var_export($propList[$k], true);
                 // prop_msg = "'$prop_msg'" if typeof(prop_msg) == 'string'
-                $this->assertEquals(
+                $this->assertSame(
                     $propList[$k],
                     $match->$propName,
                     "$prefix matches[$k].$propName == $propMessage"

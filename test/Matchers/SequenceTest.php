@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\SequenceMatch;
@@ -175,14 +177,14 @@ class SequenceTest extends AbstractMatchTest
 
     /**
      * @dataProvider guessProvider
-     * @param $token
-     * @param $ascending
-     * @param $expectedGuesses
+     * @param string $token
+     * @param bool $ascending
+     * @param float $expectedGuesses
      */
-    public function testGuesses($token, $ascending, $expectedGuesses)
+    public function testGuesses(string $token, bool $ascending, float $expectedGuesses): void
     {
         $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => $ascending]);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedGuesses,
             $match->getGuesses(),
             "the sequence pattern '$token' has guesses of $expectedGuesses"
@@ -195,13 +197,13 @@ class SequenceTest extends AbstractMatchTest
         $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => true]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Sequences like abc or 6543 are easy to guess',
             $feedback['warning'],
             "sequence gives correct warning"
         );
-        $this->assertContains(
-            'Avoid sequences',
+        $this->assertSame(
+            ['Avoid sequences'],
             $feedback['suggestions'],
             "sequence gives correct suggestion"
         );

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 
 class SpatialMatch extends BaseMatch
@@ -54,6 +57,7 @@ class SpatialMatch extends BaseMatch
         return $matches;
     }
 
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         $warning = $this->turns == 1
@@ -242,7 +246,7 @@ class SpatialMatch extends BaseMatch
             $shifted = $this->shiftedCount;
             $unshifted = $length - $shifted;
 
-            if ($shifted === 0 || $unshifted === 0) {
+            if ($unshifted === 0) {
                 $guesses *= 2;
             } else {
                 $variations = 0;
@@ -253,6 +257,6 @@ class SpatialMatch extends BaseMatch
             }
         }
 
-        return $guesses > PHP_INT_MAX ? PHP_INT_MAX : (int)$guesses;
+        return $guesses;
     }
 }

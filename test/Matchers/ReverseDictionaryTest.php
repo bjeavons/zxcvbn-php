@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\ReverseDictionaryMatch;
 
-class RerverseDictionaryTest extends AbstractMatchTest
+class ReverseDictionaryTest extends AbstractMatchTest
 {
     protected static $testDicts = [
         'd1' => [
@@ -37,8 +39,8 @@ class RerverseDictionaryTest extends AbstractMatchTest
     public function testGuessesReversed()
     {
         $match = new ReverseDictionaryMatch('aaa', 0, 2, 'aaa', ['rank' => 32]);
-        $expected = 32 * 2;     // rank * reversed
-        $this->assertEquals($expected, $match->getGuesses(), "guesses are doubled when word is reversed");
+        $expected = 32.0 * 2;     // rank * reversed
+        $this->assertSame($expected, $match->getGuesses(), "guesses are doubled when word is reversed");
     }
 
     public function testFeedback()
@@ -50,7 +52,7 @@ class RerverseDictionaryTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'A word by itself is easy to guess',
             $feedback['warning'],
             "reverse dictionary match didn't lose the original dictionary match warning"
@@ -71,7 +73,7 @@ class RerverseDictionaryTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'This is similar to a commonly used password',
             $feedback['warning'],
             "reverse dictionary match doesn't give top-100 warning"
@@ -87,7 +89,7 @@ class RerverseDictionaryTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'A word by itself is easy to guess',
             $feedback['warning'],
             "reverse dictionary match still gives warning for short token"

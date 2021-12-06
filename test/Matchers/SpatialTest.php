@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\BaseMatch;
@@ -10,7 +12,10 @@ use ZxcvbnPhp\Matchers\SpatialMatch;
  */
 class SpatialTest extends AbstractMatchTest
 {
-    public function shortPatternDataProvider()
+    /**
+     * @return string[][]
+     */
+    public function shortPatternDataProvider(): array
     {
         return [
             [''],
@@ -22,27 +27,27 @@ class SpatialTest extends AbstractMatchTest
 
     /**
      * @dataProvider shortPatternDataProvider
-     * @param $password
+     * @param string $password
      */
-    public function testShortPatterns($password)
+    public function testShortPatterns(string $password): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [],
             SpatialMatch::match($password),
             "doesn't match 1- and 2-character spatial patterns"
         );
     }
 
-    public function testNoPattern()
+    public function testNoPattern(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             [],
             SpatialMatch::match('qzpm'),
             "doesn't match non-pattern"
         );
     }
 
-    public function testSurroundedPattern()
+    public function testSurroundedPattern(): void
     {
         $pattern = "6tfGHJ";
         $password = "rz!{$pattern}%z";
@@ -64,7 +69,7 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    public function spatialDataProvider()
+    public function spatialDataProvider(): array
     {
         return [
             ['12345',        'qwerty',     1, 0],
@@ -86,12 +91,12 @@ class SpatialTest extends AbstractMatchTest
 
     /**
      * @dataProvider spatialDataProvider
-     * @param $password
-     * @param $keyboard
-     * @param $turns
-     * @param $shifts
+     * @param string $password
+     * @param string $keyboard
+     * @param int    $turns
+     * @param int    $shifts
      */
-    public function testSpatialPatterns($password, $keyboard, $turns, $shifts)
+    public function testSpatialPatterns(string $password, string $keyboard, int $turns, int $shifts): void
     {
         $graphs = [$keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]];
 
@@ -109,7 +114,7 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    public function testShiftedCountForMultipleMatches()
+    public function testShiftedCountForMultipleMatches(): void
     {
         $password = "!QAZ1qaz";
         $this->checkMatches(
@@ -126,7 +131,7 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    protected function getBaseGuessCount($token): float
+    protected function getBaseGuessCount(string $token): float
     {
         // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
         // - 1 term because: not counting spatial patterns of length 1
@@ -136,7 +141,7 @@ class SpatialTest extends AbstractMatchTest
             * (strlen($token) - 1);
     }
 
-    public function testGuessesBasic()
+    public function testGuessesBasic(): void
     {
         $token = 'zxcvbn';
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -145,14 +150,14 @@ class SpatialTest extends AbstractMatchTest
             'shifted_count' => 0,
         ]);
 
-        $this->assertEquals(
-            (int)$this->getBaseGuessCount($token),
-            (int)$match->getGuesses(),
+        $this->assertSame(
+            $this->getBaseGuessCount($token),
+            $match->getGuesses(),
             "with no turns or shifts, guesses is starts * degree * (len-1)"
         );
     }
 
-    public function testGuessesShifted()
+    public function testGuessesShifted(): void
     {
         $token = 'ZxCvbn';
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -161,14 +166,14 @@ class SpatialTest extends AbstractMatchTest
             'shifted_count' => 2,
         ]);
 
-        $this->assertEquals(
-            (int)$this->getBaseGuessCount($token) * (BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1)),
-            (int)$match->getGuesses(),
+        $this->assertSame(
+            $this->getBaseGuessCount($token) * (BaseMatch::binom(6, 2) + BaseMatch::binom(6, 1)),
+            $match->getGuesses(),
             "guesses is added for shifted keys, similar to capitals in dictionary matching"
         );
     }
 
-    public function testGuessesEverythingShifted()
+    public function testGuessesEverythingShifted(): void
     {
         $token = 'ZXCVBN';
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -177,14 +182,17 @@ class SpatialTest extends AbstractMatchTest
             'shifted_count' => 6,
         ]);
 
-        $this->assertEquals(
-            (int)$this->getBaseGuessCount($token) * 2,
-            (int)$match->getGuesses(),
+        $this->assertSame(
+            $this->getBaseGuessCount($token) * 2,
+            $match->getGuesses(),
             "when everything is shifted, guesses are double"
         );
     }
 
-    public function complexGuessProvider()
+    /**
+     * @return array[]
+     */
+    public function complexGuessProvider(): array
     {
         return [
             ['6yhgf',        2, 19596],
@@ -202,7 +210,7 @@ class SpatialTest extends AbstractMatchTest
      * @param int $turns
      * @param float $expected
      */
-    public function testGuessesComplexCase($token, $turns, $expected)
+    public function testGuessesComplexCase(string $token, int $turns, float $expected): void
     {
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
             'graph' => 'qwerty',
@@ -210,14 +218,18 @@ class SpatialTest extends AbstractMatchTest
             'shifted_count' => 0,
         ]);
 
-        $this->assertEquals(
+        $actual = $match->getGuesses();
+        $this->assertIsFloat($actual);
+
+        $this->assertEqualsWithDelta(
             $expected,
-            $match->getGuesses(),
+            $actual,
+            1.0,
             "spatial guesses accounts for turn positions, directions and starting keys"
         );
     }
 
-    public function testFeedbackStraightLine()
+    public function testFeedbackStraightLine(): void
     {
         $token = 'dfghjk';
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -227,7 +239,7 @@ class SpatialTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Straight rows of keys are easy to guess',
             $feedback['warning'],
             "spatial match in straight line gives correct warning"
@@ -239,7 +251,7 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    public function testFeedbackWithTurns()
+    public function testFeedbackWithTurns(): void
     {
         $token = 'xcvgy789';
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -249,7 +261,7 @@ class SpatialTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Short keyboard patterns are easy to guess',
             $feedback['warning'],
             "spatial match with turns gives correct warning"

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Scorer;
 
@@ -28,7 +31,7 @@ class RepeatMatch extends BaseMatch
     /**
      * Match 3 or more repeated characters.
      *
-     * @param $password
+     * @param string $password
      * @param array $userInputs
      * @return RepeatMatch[]
      */
@@ -82,6 +85,7 @@ class RepeatMatch extends BaseMatch
         return $matches;
     }
 
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         $warning = mb_strlen($this->repeatedChar) == 1

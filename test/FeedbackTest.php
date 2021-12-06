@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
@@ -22,7 +24,7 @@ class FeedbackTest extends TestCase
     {
         $feedback = $this->feedback->getFeedback(0, []);
 
-        $this->assertEquals('', $feedback['warning'], "default warning");
+        $this->assertSame('', $feedback['warning'], "default warning");
         $this->assertContains(
             'Use a few words, avoid common phrases',
             $feedback['suggestions'],
@@ -40,7 +42,7 @@ class FeedbackTest extends TestCase
         $match = new Bruteforce('a', 0, 1, 'a');
         $feedback = $this->feedback->getFeedback(3, [$match]);
 
-        $this->assertEquals('', $feedback['warning'], "no warning for good score");
+        $this->assertSame('', $feedback['warning'], "no warning for good score");
         $this->assertEmpty($feedback['suggestions'], "no suggestions for good score");
     }
 
@@ -55,7 +57,7 @@ class FeedbackTest extends TestCase
         ]);
         $feedback = $this->feedback->getFeedback(1, [$match1, $match2]);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Dates are often easy to guess',
             $feedback['warning'],
             "warning provided for the longest match"
@@ -95,8 +97,8 @@ class FeedbackTest extends TestCase
         $match = new Bruteforce('qkcriv', 0, 6, 'qkcriv');
         $feedback = $this->feedback->getFeedback(1, [$match]);
 
-        $this->assertEquals('', $feedback['warning'], "bruteforce match has no warning");
-        $this->assertEquals(
+        $this->assertSame('', $feedback['warning'], "bruteforce match has no warning");
+        $this->assertSame(
             ['Add another word or two. Uncommon words are better.'],
             $feedback['suggestions'],
             "bruteforce match only has the default suggestion"

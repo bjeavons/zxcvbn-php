@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp;
 
 use ZxcvbnPhp\Matchers\Bruteforce;
@@ -114,7 +116,7 @@ class Scorer
 
 
         if ($length === 0) {
-            $guesses = 1;
+            $guesses = 1.0;
             $optimalSequence = [];
         } else {
             $optimalSequence = $this->unwind($length);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\Bruteforce;
@@ -45,6 +47,6 @@ class BruteforceTest extends AbstractMatchTest
     {
         $token = '🙂'; // smiley face emoji
         $match = new Bruteforce($token, 0, 1, $token);
-        $this->assertEquals(11, $match->getGuesses(), "multibyte character treated as one character");
+        $this->assertSame(11.0, $match->getGuesses(), "multibyte character treated as one character");
     }
 }

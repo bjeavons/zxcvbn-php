@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matchers\DateMatch;
@@ -236,7 +238,7 @@ class DateTest extends AbstractMatchTest
 
     public function testReferenceYearImplementation()
     {
-        $this->assertEquals(date('Y'), DateMatch::getReferenceYear(), "reference year implementation");
+        $this->assertSame((int)date('Y'), DateMatch::getReferenceYear(), "reference year implementation");
     }
 
     public function testNonDateThatLooksLikeDate()
@@ -254,8 +256,8 @@ class DateTest extends AbstractMatchTest
             'day' => 1
         ]);
 
-        $expected = 365 * abs(DateMatch::getReferenceYear() - $match->year);
-        $this->assertEquals(
+        $expected = 365.0 * abs(DateMatch::getReferenceYear() - $match->year);
+        $this->assertSame(
             $expected,
             $match->getGuesses(),
             "guesses for $token is 365 * distance_from_ref_year"
@@ -272,8 +274,8 @@ class DateTest extends AbstractMatchTest
             'day' => 1
         ]);
 
-        $expected = 7300; // 365 * DateMatch::MIN_YEAR_SPACE;
-        $this->assertEquals($expected, $match->getGuesses(), "recent years assume MIN_YEAR_SPACE");
+        $expected = 7300.0; // 365 * DateMatch::MIN_YEAR_SPACE;
+        $this->assertSame($expected, $match->getGuesses(), "recent years assume MIN_YEAR_SPACE");
     }
 
     public function testGuessWithSeparator()
@@ -286,8 +288,8 @@ class DateTest extends AbstractMatchTest
             'day' => 1
         ]);
 
-        $expected = 29200; // 365 * DateMatch::MIN_YEAR_SPACE * 4;
-        $this->assertEquals($expected, $match->getGuesses(), "extra guesses are added for separators");
+        $expected = 29200.0; // 365 * DateMatch::MIN_YEAR_SPACE * 4;
+        $this->assertSame($expected, $match->getGuesses(), "extra guesses are added for separators");
     }
 
     public function testFeedback()
@@ -301,7 +303,7 @@ class DateTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Dates are often easy to guess',
             $feedback['warning'],
             "date match gives correct warning"

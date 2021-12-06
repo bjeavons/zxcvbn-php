@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp;
 
 /**
@@ -35,7 +37,7 @@ class TimeEstimator
         ];
     }
 
-    protected function guessesToScore(float $guesses): float
+    protected function guessesToScore(float $guesses): int
     {
         $DELTA = 5;
 

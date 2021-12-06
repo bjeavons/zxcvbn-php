@@ -21,6 +21,9 @@
         "php-coveralls/php-coveralls": "*",
         "squizlabs/php_codesniffer": "3.*"
     },
+    "suggest": {
+        "ext-gmp": "Required for optimized binomial calculations (also requires PHP >= 7.3)"
+    },
     "autoload": {
         "psr-4": { "ZxcvbnPhp\\": "src/" }
     },

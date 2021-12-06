@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use ZxcvbnPhp\Matcher;
@@ -29,7 +31,7 @@ class RepeatTest extends AbstractMatchTest
         $suffixes = ['u', 'u%7'];
         $pattern = '&&&&&';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as [$password, $i, $j]) {
             $this->checkMatches(
                 "matches embedded repeat patterns",
                 RepeatMatch::match($password),
@@ -159,7 +161,7 @@ class RepeatTest extends AbstractMatchTest
             [
                 'repeatedChar' => ['abc'],
                 'repeatCount' => [2],
-                'baseGuesses' => [13]
+                'baseGuesses' => [13.0]
             ]
         );
     }
@@ -204,7 +206,7 @@ class RepeatTest extends AbstractMatchTest
         $match = RepeatMatch::match($pattern)[0];
 
         $baseMatches = $match->baseMatches;
-        $this->assertEquals(1, count($baseMatches));
+        $this->assertSame(1, count($baseMatches));
         $this->assertInstanceOf(SequenceMatch::class, $baseMatches[0]);
     }
 
@@ -212,14 +214,14 @@ class RepeatTest extends AbstractMatchTest
     {
         $pattern = 'mqmqmqltltltmqmqmqltltlt';
         $match = RepeatMatch::match($pattern)[0];
-        $this->assertEquals('mqmqmqltltlt', $match->repeatedChar);
+        $this->assertSame('mqmqmqltltlt', $match->repeatedChar);
 
         $baseMatches = $match->baseMatches;
         $this->assertInstanceOf(RepeatMatch::class, $baseMatches[0]);
-        $this->assertEquals('mq', $baseMatches[0]->repeatedChar);
+        $this->assertSame('mq', $baseMatches[0]->repeatedChar);
 
         $this->assertInstanceOf(RepeatMatch::class, $baseMatches[1]);
-        $this->assertEquals('lt', $baseMatches[1]->repeatedChar);
+        $this->assertSame('lt', $baseMatches[1]->repeatedChar);
     }
 
     public function testDuplicateRepeatsInPassword()
@@ -251,12 +253,12 @@ class RepeatTest extends AbstractMatchTest
 
     /**
      * @dataProvider guessesProvider
-     * @param $token
-     * @param $repeatedChar
-     * @param $repeatCount
-     * @param $expectedGuesses
+     * @param string $token
+     * @param string $repeatedChar
+     * @param int    $repeatCount
+     * @param float  $expectedGuesses
      */
-    public function testGuesses($token, $repeatedChar, $repeatCount, $expectedGuesses)
+    public function testGuesses(string $token, string $repeatedChar, int $repeatCount, float $expectedGuesses): void
     {
         $scorer = new Scorer();
         $matcher = new Matcher();
@@ -269,7 +271,7 @@ class RepeatTest extends AbstractMatchTest
             'base_guesses' => $baseGuesses,
         ]);
 
-        self::assertEquals($expectedGuesses, $match->getGuesses(), "the repeat pattern {$token} has guesses of {$expectedGuesses}");
+        self::assertSame($expectedGuesses, $match->getGuesses(), "the repeat pattern {$token} has guesses of {$expectedGuesses}");
     }
 
     public function testFeedbackSingleCharacterRepeat()
@@ -281,7 +283,7 @@ class RepeatTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Repeats like "aaa" are easy to guess',
             $feedback['warning'],
             "one repeated character gives correct warning"
@@ -302,7 +304,7 @@ class RepeatTest extends AbstractMatchTest
         ]);
         $feedback = $match->getFeedback(true);
 
-        $this->assertEquals(
+        $this->assertSame(
             'Repeats like "abcabcabc" are only slightly harder to guess than "abc"',
             $feedback['warning'],
             "multiple repeated characters gives correct warning"

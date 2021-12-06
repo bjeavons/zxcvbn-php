@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
 
+use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 
 class DictionaryMatch extends BaseMatch
@@ -33,7 +36,7 @@ class DictionaryMatch extends BaseMatch
     protected const ALL_LOWER = "/^[^A-Z]+$/u";
 
     /**
-     * Match occurences of dictionary words in password.
+     * Match occurrences of dictionary words in password.
      *
      * @param string $password
      * @param array $userInputs
@@ -84,6 +87,11 @@ class DictionaryMatch extends BaseMatch
         }
     }
 
+    /**
+     * @param bool $isSoleMatch
+     * @return array
+     */
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         $startUpper = '/^[A-Z][^A-Z]+$/u';

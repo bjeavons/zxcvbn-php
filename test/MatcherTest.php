@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
@@ -62,7 +64,7 @@ class MatcherTest extends TestCase
         $matches = $matcher->getMatches('_wQbgL491', ['PJnD', 'WQBG', 'ZhwZ']);
 
         $this->assertInstanceOf(DictionaryMatch::class, $matches[0], "user input match is correct class");
-        $this->assertEquals('wQbg', $matches[0]->token, "user input match has correct token");
+        $this->assertSame('wQbg', $matches[0]->token, "user input match has correct token");
     }
 
     public function testAddMatcherWillThrowException()

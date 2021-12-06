@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test\Matchers;
 
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,18 +23,22 @@ class MatchTest extends TestCase
             [2, 1, 2],
             [4, 2, 6],
             [33, 7, 4272048],
+            [206, 202, 72867865],
+            [3, 5, 0],
+            [29847, 2, 445406781],
         ];
     }
 
     /**
      * @dataProvider binomialDataProvider
-     * @param $n
-     * @param $k
-     * @param $expected
+     * @param int $n
+     * @param int $k
+     * @param int $expected
      */
-    public function testBinomialCoefficient($n, $k, $expected)
+    public function testBinomialCoefficient(int $n, int $k, int $expected)
     {
-        $this->assertEquals($expected, BaseMatch::binom($n, $k), "binom returns expected result");
+        $this->assertSame($expected, BaseMatch::binom($n, $k), "binom returns expected result");
+        $this->assertSame($expected, BaseMatch::binomPolyfill($n, $k), "binomPolyfill returns expected result");
     }
 
     public function testBinomialMirrorIdentity()
@@ -40,7 +46,7 @@ class MatchTest extends TestCase
         $n = 49;
         $k = 12;
 
-        $this->assertEquals(
+        $this->assertSame(
             BaseMatch::binom($n, $k),
             BaseMatch::binom($n, $n - $k),
             "mirror identity"
@@ -52,7 +58,7 @@ class MatchTest extends TestCase
         $n = 49;
         $k = 12;
 
-        $this->assertEquals(
+        $this->assertSame(
             BaseMatch::binom($n, $k),
             BaseMatch::binom($n - 1, $k - 1) + BaseMatch::binom($n - 1, $k),
             "pascal's triangle identity"
@@ -60,38 +66,41 @@ class MatchTest extends TestCase
     }
 
     /**
-     * @param int $guesses
-     * @return \PHPUnit_Framework_MockObject_MockObject|Match
+     * @param float $guesses
+     * @return MockObject|DateMatch
      */
-    private function getMatchMock($guesses)
+    private function getMatchMock(float $guesses)
     {
         $stub = $this->getMockBuilder(DateMatch::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getGuesses'])
+            ->onlyMethods(['getGuesses'])
             ->getMock();
         $stub->method('getGuesses')->willReturn($guesses);
 
         return $stub;
     }
 
-    public function log10Provider()
+    /**
+     * @return float[][]
+     */
+    public function log10Provider(): array
     {
         return [
-            [1, 0],
-            [10, 1],
-            [100, 2],
-            [500, log10(500)],
+            [1.0, 0.0],
+            [10.0, 1.0],
+            [100.0, 2.0],
+            [500.0, log10(500)],
         ];
     }
 
     /**
      * @dataProvider log10Provider
-     * @param $n
-     * @param $expected
+     * @param float $n
+     * @param float $expected
      */
-    public function testGuessesLog10($n, $expected)
+    public function testGuessesLog10(float $n, float $expected): void
     {
         $stub = $this->getMatchMock($n);
-        $this->assertEquals($expected, $stub->getGuessesLog10(), "log10 guesses");
+        $this->assertSame($expected, $stub->getGuessesLog10(), "log10 guesses");
     }
 }

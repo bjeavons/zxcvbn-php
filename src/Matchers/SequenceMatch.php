@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Matchers;
+
+use JetBrains\PhpStorm\ArrayShape;
 
 class SequenceMatch extends BaseMatch
 {
@@ -83,6 +87,7 @@ class SequenceMatch extends BaseMatch
         }
     }
 
+    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         return [

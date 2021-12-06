@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ZxcvbnPhp\Test;
 
 use PHPUnit\Framework\TestCase;
@@ -26,7 +28,7 @@ class ZxcvbnTest extends TestCase
         // zxcvbn will return two matches: 'rock' (rank 359) and 'you' (rank 1).
         // If tested alone, the word 'you' would return only 1 guess, but because it's part of a larger password,
         // it should return the minimum number of guesses, which is 50 for a multi-character token.
-        $this->assertEquals(50, $matches[1]->getGuesses());
+        $this->assertSame(50.0, $matches[1]->getGuesses());
     }
 
     public function typeDataProvider()
@@ -45,6 +47,7 @@ class ZxcvbnTest extends TestCase
 
     /**
      * @dataProvider typeDataProvider
+     * @throws \Exception
      */
     public function testZxcvbnReturnTypes($key, $type)
     {
@@ -93,23 +96,23 @@ class ZxcvbnTest extends TestCase
      * @param string $slowHashingDisplay
      * @param float $guesses
      */
-    public function testZxcvbnSanityCheck($password, $score, $patterns, $slowHashingDisplay, $guesses)
+    public function testZxcvbnSanityCheck(string $password, int $score, array $patterns, string $slowHashingDisplay, float $guesses): void
     {
         $result = $this->zxcvbn->passwordStrength($password);
 
-        $this->assertEquals($password, $result['password'], "zxcvbn result has correct password");
-        $this->assertEquals($score, $result['score'], "zxcvbn result has correct score");
-        $this->assertEquals(
+        $this->assertSame($password, $result['password'], "zxcvbn result has correct password");
+        $this->assertSame($score, $result['score'], "zxcvbn result has correct score");
+        $this->assertSame(
             $slowHashingDisplay,
             $result['crack_times_display']['offline_slow_hashing_1e4_per_second'],
             "zxcvbn result has correct display time for offline slow hashing"
         );
-        $this->assertEquals($guesses, $result['guesses'], "zxcvbn result has correct guesses");
+        $this->assertEqualsWithDelta($guesses, $result['guesses'], 1.0, "zxcvbn result has correct guesses");
 
         $actualPatterns = array_map(function ($match) {
             return $match->pattern;
         }, $result['sequence']);
-        $this->assertEquals($patterns, $actualPatterns, "zxcvbn result has correct patterns");
+        $this->assertSame($patterns, $actualPatterns, "zxcvbn result has correct patterns");
     }
 
     /**
@@ -121,7 +124,7 @@ class ZxcvbnTest extends TestCase
         $result = $this->zxcvbn->passwordStrength('_wQbgL491', ['PJnD', 'WQBG', 'ZhwZ']);
 
         $this->assertInstanceOf(DictionaryMatch::class, $result['sequence'][1], "user input match is correct class");
-        $this->assertEquals('wQbg', $result['sequence'][1]->token, "user input match has correct token");
+        $this->assertSame('wQbg', $result['sequence'][1]->token, "user input match has correct token");
     }
 
     public function testMultibyteUserDefinedWords()
@@ -129,7 +132,7 @@ class ZxcvbnTest extends TestCase
         $result = $this->zxcvbn->passwordStrength('المفاتيح', ['العربية', 'المفاتيح', 'لوحة']);
 
         $this->assertInstanceOf(DictionaryMatch::class, $result['sequence'][0], "user input match is correct class");
-        $this->assertEquals('المفاتيح', $result['sequence'][0]->token, "user input match has correct token");
+        $this->assertSame('المفاتيح', $result['sequence'][0]->token, "user input match has correct token");
     }
 
     public function testAddMatcherWillThrowException()
