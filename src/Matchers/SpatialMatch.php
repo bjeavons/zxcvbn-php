@@ -253,6 +253,6 @@ class SpatialMatch extends BaseMatch
             }
         }
 
-        return (int)$guesses;
+        return $guesses > PHP_INT_MAX ? PHP_INT_MAX : (int)$guesses;
     }
 }
