@@ -13,7 +13,6 @@ use ZxcvbnPhp\Matcher;
  */
 class L33tMatch extends DictionaryMatch
 {
-
     /** @var array An array of substitutions made to get from the token to the dictionary word. */
     public $sub = [];
 

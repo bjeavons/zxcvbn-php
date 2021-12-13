@@ -15,7 +15,6 @@ use ZxcvbnPhp\Scorer;
  */
 class Bruteforce extends BaseMatch
 {
-
     public const BRUTEFORCE_CARDINALITY = 10;
 
     public $pattern = 'bruteforce';

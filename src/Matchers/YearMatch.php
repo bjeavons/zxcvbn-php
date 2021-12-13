@@ -9,7 +9,6 @@ use ZxcvbnPhp\Matcher;
 
 class YearMatch extends BaseMatch
 {
-
     public const NUM_YEARS = 119;
 
     public $pattern = 'regex';

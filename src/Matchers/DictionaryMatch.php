@@ -9,7 +9,6 @@ use ZxcvbnPhp\Matcher;
 
 class DictionaryMatch extends BaseMatch
 {
-
     public $pattern = 'dictionary';
 
     /** @var string The name of the dictionary that the token was found in. */

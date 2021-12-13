@@ -9,7 +9,6 @@ use ZxcvbnPhp\Scorer;
 
 abstract class BaseMatch implements MatchInterface
 {
-
     /**
      * @var
      */
