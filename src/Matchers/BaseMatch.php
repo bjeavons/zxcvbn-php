@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ZxcvbnPhp\Matchers;
 
 use JetBrains\PhpStorm\ArrayShape;
+use ZxcvbnPhp\Math\Binomial;
 use ZxcvbnPhp\Scorer;
 
 abstract class BaseMatch implements MatchInterface
@@ -119,46 +120,12 @@ abstract class BaseMatch implements MatchInterface
      *
      * @param int $n
      * @param int $k
-     * @return int
+     * @return float
+     * @deprecated Use {@see Binomial::binom()} instead
      */
-    public static function binom(int $n, int $k): int
+    public static function binom(int $n, int $k): float
     {
-        if (function_exists('gmp_binomial')) {
-            return gmp_intval(gmp_binomial($n, $k));
-        }
-
-        return self::binomPolyfill($n, $k);
-    }
-
-    /**
-     * Substitute for gmp_polynomial for non-negative values of n and k.
-     * @param int $n
-     * @param int $k
-     * @return int
-     */
-    public static function binomPolyfill(int $n, int $k): int
-    {
-        if ($k < 0 || $n < 0) {
-            throw new \DomainException("n and k must be non-negative");
-        }
-
-        if ($k > $n) {
-            return 0;
-        }
-
-        // $k and $n - $k will always produce the same value, so use smaller of the two
-        $k = min($k, $n - $k);
-
-        $c = 1;
-
-        for ($i = 1; $i <= $k; $i++, $n--) {
-            // We're aiming for $c * $n / $i, but the $c * $n part could overflow, so use $c / $i * $n instead. The caveat here is that in
-            // order to get a precise answer, we need to avoid floats, which means we need to deal with whole part and the remainder
-            // separately.
-            $c = intdiv($c, $i) * $n + intdiv($c % $i * $n, $i);
-        }
-
-        return $c;
+        return Binomial::binom($n, $k);
     }
 
     abstract protected function getRawGuesses(): float;
