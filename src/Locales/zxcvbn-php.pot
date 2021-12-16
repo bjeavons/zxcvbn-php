@@ -1,0 +1,135 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-16 15:41+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: Matchers/DictionaryMatch.php:98
+msgid "Capitalization doesn't help very much"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:100
+msgid "All-uppercase is almost as easy to guess as all-lowercase"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:112
+msgid "This is a top-10 common password"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:114
+msgid "This is a top-100 common password"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:116
+msgid "This is a very common password"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:119
+msgid "This is similar to a commonly used password"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:124
+msgid "A word by itself is easy to guess"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:131
+msgid "Names and surnames by themselves are easy to guess"
+msgstr ""
+
+#: Matchers/DictionaryMatch.php:133
+msgid "Common names and surnames are easy to guess"
+msgstr ""
+
+#: Matchers/ReverseDictionaryMatch.php:47
+msgid "Reversed words aren't much harder to guess"
+msgstr ""
+
+#: Matchers/DateMatch.php:111
+msgid "Dates are often easy to guess"
+msgstr ""
+
+#: Matchers/DateMatch.php:113
+msgid "Avoid dates and years that are associated with you"
+msgstr ""
+
+#: Matchers/YearMatch.php:36
+msgid "Recent years are easy to guess"
+msgstr ""
+
+#: Matchers/YearMatch.php:38
+msgid "Avoid recent years"
+msgstr ""
+
+#: Matchers/YearMatch.php:39
+msgid "Avoid years that are associated with you"
+msgstr ""
+
+#: Matchers/SpatialMatch.php:60
+msgid "Straight rows of keys are easy to guess"
+msgstr ""
+
+#: Matchers/SpatialMatch.php:61
+msgid "Short keyboard patterns are easy to guess"
+msgstr ""
+
+#: Matchers/SpatialMatch.php:66
+msgid "Use a longer keyboard pattern with more turns"
+msgstr ""
+
+#: Matchers/L33tMatch.php:102
+msgid "Predictable substitutions like '@' instead of 'a' don't help very much"
+msgstr ""
+
+#: Matchers/RepeatMatch.php:88
+msgid "Repeats like \"aaa\" are easy to guess"
+msgstr ""
+
+#: Matchers/RepeatMatch.php:89
+msgid ""
+"Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\""
+msgstr ""
+
+#: Matchers/RepeatMatch.php:94
+msgid "Avoid repeated words and characters"
+msgstr ""
+
+#: Matchers/SequenceMatch.php:90
+msgid "Sequences like abc or 6543 are easy to guess"
+msgstr ""
+
+#: Matchers/SequenceMatch.php:92
+msgid "Avoid sequences"
+msgstr ""
+
+#: Feedback.php:27
+msgid "Use a few words, avoid common phrases"
+msgstr ""
+
+#: Feedback.php:28
+msgid "No need for symbols, digits, or uppercase letters"
+msgstr ""
+
+#: Feedback.php:50
+msgid "Add another word or two. Uncommon words are better."
+msgstr ""
+
+#: TimeEstimator.php:73
+msgid "less than a second"
+msgstr ""
+
+#: TimeEstimator.php:106
+msgid "centuries"
+msgstr ""
