@@ -121,12 +121,12 @@ class SpatialTest extends AbstractMatchTest
             "shifted count is correct for two matches in a row",
             SpatialMatch::match($password),
             'spatial',
-            ['!QAZ', '1qaz'],
-            [[0, 3], [4, 7]],
+            ['!QAZ', 'QAZ', '1qaz', 'qaz'],
+            [[0, 3], [1, 3], [4, 7], [5, 7]],
             [
-                'graph' => ['qwerty', 'qwerty'],
-                'turns' => [1, 1],
-                'shiftedCount' => [4, 0],
+                'graph' => ['qwerty', 'azerty', 'qwerty', 'azerty'],
+                'turns' => [1, 2, 1, 2],
+                'shiftedCount' => [4, 2, 0, 0],
             ]
         );
     }
