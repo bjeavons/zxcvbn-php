@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-16 15:41+0100\n"
+"POT-Creation-Date: 2021-12-16 19:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,120 +16,163 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: Matchers/DictionaryMatch.php:98
+#: Matchers/DictionaryMatch.php:105
 msgid "Capitalization doesn't help very much"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:100
+#: Matchers/DictionaryMatch.php:107
 msgid "All-uppercase is almost as easy to guess as all-lowercase"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:112
+#: Matchers/DictionaryMatch.php:119
 msgid "This is a top-10 common password"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:114
+#: Matchers/DictionaryMatch.php:121
 msgid "This is a top-100 common password"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:116
+#: Matchers/DictionaryMatch.php:123
 msgid "This is a very common password"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:119
+#: Matchers/DictionaryMatch.php:126
 msgid "This is similar to a commonly used password"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:124
+#: Matchers/DictionaryMatch.php:131
 msgid "A word by itself is easy to guess"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:131
+#: Matchers/DictionaryMatch.php:138
 msgid "Names and surnames by themselves are easy to guess"
 msgstr ""
 
-#: Matchers/DictionaryMatch.php:133
+#: Matchers/DictionaryMatch.php:140
 msgid "Common names and surnames are easy to guess"
 msgstr ""
 
-#: Matchers/ReverseDictionaryMatch.php:47
+#: Matchers/ReverseDictionaryMatch.php:51
 msgid "Reversed words aren't much harder to guess"
 msgstr ""
 
-#: Matchers/DateMatch.php:111
+#: Matchers/DateMatch.php:115
 msgid "Dates are often easy to guess"
 msgstr ""
 
-#: Matchers/DateMatch.php:113
+#: Matchers/DateMatch.php:117
 msgid "Avoid dates and years that are associated with you"
 msgstr ""
 
-#: Matchers/YearMatch.php:36
+#: Matchers/YearMatch.php:39
 msgid "Recent years are easy to guess"
 msgstr ""
 
-#: Matchers/YearMatch.php:38
+#: Matchers/YearMatch.php:41
 msgid "Avoid recent years"
 msgstr ""
 
-#: Matchers/YearMatch.php:39
+#: Matchers/YearMatch.php:42
 msgid "Avoid years that are associated with you"
 msgstr ""
 
-#: Matchers/SpatialMatch.php:60
+#: Matchers/SpatialMatch.php:64
 msgid "Straight rows of keys are easy to guess"
 msgstr ""
 
-#: Matchers/SpatialMatch.php:61
+#: Matchers/SpatialMatch.php:65
 msgid "Short keyboard patterns are easy to guess"
 msgstr ""
 
-#: Matchers/SpatialMatch.php:66
+#: Matchers/SpatialMatch.php:70
 msgid "Use a longer keyboard pattern with more turns"
 msgstr ""
 
-#: Matchers/L33tMatch.php:102
+#: Matchers/L33tMatch.php:105
 msgid "Predictable substitutions like '@' instead of 'a' don't help very much"
 msgstr ""
 
-#: Matchers/RepeatMatch.php:88
+#: Matchers/RepeatMatch.php:92
 msgid "Repeats like \"aaa\" are easy to guess"
 msgstr ""
 
-#: Matchers/RepeatMatch.php:89
+#: Matchers/RepeatMatch.php:93
 msgid ""
 "Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\""
 msgstr ""
 
-#: Matchers/RepeatMatch.php:94
+#: Matchers/RepeatMatch.php:98
 msgid "Avoid repeated words and characters"
 msgstr ""
 
-#: Matchers/SequenceMatch.php:90
+#: Matchers/SequenceMatch.php:94
 msgid "Sequences like abc or 6543 are easy to guess"
 msgstr ""
 
-#: Matchers/SequenceMatch.php:92
+#: Matchers/SequenceMatch.php:96
 msgid "Avoid sequences"
 msgstr ""
 
-#: Feedback.php:27
+#: Feedback.php:29
 msgid "Use a few words, avoid common phrases"
 msgstr ""
 
-#: Feedback.php:28
+#: Feedback.php:30
 msgid "No need for symbols, digits, or uppercase letters"
 msgstr ""
 
-#: Feedback.php:50
+#: Feedback.php:52
 msgid "Add another word or two. Uncommon words are better."
 msgstr ""
 
-#: TimeEstimator.php:73
+#: TimeEstimator.php:79
 msgid "less than a second"
 msgstr ""
 
-#: TimeEstimator.php:106
+#: TimeEstimator.php:84
+#, php-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:89
+#, php-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:94
+#, php-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:99
+#, php-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:104
+#, php-format
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:109
+#, php-format
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: TimeEstimator.php:112
 msgid "centuries"
 msgstr ""
