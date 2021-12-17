@@ -2,7 +2,7 @@
 
 which xgettext &>/dev/null || { echo "xgettext not found, please install it"; exit 1; }
 
-cd "$( dirname "$0" )/../"
+cd -- "$( dirname -- "$0" )/../"
 
 find -name '*.php' | xgettext \
       --from-code utf-8 \
