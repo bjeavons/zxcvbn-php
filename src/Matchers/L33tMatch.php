@@ -6,6 +6,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Math\Binomial;
 
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
@@ -232,7 +233,7 @@ class L33tMatch extends DictionaryMatch
             } else {
                 $possibilities = 0;
                 for ($i = 1; $i <= min($subbed, $unsubbed); $i++) {
-                    $possibilities += static::binom($subbed + $unsubbed, $i);
+                    $possibilities += Binomial::binom($subbed + $unsubbed, $i);
                 }
                 $variations *= $possibilities;
             }

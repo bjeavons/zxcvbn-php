@@ -6,6 +6,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Math\Binomial;
 
 class DictionaryMatch extends BaseMatch
 {
@@ -230,7 +231,7 @@ class DictionaryMatch extends BaseMatch
 
         $variations = 0;
         for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {
-            $variations += static::binom($uppercase + $lowercase, $i);
+            $variations += Binomial::binom($uppercase + $lowercase, $i);
         }
         return $variations;
     }

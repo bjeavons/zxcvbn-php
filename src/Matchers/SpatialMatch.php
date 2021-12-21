@@ -6,6 +6,7 @@ namespace ZxcvbnPhp\Matchers;
 
 use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
+use ZxcvbnPhp\Math\Binomial;
 
 class SpatialMatch extends BaseMatch
 {
@@ -236,7 +237,7 @@ class SpatialMatch extends BaseMatch
         for ($i = 2; $i <= $length; $i++) {
             $possibleTurns = min($turns, $i - 1);
             for ($j = 1; $j <= $possibleTurns; $j++) {
-                $guesses += static::binom($i - 1, $j - 1) * $startingPosition * pow($averageDegree, $j);
+                $guesses += Binomial::binom($i - 1, $j - 1) * $startingPosition * pow($averageDegree, $j);
             }
         }
 
@@ -251,7 +252,7 @@ class SpatialMatch extends BaseMatch
             } else {
                 $variations = 0;
                 for ($i = 1; $i <= min($shifted, $unshifted); $i++) {
-                    $variations += static::binom($shifted + $unshifted, $i);
+                    $variations += Binomial::binom($shifted + $unshifted, $i);
                 }
                 $guesses *= $variations;
             }
