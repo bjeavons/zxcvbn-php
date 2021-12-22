@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Feedback;
 use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\DateMatch;
+use ZxcvbnPhp\Matchers\DictionaryMatch;
 use ZxcvbnPhp\Matchers\SequenceMatch;
 
 class FeedbackTest extends TestCase
@@ -103,5 +104,18 @@ class FeedbackTest extends TestCase
             $feedback['suggestions'],
             "bruteforce match only has the default suggestion"
         );
+    }
+
+    public function testFeedbackFromUserInput()
+    {
+        $match = new DictionaryMatch('user_input_password', 0, 19, 'user_input_password', [
+            'dictionary_name' => 'user_inputs',
+            'matched_word' => 'user_input_password',
+            'rank' => '1'
+        ]);
+        $feedback = $this->feedback->getFeedback(0, [$match]);
+
+        $this->assertEquals('This is similar to, or incorporates parts of, other input', $feedback['warning'], 'no warning for user input');
+        $this->assertNotEmpty($feedback['suggestions'], 'no suggestions for user input');
     }
 }
