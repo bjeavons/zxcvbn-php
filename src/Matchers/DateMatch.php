@@ -20,6 +20,9 @@ class DateMatch extends BaseMatch
 
     public $pattern = 'date';
 
+    /**
+     * @var array<int, array<array<int, int>>>
+     */
     private static $DATE_SPLITS = [
         4 => [         # For length-4 strings, eg 1191 or 9111, two ways to split:
             [1, 2],    # 1 1 91 (2nd split starts at index 1, 3rd at index 2)
@@ -57,23 +60,39 @@ class DateMatch extends BaseMatch
      */
     protected const DATE_WITH_SEPARATOR = '/^(\d{1,4})([\s\/\\\\_.-])(\d{1,2})\2(\d{1,4})$/u';
 
-    /** @var int The day portion of the date in the token. */
+    /**
+     * The day portion of the date in the token.
+     *
+     * @var int
+     */
     public $day;
 
-    /** @var int The month portion of the date in the token. */
+    /**
+     * The month portion of the date in the token.
+     *
+     * @var int
+     */
     public $month;
 
-    /** @var int The year portion of the date in the token. */
+    /**
+     * The year portion of the date in the token.
+     *
+     * @var int
+     */
     public $year;
 
-    /** @var string The separator used for the date in the token. */
+    /**
+     * The separator used for the date in the token.
+     *
+     * @var string
+     */
     public $separator;
 
     /**
      * Match occurences of dates in a password
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @return DateMatch[]
      */
     public static function match(string $password, array $userInputs = []): array
@@ -124,7 +143,7 @@ class DateMatch extends BaseMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [day, month, year, separator].
+     * @param array{day: int, month: int, year: int, separator: string} $params
      */
     public function __construct(string $password, int $begin, int $end, string $token, array $params)
     {
@@ -272,7 +291,7 @@ class DateMatch extends BaseMatch
 
     /**
      * @param int[] $ints Three numbers in an array representing day, month and year (not necessarily in that order).
-     * @return array|bool Returns an associative array containing 'day', 'month' and 'year' keys, or false if the
+     * @return array{year: int, month: int, day: int}|false Returns an associative array containing 'day', 'month' and 'year' keys, or false if the
      *                    provided date array is invalid.
      */
     protected static function checkDate(array $ints)
@@ -319,7 +338,8 @@ class DateMatch extends BaseMatch
 
         foreach ($possibleYearSplits as [$year, $rest]) {
             if ($year >= static::MIN_YEAR && $year <= static::MAX_YEAR) {
-                if ($dm = static::mapIntsToDayMonth($rest)) {
+                $dm = static::mapIntsToDayMonth($rest);
+                if ($dm) {
                     return [
                         'year'  => $year,
                         'month' => $dm['month'],
@@ -334,7 +354,8 @@ class DateMatch extends BaseMatch
         }
 
         foreach ($possibleYearSplits as [$year, $rest]) {
-            if ($dm = static::mapIntsToDayMonth($rest)) {
+            $dm = static::mapIntsToDayMonth($rest);
+            if ($dm) {
                 return [
                     'year'  => static::twoToFourDigitYear($year),
                     'month' => $dm['month'],
@@ -348,7 +369,9 @@ class DateMatch extends BaseMatch
 
     /**
      * @param int[] $ints Two numbers in an array representing day and month (not necessarily in that order).
-     * @return array|bool Returns an associative array containing 'day' and 'month' keys, or false if any combination
+     *
+     * @return array{day: int, month: int}|false
+     *                    Returns an associative array containing 'day' and 'month' keys, or false if any combination
      *                    of the two numbers does not match a day and month.
      */
     protected static function mapIntsToDayMonth(array $ints)

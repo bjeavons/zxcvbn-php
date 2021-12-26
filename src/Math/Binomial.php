@@ -10,6 +10,9 @@ use ZxcvbnPhp\Math\Impl\BinomialProviderInt64;
 
 class Binomial
 {
+    /**
+     * @var null|BinomialProvider
+     */
     private static $provider = null;
 
     private function __construct()
@@ -39,13 +42,13 @@ class Binomial
     }
 
     /**
-     * @return string[]
+     * @return array<int, class-string<\ZxcvbnPhp\Math\Impl\AbstractBinomialProvider>>
      */
     public static function getUsableProviderClasses(): array
     {
         // In order of priority.  The first provider with a value of true will be used.
         $possibleProviderClasses = [
-            BinomialProviderPhp73Gmp::class => function_exists('gmp_binomial'),
+            BinomialProviderPhp73Gmp::class => \function_exists('gmp_binomial'),
             BinomialProviderInt64::class    => PHP_INT_SIZE >= 8,
             BinomialProviderFloat64::class  => PHP_FLOAT_DIG >= 15,
         ];

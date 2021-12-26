@@ -15,7 +15,9 @@ class ScorerTest extends TestCase
 {
     public const PASSWORD = '0123456789';
 
-    /** @var Scorer */
+    /**
+     * @var Scorer
+     */
     private $scorer;
 
     public function setUp(): void

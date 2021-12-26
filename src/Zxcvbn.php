@@ -12,22 +12,22 @@ namespace ZxcvbnPhp;
 class Zxcvbn
 {
     /**
-     * @var
+     * @var Matcher
      */
     protected $matcher;
 
     /**
-     * @var
+     * @var Scorer
      */
     protected $scorer;
 
     /**
-     * @var
+     * @var TimeEstimator
      */
     protected $timeEstimator;
 
     /**
-     * @var
+     * @var Feedback
      */
     protected $feedback;
 
@@ -39,6 +39,11 @@ class Zxcvbn
         $this->feedback = new \ZxcvbnPhp\Feedback();
     }
 
+    /**
+     * @param class-string<\ZxcvbnPhp\Matchers\BaseMatch> $className
+     *
+     * @return $this
+     */
     public function addMatcher(string $className): self
     {
         $this->matcher->addMatcher($className);
@@ -49,14 +54,10 @@ class Zxcvbn
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
      *
-     * @param string $password   Password to measure
-     * @param array  $userInputs Optional user inputs
+     * @param string   $password   Password to measure
+     * @param array<int, string> $userInputs Optional user inputs
      *
-     * @return array Strength result array with keys:
-     *               password
-     *               entropy
-     *               match_sequence
-     *               score
+     * @return array{calc_time: float, feedback: array<array-key, mixed>, guesses: float, guesses_log10: float, password: string, sequence: array<int, \ZxcvbnPhp\Matchers\BaseMatch>}
      */
     public function passwordStrength(string $password, array $userInputs = []): array
     {
@@ -64,6 +65,7 @@ class Zxcvbn
 
         $sanitizedInputs = array_map(
             function ($input) {
+                /** @psalm-suppress RedundantCastGivenDocblockType | maybe it's needed here? */
                 return mb_strtolower((string) $input);
             },
             $userInputs

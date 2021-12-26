@@ -37,5 +37,10 @@ jobs:
     - name: Code style checks
       run: ./vendor/bin/phpcs .
 
+    - name: Run psalm
+      if: ${{ matrix.php-versions == '7.4' }}
+      run: |
+        php vendor/bin/psalm --config=psalm.xml --no-progress
+
     - name: Unit tests
       run: ./vendor/bin/phpunit

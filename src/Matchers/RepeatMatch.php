@@ -16,23 +16,39 @@ class RepeatMatch extends BaseMatch
 
     public $pattern = 'repeat';
 
-    /** @var MatchInterface[] An array of matches for the repeated section itself. */
+    /**
+     * An array of matches for the repeated section itself.
+     *
+     * @var array<int, BaseMatch>
+     */
     public $baseMatches = [];
 
-    /** @var int The number of guesses required for the repeated section itself. */
+    /**
+     * The number of guesses required for the repeated section itself.
+     *
+     * @var float
+     */
     public $baseGuesses;
 
-    /** @var int The number of times the repeated section is repeated. */
+    /**
+     * The number of times the repeated section is repeated.
+     *
+     * @var int
+     */
     public $repeatCount;
 
-    /** @var string The string that was repeated in the token. */
+    /**
+     * The string that was repeated in the token.
+     *
+     * @var string
+     */
     public $repeatedChar;
 
     /**
      * Match 3 or more repeated characters.
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @return RepeatMatch[]
      */
     public static function match(string $password, array $userInputs = []): array
@@ -64,7 +80,7 @@ class RepeatMatch extends BaseMatch
             $baseMatches = $baseAnalysis['sequence'];
             $baseGuesses = $baseAnalysis['guesses'];
 
-            $repeatCount = mb_strlen($match[0]['token']) / mb_strlen($repeatedChar);
+            $repeatCount = (int)(mb_strlen($match[0]['token']) / mb_strlen($repeatedChar));
 
             $matches[] = new static(
                 $password,
@@ -105,14 +121,14 @@ class RepeatMatch extends BaseMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [repeated_char, base_guesses, base_matches, repeat_count].
+     * @param array<empty>|array{repeated_char?: string, base_guesses?: float, base_marches?: array<int, BaseMatch>, repeat_count?: int} $params
      */
     public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         if (!empty($params)) {
             $this->repeatedChar = $params['repeated_char'] ?? '';
-            $this->baseGuesses = $params['base_guesses'] ?? 0;
+            $this->baseGuesses = $params['base_guesses'] ?? 0.0;
             $this->baseMatches = $params['base_matches'] ?? [];
             $this->repeatCount = $params['repeat_count'] ?? 0;
         }

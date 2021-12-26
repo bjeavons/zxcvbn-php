@@ -9,14 +9,18 @@ use ZxcvbnPhp\Matcher;
 
 class ReverseDictionaryMatch extends DictionaryMatch
 {
-    /** @var bool Whether or not the matched word was reversed in the token. */
+    /**
+     * Whether or not the matched word was reversed in the token.
+     *
+     * @var bool
+     */
     public $reversed = true;
 
     /**
      * Match occurences of reversed dictionary words in password.
      *
-     * @param $password
-     * @param array $userInputs
+     * @param string $password
+     * @param array<int, string> $userInputs
      * @param array $rankedDictionaries
      * @return ReverseDictionaryMatch[]
      */

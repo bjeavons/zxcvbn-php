@@ -12,7 +12,9 @@ use ZxcvbnPhp\Matchers\SequenceMatch;
 
 class FeedbackTest extends TestCase
 {
-    /** @var Feedback */
+    /**
+     * @var Feedback
+     */
     private $feedback;
 
     public function setUp(): void

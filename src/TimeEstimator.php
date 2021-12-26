@@ -13,8 +13,23 @@ namespace ZxcvbnPhp;
 class TimeEstimator
 {
     /**
-     * @param int|float $guesses
-     * @return array
+     * @param float $guesses
+     *
+     * @return array{
+     *     crack_times_seconds: array{
+     *         online_throttling_100_per_hour: float,
+     *         online_no_throttling_10_per_second: float,
+     *         offline_slow_hashing_1e4_per_second: float,
+     *         offline_fast_hashing_1e10_per_second: float
+     *     },
+     *     crack_times_display: array{
+     *         online_throttling_100_per_hour: string,
+     *         online_no_throttling_10_per_second: string,
+     *         offline_slow_hashing_1e4_per_second: string,
+     *         offline_fast_hashing_1e10_per_second: string
+     *     },
+     *     score: int
+     * }
      */
     public function estimateAttackTimes(float $guesses): array
     {
