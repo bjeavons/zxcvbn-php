@@ -16,8 +16,8 @@ class Feedback
 {
     /**
      * @param int $score
-     * @param MatchInterface[] $sequence
-     * @return array
+     * @param array<int, \ZxcvbnPhp\Matchers\BaseMatch> $sequence
+     * @return array{warning: string, suggestions: array<int, string>}
      */
     public function getFeedback(int $score, array $sequence): array
     {
@@ -42,7 +42,7 @@ class Feedback
 
         // tie feedback to the longest match for longer sequences
         $longestMatch = $sequence[0];
-        foreach (array_slice($sequence, 1) as $match) {
+        foreach (\array_slice($sequence, 1) as $match) {
             if (mb_strlen($match->token) > mb_strlen($longestMatch->token)) {
                 $longestMatch = $match;
             }

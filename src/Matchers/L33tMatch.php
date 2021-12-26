@@ -14,20 +14,32 @@ use ZxcvbnPhp\Math\Binomial;
  */
 class L33tMatch extends DictionaryMatch
 {
-    /** @var array An array of substitutions made to get from the token to the dictionary word. */
+    /**
+     * An array of substitutions made to get from the token to the dictionary word.
+     *
+     * @var array<string, string>
+     */
     public $sub = [];
 
-    /** @var string A user-readable string that shows which substitutions were detected. */
+    /**
+     * A user-readable string that shows which substitutions were detected.
+     *
+     * @var null|string
+     */
     public $subDisplay;
 
-    /** @var bool Whether or not the token contained l33t substitutions. */
+    /**
+     * Whether or not the token contained l33t substitutions.
+     *
+     * @var bool
+     */
     public $l33t = true;
 
     /**
      * Match occurences of l33t words in password to dictionary words.
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @param array $rankedDictionaries
      * @return L33tMatch[]
      */
@@ -87,7 +99,7 @@ class L33tMatch extends DictionaryMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [sub, sub_display].
+     * @param array<empty>|array{sub?: array<string, string>, sub_display?: string} $params
      */
     public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
@@ -146,7 +158,7 @@ class L33tMatch extends DictionaryMatch
         $table = static::getL33tTable();
         foreach ($table as $letter => $substitutions) {
             foreach ($substitutions as $sub) {
-                if (in_array($sub, $passwordChars)) {
+                if (\in_array($sub, $passwordChars)) {
                     $subTable[$letter][] = $sub;
                 }
             }
@@ -218,12 +230,28 @@ class L33tMatch extends DictionaryMatch
         foreach ($this->sub as $substitution => $letter) {
             $characters = preg_split('//u', mb_strtolower($this->token), -1, PREG_SPLIT_NO_EMPTY);
 
-            $subbed = count(array_filter($characters, function ($character) use ($substitution) {
-                return (string)$character === (string)$substitution;
-            }));
-            $unsubbed = count(array_filter($characters, function ($character) use ($letter) {
-                return (string)$character === (string)$letter;
-            }));
+            $subbed = count(array_filter(
+                $characters,
+                /**
+                 * @param string $character
+                 * @return bool
+                 */
+                function ($character) use ($substitution) {
+                    /** @psalm-suppress RedundantCastGivenDocblockType | maybe it's needed here? */
+                    return (string)$character === (string)$substitution;
+                }
+            ));
+            $unsubbed = count(array_filter(
+                $characters,
+                /**
+                   * @param string $character
+                   * @return bool
+                   */
+                function ($character) use ($letter) {
+                    /** @psalm-suppress RedundantCastGivenDocblockType | maybe it's needed here? */
+                    return (string)$character === (string)$letter;
+                }
+            ));
 
             if ($subbed === 0 || $unsubbed === 0) {
                 // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)

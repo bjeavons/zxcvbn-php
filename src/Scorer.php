@@ -20,8 +20,19 @@ class Scorer
     public const MIN_SUBMATCH_GUESSES_SINGLE_CHAR = 10;
     public const MIN_SUBMATCH_GUESSES_MULTI_CHAR = 50;
 
+    /**
+     * @var string
+     */
     protected $password;
+
+    /**
+     * @var bool
+     */
     protected $excludeAdditive;
+
+    /**
+     * @var array<empty>|array{g: array<int, array<int, int|float>>, m: array<int, array<int, BaseMatch>>, pi: array<int, array<int, int|float>>}
+     */
     protected $optimal = [];
 
     /**
@@ -57,9 +68,9 @@ class Scorer
      *    D^(l-1) approximates Sum(D^i for i in [1..l-1]
      *
      * @param string $password
-     * @param MatchInterface[] $matches
+     * @param array<int, BaseMatch> $matches
      * @param bool $excludeAdditive
-     * @return array Returns an array with these keys: [password, guesses, guesses_log10, sequence]
+     * @return array{password: string, guesses: float, guesses_log10: float, sequence: array<int, BaseMatch>}
      */
     public function getMostGuessableMatchSequence(string $password, array $matches, bool $excludeAdditive = false): array
     {
@@ -76,13 +87,19 @@ class Scorer
         }
 
         // small detail: for deterministic output, sort each sublist by i.
-        foreach ($matchesByEndIndex as &$matches) {
-            usort($matches, function ($a, $b) {
-                /** @var $a BaseMatch */
-                /** @var $b BaseMatch */
-                return $a->begin - $b->begin;
-            });
+        foreach ($matchesByEndIndex as &$matchesInner) {
+            usort(
+                $matchesInner,
+                /**
+                 * @param BaseMatch $a
+                 * @param BaseMatch $b
+                 */
+                function ($a, $b) {
+                    return $a->begin - $b->begin;
+                }
+            );
         }
+        unset($matchesInner);
 
         $this->optimal = [
             // optimal.m[k][l] holds final match in the best length-l match sequence covering the
@@ -114,13 +131,13 @@ class Scorer
             $this->bruteforceUpdate($k);
         }
 
-
         if ($length === 0) {
             $guesses = 1.0;
             $optimalSequence = [];
         } else {
             $optimalSequence = $this->unwind($length);
             $optimalSequenceLength = count($optimalSequence);
+            /** @psalm-suppress EmptyArrayAccess | $this->optimal was changed in other methods */
             $guesses = $this->optimal['g'][$length - 1][$optimalSequenceLength];
         }
 
@@ -146,6 +163,8 @@ class Scorer
         // object-oriented approach we can just call getGuesses on the match directly.
         $pi = $match->getGuesses();
 
+        \assert(empty($this->optimal['pi']) === false);
+
         if ($length > 1) {
             // we're considering a length-l sequence ending with match m:
             // obtain the product term in the minimization function by multiplying m's guesses
@@ -158,6 +177,8 @@ class Scorer
         if (!$this->excludeAdditive) {
             $g += pow(self::MIN_GUESSES_BEFORE_GROWING_SEQUENCE, $length - 1);
         }
+
+        \assert(empty($this->optimal['g']) === false);
 
         // update state if new best.
         // first see if any competing sequences covering this prefix, with l or fewer matches,
@@ -192,12 +213,15 @@ class Scorer
         $match = $this->makeBruteforceMatch(0, $end);
         $this->update($match, 1);
 
+        \assert(empty($this->optimal['m']) === false);
+
         // generate k bruteforce matches, spanning from (i=1, j=k) up to (i=k, j=k).
         // see if adding these new matches to any of the sequences in optimal[i-1]
         // leads to new bests.
         for ($i = 1; $i <= $end; $i++) {
             $match = $this->makeBruteforceMatch($i, $end);
             foreach ($this->optimal['m'][$i - 1] as $l => $lastM) {
+                /** @psalm-suppress RedundantCastGivenDocblockType | maybe it's needed here? */
                 $l = (int)$l;
 
                 // corner: an optimal sequence will never have two adjacent bruteforce matches.
@@ -227,7 +251,7 @@ class Scorer
     /**
      * helper: step backwards through optimal.m starting at the end, constructing the final optimal match sequence.
      * @param int $n
-     * @return MatchInterface[]
+     * @return array<int, BaseMatch>
      */
     protected function unwind(int $n): array
     {
@@ -238,6 +262,8 @@ class Scorer
         $l = null;
         $g = INF;
 
+        \assert(empty($this->optimal['g']) === false);
+
         foreach ($this->optimal['g'][$k] as $candidateL => $candidateG) {
             if ($candidateG < $g) {
                 $l = $candidateL;
@@ -245,7 +271,13 @@ class Scorer
             }
         }
 
+        \assert(empty($this->optimal['m']) === false);
+
         while ($k >= 0) {
+            /**
+             * @psalm-suppress PossiblyNullArrayOffset | try to add phpdoc for $this->optimal :/
+             * @var BaseMatch $m
+             */
             $m = $this->optimal['m'][$k][$l];
             array_unshift($optimalSequence, $m);
             $k = $m->begin - 1;

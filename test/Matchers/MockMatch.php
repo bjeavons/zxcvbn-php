@@ -9,7 +9,9 @@ use ZxcvbnPhp\Matchers\BaseMatch;
 
 class MockMatch extends BaseMatch
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $guesses;
 
     public function __construct(int $begin, int $end, float $guesses)
@@ -44,7 +46,7 @@ class MockMatch extends BaseMatch
      *
      * @param string $password
      *   Password to check for match.
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      *   Array of values related to the user (optional).
      * @code
      *   array('Alice Smith')

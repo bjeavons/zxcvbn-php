@@ -21,7 +21,7 @@ class Bruteforce extends BaseMatch
 
     /**
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @return Bruteforce[]
      */
     public static function match(string $password, array $userInputs = []): array

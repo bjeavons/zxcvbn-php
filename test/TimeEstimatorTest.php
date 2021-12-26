@@ -9,7 +9,9 @@ use ZxcvbnPhp\TimeEstimator;
 
 class TimeEstimatorTest extends TestCase
 {
-    /** @var TimeEstimator */
+    /**
+     * @var TimeEstimator
+     */
     private $timeEstimator;
 
     public function setUp(): void

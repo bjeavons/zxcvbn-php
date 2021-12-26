@@ -10,24 +10,39 @@ use ZxcvbnPhp\Math\Binomial;
 
 class DictionaryMatch extends BaseMatch
 {
+    /**
+     * @var string
+     */
     public $pattern = 'dictionary';
 
-    /** @var string The name of the dictionary that the token was found in. */
+    /**
+     * @var string The name of the dictionary that the token was found in.
+     */
     public $dictionaryName;
 
-    /** @var int The rank of the token in the dictionary. */
+    /**
+     * @var int The rank of the token in the dictionary.
+     */
     public $rank;
 
-    /** @var string The word that was matched from the dictionary. */
+    /**
+     * @var string The word that was matched from the dictionary.
+     */
     public $matchedWord;
 
-    /** @var bool Whether or not the matched word was reversed in the token. */
+    /**
+     * @var bool Whether or not the matched word was reversed in the token.
+     */
     public $reversed = false;
 
-    /** @var bool Whether or not the token contained l33t substitutions. */
+    /**
+     * @var bool Whether or not the token contained l33t substitutions.
+     */
     public $l33t = false;
 
-    /** @var array A cache of the frequency_lists json file */
+    /**
+     * @var array A cache of the frequency_lists json file
+     */
     protected static $rankedDictionaries = [];
 
     protected const START_UPPER = "/^[A-Z][^A-Z]+$/u";
@@ -39,7 +54,7 @@ class DictionaryMatch extends BaseMatch
      * Match occurrences of dictionary words in password.
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @param array $rankedDictionaries
      * @return DictionaryMatch[]
      */
@@ -75,7 +90,7 @@ class DictionaryMatch extends BaseMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [dictionary_name, matched_word, rank].
+     * @param array{dictionary_name?: string, matched_word?: string, rank?: int} $params
      */
     public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
@@ -89,7 +104,7 @@ class DictionaryMatch extends BaseMatch
 
     /**
      * @param bool $isSoleMatch
-     * @return array
+     * @return array{suggestions: array<int, string>, warning: string}
      */
     #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
@@ -186,7 +201,7 @@ class DictionaryMatch extends BaseMatch
     protected static function getRankedDictionaries(): array
     {
         if (empty(self::$rankedDictionaries)) {
-            $json = file_get_contents(dirname(__FILE__) . '/frequency_lists.json');
+            $json = file_get_contents(__DIR__ . '/frequency_lists.json');
             $data = json_decode($json, true);
 
             $rankedLists = [];

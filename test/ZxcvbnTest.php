@@ -12,7 +12,9 @@ use ZxcvbnPhp\Zxcvbn;
 
 class ZxcvbnTest extends TestCase
 {
-    /** @var Zxcvbn */
+    /**
+     * @var Zxcvbn
+     */
     private $zxcvbn;
 
     public function setUp(): void

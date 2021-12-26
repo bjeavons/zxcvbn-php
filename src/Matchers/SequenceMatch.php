@@ -12,20 +12,32 @@ class SequenceMatch extends BaseMatch
 
     public $pattern = 'sequence';
 
-    /** @var string The name of the detected sequence. */
+    /**
+     * The name of the detected sequence.
+     *
+     * @var string
+     */
     public $sequenceName;
 
-    /** @var int The number of characters in the complete sequence space. */
+    /**
+     * The number of characters in the complete sequence space.
+     *
+     * @var int
+     */
     public $sequenceSpace;
 
-    /** @var bool True if the sequence is ascending, and false if it is descending. */
+    /**
+     * True if the sequence is ascending, and false if it is descending.
+     *
+     * @var bool
+     */
     public $ascending;
 
     /**
      * Match sequences of three or more characters.
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @return SequenceMatch[]
      */
     public static function match(string $password, array $userInputs = []): array
@@ -54,11 +66,20 @@ class SequenceMatch extends BaseMatch
             $lastDelta = $delta;
         }
 
-        static::findSequenceMatch($password, $begin, $passwordLength - 1, $lastDelta, $matches);
+        static::findSequenceMatch($password, $begin, $passwordLength - 1, (int)$lastDelta, $matches);
 
         return $matches;
     }
 
+    /**
+     * @param string $password
+     * @param int    $begin
+     * @param int    $end
+     * @param int    $delta
+     * @param array<int, SequenceMatch> $matches
+     *
+     * @return void
+     */
     public static function findSequenceMatch(string $password, int $begin, int $end, int $delta, array &$matches)
     {
         if ($end - $begin > 1 || abs($delta) === 1) {
@@ -103,7 +124,7 @@ class SequenceMatch extends BaseMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [sequenceName, sequenceSpace, ascending].
+     * @param array{sequenceName?: string, sequenceSpace?: int, ascending?: bool} $params
      */
     public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
@@ -120,7 +141,7 @@ class SequenceMatch extends BaseMatch
         $firstCharacter = mb_substr($this->token, 0, 1);
         $guesses = 0;
 
-        if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
+        if (\in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
             $guesses += 4;  // lower guesses for obvious starting points
         } elseif (ctype_digit($firstCharacter)) {
             $guesses += 10; // digits

@@ -12,13 +12,17 @@ class YearMatch extends BaseMatch
     public const NUM_YEARS = 119;
 
     public $pattern = 'regex';
+
+    /**
+     * @var string
+     */
     public $regexName = 'recent_year';
 
     /**
      * Match occurrences of years in a password
      *
      * @param string $password
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      * @return YearMatch[]
      */
     public static function match(string $password, array $userInputs = []): array
@@ -46,6 +50,7 @@ class YearMatch extends BaseMatch
 
     protected function getRawGuesses(): float
     {
+        \assert(is_numeric($this->token));
         $yearSpace = abs($this->token - DateMatch::getReferenceYear());
         return max($yearSpace, DateMatch::MIN_YEAR_SPACE);
     }

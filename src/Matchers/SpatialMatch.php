@@ -20,24 +20,40 @@ class SpatialMatch extends BaseMatch
 
     public $pattern = 'spatial';
 
-    /** @var int The number of characters the shift key was held for in the token. */
+    /**
+     * The number of characters the shift key was held for in the token.
+     *
+     * @var null|int
+     */
     public $shiftedCount;
 
-    /** @var int The number of turns on the keyboard required to complete the token. */
+    /**
+     * The number of turns on the keyboard required to complete the token.
+     *
+     * @var null|int
+     */
     public $turns;
 
-    /** @var string The keyboard layout that the token is a spatial match on. */
+    /**
+     * The keyboard layout that the token is a spatial match on.
+     *
+     * @var string
+     */
     public $graph;
 
-    /** @var array A cache of the adjacency_graphs json file */
+    /**
+     * A cache of the adjacency_graphs json file.
+     *
+     * @var array<empty>|array{qwerty: array<string, array<int, string>>, keypad: array<string, array<int, string>>, mac_keypad: array<string, array<int, string>>}
+     */
     protected static $adjacencyGraphs = [];
 
     /**
      * Match spatial patterns based on keyboard layouts (e.g. qwerty, dvorak, keypad).
      *
      * @param string $password
-     * @param array $userInputs
-     * @param array $graphs
+     * @param array<int, string> $userInputs
+     * @param array<string, array> $graphs
      * @return SpatialMatch[]
      */
     public static function match(string $password, array $userInputs = [], array $graphs = []): array
@@ -50,8 +66,11 @@ class SpatialMatch extends BaseMatch
         foreach ($graphs as $name => $graph) {
             $results = static::graphMatch($password, $graph, $name);
             foreach ($results as $result) {
-                $result['graph'] = $name;
-                $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
+                $params = [];
+                $params['graph'] = $name;
+                $params['turns'] = $result['turns'];
+                $params['shifted_count'] = $result['shifted_count'];
+                $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $params);
             }
         }
         Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
@@ -78,16 +97,14 @@ class SpatialMatch extends BaseMatch
      * @param int $begin
      * @param int $end
      * @param string $token
-     * @param array $params An array with keys: [graph (required), shifted_count, turns].
+     * @param array{graph: string, shifted_count?: int, turns?: int} $params
      */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params)
     {
         parent::__construct($password, $begin, $end, $token);
         $this->graph = $params['graph'];
-        if (!empty($params)) {
-            $this->shiftedCount = $params['shifted_count'] ?? null;
-            $this->turns = $params['turns'] ?? null;
-        }
+        $this->shiftedCount = $params['shifted_count'] ?? null;
+        $this->turns = $params['turns'] ?? null;
     }
 
     /**
@@ -95,7 +112,7 @@ class SpatialMatch extends BaseMatch
      * @param string $password
      * @param array  $graph
      * @param string $graphName
-     * @return array
+     * @return array<empty>|array<int, array{begin: int, end: int, token: string, turns: int, shifted_count: int}>
      */
     protected static function graphMatch(string $password, array $graph, string $graphName): array
     {
@@ -196,17 +213,18 @@ class SpatialMatch extends BaseMatch
     /**
      * Load adjacency graphs.
      *
-     * @return array
+     * @return array<string, array>
      */
     public static function getAdjacencyGraphs(): array
     {
         if (empty(self::$adjacencyGraphs)) {
-            $json = file_get_contents(dirname(__FILE__) . '/adjacency_graphs.json');
+            $json = file_get_contents(__DIR__ . '/adjacency_graphs.json');
             $data = json_decode($json, true);
 
             // This seems pointless, but the data file is not guaranteed to be in any particular order.
             // We want to be in the exact order below so as to match most closely with upstream, because when a match
             // can be found in multiple graphs (such as 789), the one that's listed first is that one that will be picked.
+            /** @var array<empty>|array{qwerty: array<string, array<int, string>>, keypad: array<string, array<int, string>>, mac_keypad: array<string, array<int, string>>} $data */
             $data = [
                 'qwerty' => $data['qwerty'],
                 'dvorak' => $data['dvorak'],

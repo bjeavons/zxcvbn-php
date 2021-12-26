@@ -11,27 +11,27 @@ use ZxcvbnPhp\Scorer;
 abstract class BaseMatch implements MatchInterface
 {
     /**
-     * @var
+     * @var string
      */
     public $password;
 
     /**
-     * @var
+     * @var int
      */
     public $begin;
 
     /**
-     * @var
+     * @var int
      */
     public $end;
 
     /**
-     * @var
+     * @var string
      */
     public $token;
 
     /**
-     * @var
+     * @var string
      */
     public $pattern;
 
@@ -46,9 +46,9 @@ abstract class BaseMatch implements MatchInterface
     /**
      * Get feedback to a user based on the match.
      *
-     * @param  bool $isSoleMatch
+     * @param bool $isSoleMatch
      *   Whether this is the only match in the password
-     * @return array
+     * @return array{warning: string, suggestions: array<int, string>}
      *   Associative array with warning (string) and suggestions (array of strings)
      */
     #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
@@ -62,7 +62,7 @@ abstract class BaseMatch implements MatchInterface
      * @param string $regex
      *   Regular expression with captures.
      * @param int $offset
-     * @return array
+     * @return array<int, array<array{begin: int, end: int, token: string}>>
      *   Array of capture groups. Captures in a group have named indexes: 'begin', 'end', 'token'.
      *     e.g. fishfish /(fish)/
      *     array(
@@ -82,7 +82,7 @@ abstract class BaseMatch implements MatchInterface
         // preg_match_all counts bytes, not characters: to correct this, we need to calculate the byte offset and pass
         // that in instead.
         $charsBeforeOffset = mb_substr($string, 0, $offset);
-        $byteOffset = strlen($charsBeforeOffset);
+        $byteOffset = \strlen($charsBeforeOffset);
 
         $count = preg_match_all($regex, $string, $matches, PREG_SET_ORDER, $byteOffset);
         if (!$count) {
@@ -93,7 +93,7 @@ abstract class BaseMatch implements MatchInterface
         foreach ($matches as $group) {
             $captureBegin = 0;
             $match = array_shift($group);
-            $matchBegin = mb_strpos($string, $match, $offset);
+            $matchBegin = (int)mb_strpos($string, $match, $offset);
             $captures = [
                 [
                     'begin' => $matchBegin,
@@ -102,7 +102,7 @@ abstract class BaseMatch implements MatchInterface
                 ],
             ];
             foreach ($group as $capture) {
-                $captureBegin = mb_strpos($match, $capture, $captureBegin);
+                $captureBegin = (int)mb_strpos($match, $capture, $captureBegin);
                 $captures[] = [
                     'begin' => $matchBegin + $captureBegin,
                     'end' => $matchBegin + $captureBegin + mb_strlen($capture) - 1,
