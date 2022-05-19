@@ -258,9 +258,9 @@ class Scorer
     /**
      * unoptimized, called only on small n
      * @param int $n
-     * @return int
+     * @return int|float
      */
-    protected function factorial(int $n): int
+    protected function factorial(int $n)
     {
         if ($n < 2) {
             return 1;
