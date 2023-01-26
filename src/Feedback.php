@@ -26,8 +26,8 @@ class Feedback
             return [
                 'warning'     => '',
                 'suggestions' => [
-                    "Use a few words, avoid common phrases",
-                    "No need for symbols, digits, or uppercase letters",
+                    dgettext("ZxcvbnPhp", "Use a few words, avoid common phrases"),
+                    dgettext("ZxcvbnPhp", "No need for symbols, digits, or uppercase letters"),
                 ],
             ];
         }
@@ -49,7 +49,7 @@ class Feedback
         }
 
         $feedback = $longestMatch->getFeedback(count($sequence) === 1);
-        $extraFeedback = 'Add another word or two. Uncommon words are better.';
+        $extraFeedback = dgettext("ZxcvbnPhp", "Add another word or two. Uncommon words are better.");
 
         array_unshift($feedback['suggestions'], $extraFeedback);
         return $feedback;

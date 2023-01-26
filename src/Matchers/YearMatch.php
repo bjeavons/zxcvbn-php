@@ -36,10 +36,10 @@ class YearMatch extends BaseMatch
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
-            'warning' => "Recent years are easy to guess",
+            'warning' => dgettext("ZxcvbnPhp", "Recent years are easy to guess"),
             'suggestions' => [
-                'Avoid recent years',
-                'Avoid years that are associated with you',
+                dgettext("ZxcvbnPhp", "Avoid recent years"),
+                dgettext("ZxcvbnPhp", "Avoid years that are associated with you"),
             ]
         ];
     }

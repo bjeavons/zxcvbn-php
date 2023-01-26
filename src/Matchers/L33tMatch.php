@@ -103,7 +103,7 @@ class L33tMatch extends DictionaryMatch
     {
         $feedback = parent::getFeedback($isSoleMatch);
 
-        $feedback['suggestions'][] = "Predictable substitutions like '@' instead of 'a' don't help very much";
+        $feedback['suggestions'][] = dgettext("ZxcvbnPhp", "Predictable substitutions like '@' instead of 'a' don't help very much");
 
         return $feedback;
     }

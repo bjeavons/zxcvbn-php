@@ -1,0 +1,191 @@
+# ZxcvbnPhp french translations
+# Copyright (C) 2021
+# This file is distributed under the same license as the zxcvbn-php package.
+# Benjamin Renard <brenard@easte-reggs.com>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ZxcvbnPhp\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-16 19:43+0100\n"
+"PO-Revision-Date: 2021-12-16 19:45+0100\n"
+"Last-Translator: Benjamin Renard <brenard@easter-eggs.com>\n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 2.4.2\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: Matchers/DictionaryMatch.php:105
+msgid "Capitalization doesn't help very much"
+msgstr "Les majuscules n'aide pas vraiement"
+
+#: Matchers/DictionaryMatch.php:107
+msgid "All-uppercase is almost as easy to guess as all-lowercase"
+msgstr ""
+"Mettre tout en majuscule ne rend pas le mot de passe plus compliqué à "
+"deviner que s'il était tout en minuscule"
+
+#: Matchers/DictionaryMatch.php:119
+msgid "This is a top-10 common password"
+msgstr "Ce mot de passe fait parti du top 10 des plus communs"
+
+#: Matchers/DictionaryMatch.php:121
+msgid "This is a top-100 common password"
+msgstr "Ce mot de passe fait parti du top 100 des plus communs"
+
+#: Matchers/DictionaryMatch.php:123
+msgid "This is a very common password"
+msgstr "Ce mot de passe est très communs"
+
+#: Matchers/DictionaryMatch.php:126
+msgid "This is similar to a commonly used password"
+msgstr "Ce mot de passe est similaire à un des plus communs"
+
+#: Matchers/DictionaryMatch.php:131
+msgid "A word by itself is easy to guess"
+msgstr "Un mot en lui-même est assez simple à deviner"
+
+#: Matchers/DictionaryMatch.php:138
+msgid "Names and surnames by themselves are easy to guess"
+msgstr "Les noms et surnoms en eux-même sont assez simples à deviner"
+
+#: Matchers/DictionaryMatch.php:140
+msgid "Common names and surnames are easy to guess"
+msgstr "Les noms et surnoms communs sont assez simples à deviner"
+
+#: Matchers/ReverseDictionaryMatch.php:51
+msgid "Reversed words aren't much harder to guess"
+msgstr "Les mots réservés ne sont pas plus compliqués à deviner"
+
+#: Matchers/DateMatch.php:115
+msgid "Dates are often easy to guess"
+msgstr "Les dates sont souvent faciles à deviner"
+
+#: Matchers/DateMatch.php:117
+msgid "Avoid dates and years that are associated with you"
+msgstr "Éviter les dates et les années qui vous sont associées"
+
+#: Matchers/YearMatch.php:39
+msgid "Recent years are easy to guess"
+msgstr "Les années récentes sont simples à deviner"
+
+#: Matchers/YearMatch.php:41
+msgid "Avoid recent years"
+msgstr "Éviter les années récentes"
+
+#: Matchers/YearMatch.php:42
+msgid "Avoid years that are associated with you"
+msgstr "Éviter les années qui vous sont associées"
+
+#: Matchers/SpatialMatch.php:64
+msgid "Straight rows of keys are easy to guess"
+msgstr "Les rangées de touches sont faciles à deviner"
+
+#: Matchers/SpatialMatch.php:65
+msgid "Short keyboard patterns are easy to guess"
+msgstr "Les sequences courtes de touches d'un clavier sont simples à deviner"
+
+#: Matchers/SpatialMatch.php:70
+msgid "Use a longer keyboard pattern with more turns"
+msgstr ""
+"Utilisez une séquence de touches d'un clavier plus longue et avec plus de "
+"répétitions"
+
+#: Matchers/L33tMatch.php:105
+msgid "Predictable substitutions like '@' instead of 'a' don't help very much"
+msgstr "Les substitutions comme un '@' à la place d'un 'a' n'aide pas vraiment"
+
+#: Matchers/RepeatMatch.php:92
+msgid "Repeats like \"aaa\" are easy to guess"
+msgstr "Les répétitions comme \"aaa\" sont simples à deviner"
+
+#: Matchers/RepeatMatch.php:93
+msgid ""
+"Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\""
+msgstr ""
+"Les répétitions comme \"abcabcabc\" ne sont que légèrement plus compliquées "
+"à deviner que \"abc\""
+
+#: Matchers/RepeatMatch.php:98
+msgid "Avoid repeated words and characters"
+msgstr "Éviter les répétitions de mots ou de caractères"
+
+#: Matchers/SequenceMatch.php:94
+msgid "Sequences like abc or 6543 are easy to guess"
+msgstr "Les séquences comme abc ou 6543 sont simples à deviner"
+
+#: Matchers/SequenceMatch.php:96
+msgid "Avoid sequences"
+msgstr "Éviter les séquences"
+
+#: Feedback.php:29
+msgid "Use a few words, avoid common phrases"
+msgstr "Utiliser quelques mots, éviter les phrases courantes"
+
+#: Feedback.php:30
+msgid "No need for symbols, digits, or uppercase letters"
+msgstr "Pas besoin de symboles, de chiffres ou de lettres majuscules"
+
+#: Feedback.php:52
+msgid "Add another word or two. Uncommon words are better."
+msgstr "Ajouter un ou deux autres mots. Les mots peu commun sont préférables."
+
+#: TimeEstimator.php:79
+msgid "less than a second"
+msgstr "moins d'une seconde"
+
+#: TimeEstimator.php:84
+#, php-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%d seconde"
+msgstr[1] "%d secondes"
+
+#: TimeEstimator.php:89
+#, php-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%d minute"
+msgstr[1] "%d minutes"
+
+#: TimeEstimator.php:94
+#, php-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d heure"
+msgstr[1] "%d heures"
+
+#: TimeEstimator.php:99
+#, php-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d jour"
+msgstr[1] "%d jours"
+
+#: TimeEstimator.php:104
+#, php-format
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "%d mois"
+msgstr[1] "%d mois"
+
+#: TimeEstimator.php:109
+#, php-format
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] "%d année"
+msgstr[1] "%d années"
+
+#: TimeEstimator.php:112
+msgid "centuries"
+msgstr "siècles"
+
+#~ msgid "The security of this password is too weak."
+#~ msgstr "La sécurité de ce mot de passe est trop faible."
+
+#~ msgid "Avoid reserved words or words that are associated with you"
+#~ msgstr "Éviter les mots réservés ou les mots qui vous sont associées"

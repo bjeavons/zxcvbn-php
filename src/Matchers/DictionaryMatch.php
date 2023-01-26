@@ -103,9 +103,9 @@ class DictionaryMatch extends BaseMatch
         ];
 
         if (preg_match($startUpper, $this->token)) {
-            $feedback['suggestions'][] = "Capitalization doesn't help very much";
+            $feedback['suggestions'][] = dgettext("ZxcvbnPhp", "Capitalization doesn't help very much");
         } elseif (preg_match($allUpper, $this->token) && mb_strtolower($this->token) != $this->token) {
-            $feedback['suggestions'][] = "All-uppercase is almost as easy to guess as all-lowercase";
+            $feedback['suggestions'][] = dgettext("ZxcvbnPhp", "All-uppercase is almost as easy to guess as all-lowercase");
         }
 
         return $feedback;
@@ -117,28 +117,28 @@ class DictionaryMatch extends BaseMatch
             case 'passwords':
                 if ($isSoleMatch && !$this->l33t && !$this->reversed) {
                     if ($this->rank <= 10) {
-                        return 'This is a top-10 common password';
+                        return dgettext("ZxcvbnPhp", "This is a top-10 common password");
                     } elseif ($this->rank <= 100) {
-                        return 'This is a top-100 common password';
+                        return dgettext("ZxcvbnPhp", "This is a top-100 common password");
                     } else {
-                        return 'This is a very common password';
+                        return dgettext("ZxcvbnPhp", "This is a very common password");
                     }
                 } elseif ($this->getGuessesLog10() <= 4) {
-                    return 'This is similar to a commonly used password';
+                    return dgettext("ZxcvbnPhp", "This is similar to a commonly used password");
                 }
                 break;
             case 'english_wikipedia':
                 if ($isSoleMatch) {
-                    return 'A word by itself is easy to guess';
+                    return dgettext("ZxcvbnPhp", "A word by itself is easy to guess");
                 }
                 break;
             case 'surnames':
             case 'male_names':
             case 'female_names':
                 if ($isSoleMatch) {
-                    return 'Names and surnames by themselves are easy to guess';
+                    return dgettext("ZxcvbnPhp", "Names and surnames by themselves are easy to guess");
                 } else {
-                    return 'Common names and surnames are easy to guess';
+                    return dgettext("ZxcvbnPhp", "Common names and surnames are easy to guess");
                 }
         }
 
