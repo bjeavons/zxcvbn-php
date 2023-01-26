@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding: utf-8
 import sys
 import json as simplejson
 
@@ -10,21 +11,28 @@ usage:
 %s src/Matchers/adjacency_graphs.json
 ''' % sys.argv[0]
 
-qwerty = r'''
+qwerty = u'''
 `~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+
     qQ wW eE rR tT yY uU iI oO pP [{ ]} \|
      aA sS dD fF gG hH jJ kK lL ;: '"
       zZ xX cC vV bB nN mM ,< .> /?
 '''
 
-dvorak = r'''
+azerty = u'''
+œŒ“ &1´ é2~ "3# '4{ (5[ -6| è7` _8\\ ç9^ à0@ )°] =+}
+     aAâ zZå eE€ rRç tTþ yYý uUû iIî oOô pP¶ ^"~ $£ê
+      qQÂ sSø dDÊ fF± gGæ hHð jJÛ kKÎ lLÔ mM¹ ù%² *µ³
+   <>| wW« xX» cC© vV® bBß nN¬ ,?¿ ;.× :/÷ !§¡
+'''
+
+dvorak = u'''
 `~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) [{ ]}
     '" ,< .> pP yY fF gG cC rR lL /? =+ \|
      aA oO eE uU iI dD hH tT nN sS -_
       ;: qQ jJ kK xX bB mM wW vV zZ
 '''
 
-keypad = r'''
+keypad = u'''
   / * -
 7 8 9 +
 4 5 6
@@ -32,7 +40,7 @@ keypad = r'''
   0 .
 '''
 
-mac_keypad = r'''
+mac_keypad = u'''
   = / *
 7 8 9 -
 4 5 6 +
@@ -68,13 +76,21 @@ def build_graph(layout_str, slanted):
     token_size = len(tokens[0])
     x_unit = token_size + 1 # x position unit len is token len plus 1 for the following whitespace.
     adjacency_func = get_slanted_adjacent_coords if slanted else get_aligned_adjacent_coords
-    assert all(len(token) == token_size for token in tokens), 'token len mismatch:\n ' + layout_str
-    for y, line in enumerate(layout_str.split('\n')):
+    for token in tokens:
+        assert len(token) == token_size, (
+            u'token "%s" len mismatch (%d != %d):\n%s ' % (
+                token, len(token), token_size, layout_str
+            ).encode('utf-8')
+        )
+    for y, line in enumerate(layout_str.split(u'\n')):
         # the way I illustrated keys above, each qwerty row is indented one space in from the last
         slant = y - 1 if slanted else 0
         for token in line.split():
             x, remainder = divmod(line.index(token) - slant, x_unit)
-            assert remainder == 0, 'unexpected x offset for %s in:\n%s' % (token, layout_str)
+            assert remainder == 0, (
+                u'unexpected x offset for %s (%d != 0) in:\n%s' % (
+                    token, remainder, layout_str)
+            ).encode('utf8')
             position_table[(x,y)] = token
 
     adjacency_graph = {}
@@ -96,10 +112,11 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'w') as f:
         data = {
             'qwerty':     build_graph(qwerty, True),
+            'azerty':     build_graph(azerty, True),
             'dvorak':     build_graph(dvorak, True),
             'keypad':     build_graph(keypad, False),
             'mac_keypad': build_graph(mac_keypad, False),
         }
-        simplejson.dump(data, f)
+        f.write(simplejson.dumps(data, ensure_ascii=False).encode('utf8'))
     sys.exit(0)
 
