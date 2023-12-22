@@ -91,7 +91,7 @@ def build_graph(layout_str, slanted):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print usage()
+        print(usage())
         sys.exit(0)
     with open(sys.argv[1], 'w') as f:
         data = {
