@@ -123,7 +123,7 @@ def to_kv(lst, lst_name):
 
 def main():
     if len(sys.argv) != 3:
-        print usage()
+        print(usage())
         sys.exit(0)
     data_dir, output_file = sys.argv[1:]
     unfiltered_freq_lists = parse_frequency_lists(data_dir)
