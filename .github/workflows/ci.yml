@@ -40,3 +40,6 @@ jobs:
 
     - name: Unit tests
       run: ./vendor/bin/phpunit
+
+    - name: PHPStan
+      run: ./vendor/bin/phpstan analyze
