@@ -12,8 +12,6 @@ jobs:
           # - windows-latest # Disabled - apparently checkouts have \r\n which breaks phpcs
           - macos-latest
         php-versions:
-          - '7.2'
-          - '7.3'
           - '7.4'
           - '8.0'
           - '8.1'
