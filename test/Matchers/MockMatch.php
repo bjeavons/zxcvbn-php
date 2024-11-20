@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
-use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matchers\BaseMatch;
 
 class MockMatch extends BaseMatch
@@ -22,10 +21,8 @@ class MockMatch extends BaseMatch
      * Get feedback to a user based on the match.
      * @param  bool $isSoleMatch
      *   Whether this is the only match in the password
-     * @return array
-     *   Associative array with warning (string) and suggestions (array of strings)
+     * @return array{'warning': string, "suggestions": string[]}
      */
-    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
