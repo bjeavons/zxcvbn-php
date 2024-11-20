@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Matchers;
 
-use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 
-class YearMatch extends BaseMatch
+final class YearMatch extends BaseMatch
 {
     public const NUM_YEARS = 119;
 
@@ -32,7 +31,10 @@ class YearMatch extends BaseMatch
         return $matches;
     }
 
-    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
+
+    /**
+     * @return array{'warning': string, "suggestions": string[]}
+     */
     public function getFeedback(bool $isSoleMatch): array
     {
         return [

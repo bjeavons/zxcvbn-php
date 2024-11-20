@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Matchers;
 
-use JetBrains\PhpStorm\ArrayShape;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Scorer;
 
-class RepeatMatch extends BaseMatch
+final class RepeatMatch extends BaseMatch
 {
     public const GREEDY_MATCH = '/(.+)\1+/u';
     public const LAZY_MATCH = '/(.+?)\1+/u';
@@ -85,7 +84,9 @@ class RepeatMatch extends BaseMatch
         return $matches;
     }
 
-    #[ArrayShape(['warning' => 'string', 'suggestions' => 'string[]'])]
+    /**
+     * @return array{'warning': string, "suggestions": string[]}
+     */
     public function getFeedback(bool $isSoleMatch): array
     {
         $warning = mb_strlen($this->repeatedChar) == 1
