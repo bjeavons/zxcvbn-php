@@ -62,7 +62,7 @@ class DictionaryMatch extends BaseMatch
             $results = static::dictionaryMatch($password, $dict);
             foreach ($results as $result) {
                 $result['dictionary_name'] = $name;
-                $matches[] = new DictionaryMatch($password, $result['begin'], $result['end'], $result['token'], $result);
+                $matches[] = new static($password, $result['begin'], $result['end'], $result['token'], $result);
             }
         }
         Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
