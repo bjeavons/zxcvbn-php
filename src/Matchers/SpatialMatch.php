@@ -7,7 +7,8 @@ namespace ZxcvbnPhp\Matchers;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Math\Binomial;
 
-final class SpatialMatch extends BaseMatch
+/** @phpstan-consistent-constructor */
+class SpatialMatch extends BaseMatch
 {
     public const SHIFTED_CHARACTERS = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
 

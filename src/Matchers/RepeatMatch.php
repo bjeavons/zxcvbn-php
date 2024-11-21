@@ -7,7 +7,8 @@ namespace ZxcvbnPhp\Matchers;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Scorer;
 
-final class RepeatMatch extends BaseMatch
+/** @phpstan-consistent-constructor */
+class RepeatMatch extends BaseMatch
 {
     public const GREEDY_MATCH = '/(.+)\1+/u';
     public const LAZY_MATCH = '/(.+?)\1+/u';

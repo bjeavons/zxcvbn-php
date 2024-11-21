@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Matchers;
 
-final class SequenceMatch extends BaseMatch
+/** @phpstan-consistent-constructor */
+class SequenceMatch extends BaseMatch
 {
     public const MAX_DELTA = 5;
 

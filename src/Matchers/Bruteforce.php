@@ -6,12 +6,6 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Scorer;
 
-/**
- * Class Bruteforce
- * @package ZxcvbnPhp\Matchers
- *
- * Intentionally not named with Match suffix to prevent autoloading from Matcher.
- */
 final class Bruteforce extends BaseMatch
 {
     public const BRUTEFORCE_CARDINALITY = 10;

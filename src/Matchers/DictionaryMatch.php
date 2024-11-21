@@ -7,6 +7,7 @@ namespace ZxcvbnPhp\Matchers;
 use ZxcvbnPhp\Matcher;
 use ZxcvbnPhp\Math\Binomial;
 
+/** @phpstan-consistent-constructor */
 class DictionaryMatch extends BaseMatch
 {
     public $pattern = 'dictionary';

@@ -6,7 +6,8 @@ namespace ZxcvbnPhp\Matchers;
 
 use ZxcvbnPhp\Matcher;
 
-final class DateMatch extends BaseMatch
+/** @phpstan-consistent-constructor */
+class DateMatch extends BaseMatch
 {
     public const NUM_YEARS = 119; // Years match against 1900 - 2019
     public const NUM_MONTHS = 12;
