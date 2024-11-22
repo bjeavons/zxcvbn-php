@@ -91,13 +91,13 @@ class RepeatMatch extends BaseMatch
     public function getFeedback(bool $isSoleMatch): array
     {
         $warning = mb_strlen($this->repeatedChar) == 1
-            ? 'Repeats like "aaa" are easy to guess'
-            : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
+            ? dgettext("ZxcvbnPhp", 'Repeats like "aaa" are easy to guess')
+            : dgettext("ZxcvbnPhp", 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"');
 
         return [
             'warning'     => $warning,
             'suggestions' => [
-                'Avoid repeated words and characters',
+                dgettext("ZxcvbnPhp", 'Avoid repeated words and characters'),
             ],
         ];
     }

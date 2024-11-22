@@ -92,9 +92,9 @@ class SequenceMatch extends BaseMatch
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
-            'warning' => "Sequences like abc or 6543 are easy to guess",
+            'warning' => dgettext("ZxcvbnPhp", "Sequences like abc or 6543 are easy to guess"),
             'suggestions' => [
-                'Avoid sequences'
+                dgettext("ZxcvbnPhp", "Avoid sequences")
             ]
         ];
     }

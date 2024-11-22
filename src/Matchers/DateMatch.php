@@ -114,9 +114,9 @@ class DateMatch extends BaseMatch
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
-            'warning' => "Dates are often easy to guess",
+            'warning' => dgettext("ZxcvbnPhp", "Dates are often easy to guess"),
             'suggestions' => [
-                'Avoid dates and years that are associated with you'
+                dgettext("ZxcvbnPhp", "Avoid dates and years that are associated with you")
             ]
         ];
     }

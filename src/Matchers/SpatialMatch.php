@@ -64,13 +64,13 @@ class SpatialMatch extends BaseMatch
     public function getFeedback(bool $isSoleMatch): array
     {
         $warning = $this->turns == 1
-            ? 'Straight rows of keys are easy to guess'
-            : 'Short keyboard patterns are easy to guess';
+            ? dgettext("ZxcvbnPhp", "Straight rows of keys are easy to guess")
+            : dgettext("ZxcvbnPhp", "Short keyboard patterns are easy to guess");
 
         return [
             'warning' => $warning,
             'suggestions' => [
-                'Use a longer keyboard pattern with more turns'
+                dgettext("ZxcvbnPhp", "Use a longer keyboard pattern with more turns")
             ]
         ];
     }

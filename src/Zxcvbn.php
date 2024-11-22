@@ -33,6 +33,7 @@ class Zxcvbn
 
     public function __construct()
     {
+        bindtextdomain('ZxcvbnPhp', __DIR__ . '/Locales');
         $this->matcher = new \ZxcvbnPhp\Matcher();
         $this->scorer = new \ZxcvbnPhp\Scorer();
         $this->timeEstimator = new \ZxcvbnPhp\TimeEstimator();

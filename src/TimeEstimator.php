@@ -68,57 +68,47 @@ class TimeEstimator
 
     protected function displayTime(float $seconds): string
     {
-        $callback = function (float $seconds): array {
-            $minute = 60;
-            $hour = $minute * 60;
-            $day = $hour * 24;
-            $month = $day * 31;
-            $year = $month * 12;
-            $century = $year * 100;
+        $minute = 60;
+        $hour = $minute * 60;
+        $day = $hour * 24;
+        $month = $day * 31;
+        $year = $month * 12;
+        $century = $year * 100;
 
-            if ($seconds < 1) {
-                return [null, 'less than a second'];
-            }
-
-            if ($seconds < $minute) {
-                $base = round($seconds);
-                return [$base, "$base second"];
-            }
-
-            if ($seconds < $hour) {
-                $base = round($seconds / $minute);
-                return [$base, "$base minute"];
-            }
-
-            if ($seconds < $day) {
-                $base = round($seconds / $hour);
-                return [$base, "$base hour"];
-            }
-
-            if ($seconds < $month) {
-                $base = round($seconds / $day);
-                return [$base, "$base day"];
-            }
-
-            if ($seconds < $year) {
-                $base = round($seconds / $month);
-                return [$base, "$base month"];
-            }
-
-            if ($seconds < $century) {
-                $base = round($seconds / $year);
-                return [$base, "$base year"];
-            }
-
-            return [null, 'centuries'];
-        };
-
-        [$display_num, $display_str] = $callback($seconds);
-
-        if ($display_num > 1) {
-            $display_str .= 's';
+        if ($seconds < 1) {
+            return dgettext("ZxcvbnPhp", 'less than a second');
         }
 
-        return $display_str;
+        if ($seconds < $minute) {
+            $base = intval(round($seconds));
+            return sprintf(dngettext("ZxcvbnPhp", "%d second", "%d seconds", $base), $base);
+        }
+
+        if ($seconds < $hour) {
+            $base = intval(round($seconds / $minute));
+            return sprintf(dngettext("ZxcvbnPhp", "%d minute", "%d minutes", $base), $base);
+        }
+
+        if ($seconds < $day) {
+            $base = intval(round($seconds / $hour));
+            return sprintf(dngettext("ZxcvbnPhp", "%d hour", "%d hours", $base), $base);
+        }
+
+        if ($seconds < $month) {
+            $base = intval(round($seconds / $day));
+            return sprintf(dngettext("ZxcvbnPhp", "%d day", "%d days", $base), $base);
+        }
+
+        if ($seconds < $year) {
+            $base = intval(round($seconds / $month));
+            return sprintf(dngettext("ZxcvbnPhp", "%d month", "%d months", $base), $base);
+        }
+
+        if ($seconds < $century) {
+            $base = intval(round($seconds / $year));
+            return sprintf(dngettext("ZxcvbnPhp", "%d year", "%d years", $base), $base);
+        }
+
+        return dgettext("ZxcvbnPhp", "centuries");
     }
 }
