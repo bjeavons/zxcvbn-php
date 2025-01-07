@@ -12,6 +12,7 @@ jobs:
   all:
     runs-on: ${{ matrix.operating-system }}
     strategy:
+      fail-fast: false
       matrix:
         operating-system:
           - ubuntu-latest
