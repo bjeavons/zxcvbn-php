@@ -14,7 +14,7 @@
         <testsuite name="Zxcvbn-PHP">
             <directory suffix="Test.php">test/</directory>
             <exclude>
-                <file>tests/Matchers/AbstractMatchTest.php</file>
+                test/Matchers/AbstractMatchTest.php
             </exclude>
         </testsuite>
     </testsuites>
