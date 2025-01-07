@@ -218,7 +218,7 @@ class DateMatch extends BaseMatch
                     }
                 }
 
-                if (empty($candidates)) {
+                if ($candidates === []) {
                     continue;
                 }
 
@@ -310,7 +310,8 @@ class DateMatch extends BaseMatch
 
         foreach ($possibleYearSplits as [$year, $rest]) {
             if ($year >= self::MIN_YEAR && $year <= self::MAX_YEAR) {
-                if ($dm = static::mapIntsToDayMonth($rest)) {
+                $dm = static::mapIntsToDayMonth($rest);
+                if ($dm !== false) {
                     return [
                         'year' => $year,
                         'month' => $dm['month'],
@@ -325,7 +326,8 @@ class DateMatch extends BaseMatch
         }
 
         foreach ($possibleYearSplits as [$year, $rest]) {
-            if ($dm = static::mapIntsToDayMonth($rest)) {
+            $dm = static::mapIntsToDayMonth($rest);
+            if ($dm !== false) {
                 return [
                     'year' => static::twoToFourDigitYear($year),
                     'month' => $dm['month'],

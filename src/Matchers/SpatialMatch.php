@@ -92,8 +92,13 @@ class SpatialMatch extends BaseMatch
      */
     public static function getAdjacencyGraphs(): array
     {
-        if (empty(self::$adjacencyGraphs)) {
+        if (self::$adjacencyGraphs === []) {
             $json = file_get_contents(__DIR__ . '/adjacency_graphs.json');
+
+            if ($json === false) {
+                throw new \Exception('Failed to read adjacency_graphs.json file');
+            }
+
             $data = json_decode($json, true);
 
             // This seems pointless, but the data file is not guaranteed to be in any particular order.
@@ -241,7 +246,8 @@ class SpatialMatch extends BaseMatch
                 $guesses *= 2;
             } else {
                 $variations = 0;
-                for ($i = 1; $i <= min($shifted, $unshifted); $i++) {
+                $min = min($shifted, $unshifted);
+                for ($i = 1; $i <= $min; $i++) {
                     $variations += Binomial::binom($shifted + $unshifted, $i);
                 }
                 $guesses *= $variations;

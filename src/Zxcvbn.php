@@ -27,6 +27,9 @@ class Zxcvbn
         $this->feedback = new Feedback();
     }
 
+    /**
+     * @param class-string $className
+     */
     public function addMatcher(string $className): self
     {
         $this->matcher->addMatcher($className);

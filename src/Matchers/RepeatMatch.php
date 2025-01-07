@@ -44,6 +44,8 @@ class RepeatMatch extends BaseMatch
     /**
      * Match 3 or more repeated characters.
      *
+     * @param array<mixed> $userInputs
+     *
      * @return array<RepeatMatch>
      */
     public static function match(string $password, array $userInputs = []): array
@@ -55,14 +57,16 @@ class RepeatMatch extends BaseMatch
             $greedyMatches = self::findAll($password, self::GREEDY_MATCH, $lastIndex);
             $lazyMatches = self::findAll($password, self::LAZY_MATCH, $lastIndex);
 
-            if (empty($greedyMatches)) {
+            if ($greedyMatches === []) {
                 break;
             }
 
             if (mb_strlen((string) $greedyMatches[0][0]['token']) > mb_strlen((string) $lazyMatches[0][0]['token'])) {
                 $match = $greedyMatches[0];
-                preg_match(self::ANCHORED_LAZY_MATCH, (string) $match[0]['token'], $anchoredMatch);
-                $repeatedChar = $anchoredMatch[1];
+                $repeatedChar = '';
+                if (preg_match(self::ANCHORED_LAZY_MATCH, (string) $match[0]['token'], $anchoredMatch)) {
+                    $repeatedChar = $anchoredMatch[1];
+                }
             } else {
                 $match = $lazyMatches[0];
                 $repeatedChar = $match[1]['token'];

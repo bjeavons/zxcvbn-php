@@ -37,18 +37,21 @@ class L33tMatch extends DictionaryMatch
     /**
      * Match occurrences of l33t words in password to dictionary words.
      *
+     * @param array<mixed> $userInputs
+     * @param array<string, mixed> $rankedDictionaries
+     *
      * @return array<L33tMatch>
      */
     public static function match(string $password, array $userInputs = [], array $rankedDictionaries = []): array
     {
         // Translate l33t password and dictionary match the translated password.
         $maps = array_filter(static::getL33tSubstitutions(static::getL33tSubtable($password)));
-        if (empty($maps)) {
+        if ($maps === []) {
             return [];
         }
 
         $matches = [];
-        if (! $rankedDictionaries) {
+        if ($rankedDictionaries === []) {
             $rankedDictionaries = static::getRankedDictionaries();
         }
 
@@ -136,16 +139,20 @@ class L33tMatch extends DictionaryMatch
      */
     protected static function getL33tSubtable(string $password): array
     {
-        // The preg_split call below is a multibyte compatible version of str_split
-        $passwordChars = array_unique(preg_split('//u', $password, -1, PREG_SPLIT_NO_EMPTY));
-
         $subTable = [];
 
-        $table = static::getL33tTable();
-        foreach ($table as $letter => $substitutions) {
-            foreach ($substitutions as $sub) {
-                if (in_array($sub, $passwordChars)) {
-                    $subTable[$letter][] = $sub;
+        // The preg_split call below is a multibyte compatible version of str_split
+        $splitItems = preg_split('//u', $password, -1, PREG_SPLIT_NO_EMPTY);
+
+        if ($splitItems !== false) {
+            $passwordChars = array_unique($splitItems);
+
+            $table = static::getL33tTable();
+            foreach ($table as $letter => $substitutions) {
+                foreach ($substitutions as $sub) {
+                    if (in_array($sub, $passwordChars)) {
+                        $subTable[$letter][] = $sub;
+                    }
                 }
             }
         }
@@ -178,7 +185,7 @@ class L33tMatch extends DictionaryMatch
      */
     protected static function substitutionTableHelper(array $table, array $keys, array $subs): array
     {
-        if (empty($keys)) {
+        if ($keys === []) {
             return $subs;
         }
 
@@ -226,20 +233,23 @@ class L33tMatch extends DictionaryMatch
         foreach ($this->sub as $substitution => $letter) {
             $characters = preg_split('//u', mb_strtolower((string) $this->token), -1, PREG_SPLIT_NO_EMPTY);
 
-            $subbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $substitution));
-            $unsubbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $letter));
+            if ($characters !== false) {
+                $subbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $substitution));
+                $unsubbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $letter));
 
-            if ($subbed === 0 || $unsubbed === 0) {
-                // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
-                // treat that as doubling the space (attacker needs to try fully subbed chars in addition to
-                // unsubbed.)
-                $variations *= 2;
-            } else {
-                $possibilities = 0;
-                for ($i = 1; $i <= min($subbed, $unsubbed); $i++) {
-                    $possibilities += Binomial::binom($subbed + $unsubbed, $i);
+                if ($subbed === 0 || $unsubbed === 0) {
+                    // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
+                    // treat that as doubling the space (attacker needs to try fully subbed chars in addition to
+                    // unsubbed.)
+                    $variations *= 2;
+                } else {
+                    $possibilities = 0;
+                    $min = min($subbed, $unsubbed);
+                    for ($i = 1; $i <= $min; $i++) {
+                        $possibilities += Binomial::binom($subbed + $unsubbed, $i);
+                    }
+                    $variations *= $possibilities;
                 }
-                $variations *= $possibilities;
             }
         }
         return $variations;

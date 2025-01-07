@@ -35,6 +35,8 @@ class SequenceMatch extends BaseMatch
     /**
      * Match sequences of three or more characters.
      *
+     * @param array<mixed> $userInputs Array of values related to the user (optional)
+     *
      * @return array<SequenceMatch>
      */
     public static function match(string $password, array $userInputs = []): array

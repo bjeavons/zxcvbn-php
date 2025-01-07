@@ -13,6 +13,7 @@ use SlevomatCodingStandard\Sniffs\Classes\SuperfluousExceptionNamingSniff;
 use SlevomatCodingStandard\Sniffs\Classes\SuperfluousInterfaceNamingSniff;
 use SlevomatCodingStandard\Sniffs\Functions\FunctionLengthSniff;
 use SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff;
+use SlevomatCodingStandard\Sniffs\Operators\RequireOnlyStandaloneIncrementAndDecrementOperatorsSniff;
 use SlevomatCodingStandard\Sniffs\TypeHints\DisallowMixedTypeHintSniff;
 
 return [
@@ -84,6 +85,7 @@ return [
         UnusedParameterSniff::class,
         TodoSniff::class,
         ForbiddenPublicPropertySniff::class,
+        RequireOnlyStandaloneIncrementAndDecrementOperatorsSniff::class,
     ],
 
     'config' => [

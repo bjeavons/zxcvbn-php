@@ -35,7 +35,7 @@ class Binomial
     }
 
     /**
-     * @return array<string>
+     * @return array<class-string>
      */
     public static function getUsableProviderClasses(): array
     {
@@ -55,12 +55,18 @@ class Binomial
     {
         $providerClasses = self::getUsableProviderClasses();
 
-        if (! $providerClasses) {
+        if ($providerClasses === []) {
             throw new \LogicException('No valid providers');
         }
 
         $bestProviderClass = reset($providerClasses);
 
-        return new $bestProviderClass();
+        $provider = new $bestProviderClass();
+
+        if (! $provider instanceof BinomialProvider) {
+            throw new \LogicException('Inval provider class: ' . $bestProviderClass);
+        }
+
+        return $provider;
     }
 }

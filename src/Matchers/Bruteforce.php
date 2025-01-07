@@ -13,6 +13,8 @@ final class Bruteforce extends BaseMatch
     public string $pattern = 'bruteforce';
 
     /**
+     * @param array<mixed> $userInputs
+     *
      * @return array<Bruteforce>
      */
     public static function match(string $password, array $userInputs = []): array

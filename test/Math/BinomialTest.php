@@ -37,8 +37,10 @@ class BinomialTest extends TestCase
     public function testChosenProviderMatchesExpected(): void
     {
         $providerClasses = Binomial::getUsableProviderClasses();
+        $provider = reset($providerClasses);
+        $this->assertNotFalse($provider);
 
-        $this->assertInstanceOf(reset($providerClasses), Binomial::getProvider());
+        $this->assertInstanceOf($provider, Binomial::getProvider());
     }
 
     /**

@@ -73,7 +73,14 @@ abstract class BaseMatch implements MatchInterface
                 ],
             ];
             foreach ($group as $capture) {
-                $captureBegin = mb_strpos((string) $match, $capture, $captureBegin);
+                $captureBeginTemp = mb_strpos((string) $match, $capture, $captureBegin);
+
+                if ($captureBeginTemp === false) {
+                    continue;
+                }
+
+                $captureBegin = $captureBeginTemp;
+
                 $captures[] = [
                     'begin' => $matchBegin + $captureBegin,
                     'end' => $matchBegin + $captureBegin + mb_strlen($capture) - 1,

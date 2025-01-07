@@ -135,9 +135,8 @@ class ZxcvbnTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
+        // @phpstan-ignore-next-line
         $this->zxcvbn->addMatcher('invalid className');
-
-        $this->expectNotToPerformAssertions();
     }
 
     public function testAddMatcherWillReturnSelf(): void

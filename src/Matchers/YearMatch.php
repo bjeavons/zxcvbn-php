@@ -16,6 +16,8 @@ final class YearMatch extends BaseMatch
     /**
      * Match occurrences of years in a password
      *
+     * @param array<mixed> $userInputs Array of values related to the user (optional)
+     *
      * @return array<YearMatch>
      */
     public static function match(string $password, array $userInputs = []): array

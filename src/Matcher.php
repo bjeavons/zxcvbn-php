@@ -9,7 +9,7 @@ use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
 {
-    private const DEFAULT_MATCHERS = [
+    private const array DEFAULT_MATCHERS = [
         Matchers\DateMatch::class,
         Matchers\DictionaryMatch::class,
         Matchers\ReverseDictionaryMatch::class,
@@ -21,7 +21,7 @@ class Matcher
     ];
 
     /**
-     * @var array<string, BaseMatch>
+     * @var array<class-string, BaseMatch>
      */
     private array $additionalMatchers = [];
 
@@ -45,7 +45,7 @@ class Matcher
         /** @var MatchInterface $matcher */
         foreach ($this->getMatchers() as $matcher) {
             $matched = $matcher::match($password, $userInputs);
-            if (! empty($matched)) {
+            if ($matched !== []) {
                 $matches[] = $matched;
             }
         }
@@ -56,12 +56,18 @@ class Matcher
         return $matches;
     }
 
+    /**
+     * @param class-string $className
+     *
+     * @throws \InvalidArgumentException
+     */
     public function addMatcher(string $className): self
     {
-        if (! is_a($className, MatchInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf('Matcher class must implement %s', MatchInterface::class));
+        if (! is_a($className, BaseMatch::class, true)) {
+            throw new \InvalidArgumentException(sprintf('Matcher class must extend %s', BaseMatch::class));
         }
 
+        // @phpstan-ignore-next-line
         $this->additionalMatchers[$className] = $className;
 
         return $this;
@@ -107,13 +113,17 @@ class Matcher
     /**
      * Load available Match objects to match against a password.
      *
-     * @return array<int, BaseMatch> Array of classes implementing BaseMatch
+     * @return array<int, BaseMatch> Array of classes extending BaseMatch
      */
     protected function getMatchers(): array
     {
+        /** @var array<int, BaseMatch> $additionalMatchers */
+        $additionalMatchers = array_values($this->additionalMatchers);
+
+        // @phpstan-ignore-next-line
         return array_merge(
             self::DEFAULT_MATCHERS,
-            array_values($this->additionalMatchers)
+            $additionalMatchers
         );
     }
 }

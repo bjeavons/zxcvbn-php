@@ -74,9 +74,8 @@ class MatcherTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $matcher = new Matcher();
+        // @phpstan-ignore-next-line
         $matcher->addMatcher('invalid className');
-
-        $this->expectNotToPerformAssertions();
     }
 
     public function testAddMatcherWillReturnSelf(): void

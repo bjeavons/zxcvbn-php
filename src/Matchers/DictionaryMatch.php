@@ -63,7 +63,7 @@ class DictionaryMatch extends BaseMatch
             $dicts = static::getRankedDictionaries();
         }
 
-        if (! empty($userInputs)) {
+        if ($userInputs !== []) {
             $dicts['user_inputs'] = [];
             foreach ($userInputs as $rank => $input) {
                 $input_lower = mb_strtolower((string) $input);
@@ -177,8 +177,13 @@ class DictionaryMatch extends BaseMatch
      */
     protected static function getRankedDictionaries(): array
     {
-        if (empty(self::$rankedDictionaries)) {
+        if (self::$rankedDictionaries === []) {
             $json = file_get_contents(__DIR__ . '/frequency_lists.json');
+
+            if ($json === false) {
+                throw new \Exception('Failed to read frequency_lists.json file');
+            }
+
             $data = json_decode($json, true);
 
             $rankedLists = [];
@@ -218,12 +223,17 @@ class DictionaryMatch extends BaseMatch
         // otherwise calculate the number of ways to capitalize U+L uppercase+lowercase letters
         // with U uppercase letters or less. or, if there's more uppercase than lower (for eg. PASSwORD),
         // the number of ways to lowercase U+L letters with L lowercase letters or less.
-        $uppercase = count(array_filter(preg_split('//u', (string) $word, -1, PREG_SPLIT_NO_EMPTY), 'ctype_upper'));
-        $lowercase = count(array_filter(preg_split('//u', (string) $word, -1, PREG_SPLIT_NO_EMPTY), 'ctype_lower'));
+        $splitWord = preg_split('//u', (string) $word, -1, PREG_SPLIT_NO_EMPTY);
 
         $variations = 0;
-        for ($i = 1; $i <= min($uppercase, $lowercase); $i++) {
-            $variations += Binomial::binom($uppercase + $lowercase, $i);
+        if ($splitWord !== false) {
+            $uppercase = count(array_filter($splitWord, 'ctype_upper'));
+            $lowercase = count(array_filter($splitWord, 'ctype_lower'));
+
+            $min = min($uppercase, $lowercase);
+            for ($i = 1; $i <= $min; $i++) {
+                $variations += Binomial::binom($uppercase + $lowercase, $i);
+            }
         }
         return $variations;
     }
