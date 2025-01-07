@@ -9,7 +9,7 @@ use ZxcvbnPhp\Matchers\MatchInterface;
 
 class Matcher
 {
-    private const array DEFAULT_MATCHERS = [
+    private const DEFAULT_MATCHERS = [
         Matchers\DateMatch::class,
         Matchers\DictionaryMatch::class,
         Matchers\ReverseDictionaryMatch::class,
