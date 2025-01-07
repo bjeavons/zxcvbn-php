@@ -35,7 +35,7 @@ class SpatialMatch extends BaseMatch
     /**
      * @param array{'graph'?: string, 'shifted_count'?: int, 'turns'?: int} $params
      */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = ['graph' => 'qwerty', 'shifted_count' => 0, 'turns' => 0])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
         $this->graph = $params['graph'] ?? 'qwerty';

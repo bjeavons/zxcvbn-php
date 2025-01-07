@@ -23,7 +23,7 @@ class SequenceMatch extends BaseMatch
     /**
      * @param array{'sequenceName'?: string, 'sequenceSpace'?: int, 'ascending'?: bool} $params
      */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = ['sequenceName' => '', 'sequenceSpace' => 0, 'ascending' => false])
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
     {
         parent::__construct($password, $begin, $end, $token);
 
