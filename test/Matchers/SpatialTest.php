@@ -4,32 +4,27 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matchers\BaseMatch;
 use ZxcvbnPhp\Matchers\SpatialMatch;
 use ZxcvbnPhp\Math\Binomial;
 
-/**
- * @covers \ZxcvbnPhp\Matchers\SpatialMatch
- */
+#[\PHPUnit\Framework\Attributes\CoversClass(\ZxcvbnPhp\Matchers\SpatialMatch::class)]
 class SpatialTest extends AbstractMatchTest
 {
     /**
-     * @return string[][]
+     * @return Iterator<int, mixed>
      */
-    public function shortPatternDataProvider(): array
+    public static function shortPatternDataProvider(): Iterator
     {
-        return [
-            [''],
-            ['/'],
-            ['qw'],
-            ['*/'],
-        ];
+        yield [''];
+        yield ['/'];
+        yield ['qw'];
+        yield ['*/'];
     }
 
-    /**
-     * @dataProvider shortPatternDataProvider
-     * @param string $password
-     */
+    #[DataProvider('shortPatternDataProvider')]
     public function testShortPatterns(string $password): void
     {
         $this->assertSame(
@@ -70,33 +65,34 @@ class SpatialTest extends AbstractMatchTest
         );
     }
 
-    public function spatialDataProvider(): array
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function spatialDataProvider(): Iterator
     {
-        return [
-            ['12345',        'qwerty',     1, 0],
-            ['@WSX',         'qwerty',     1, 4],
-            ['6tfGHJ',       'qwerty',     2, 3],
-            ['hGFd',         'qwerty',     1, 2],
-            ['/;p09876yhn',  'qwerty',     3, 0],
-            ['Xdr%',         'qwerty',     1, 2],
-            ['159-',         'keypad',     1, 0],
-            ['*84',          'keypad',     1, 0],
-            ['/8520',        'keypad',     1, 0],
-            ['369',          'keypad',     1, 0],
-            ['/963.',        'mac_keypad', 1, 0],
-            ['*-632.0214',   'mac_keypad', 9, 0],
-            ['aoEP%yIxkjq:', 'dvorak',     4, 5],
-            [';qoaOQ:Aoq;a', 'dvorak',    11, 4],
-        ];
+        yield ['12345',        'qwerty',     1, 0];
+        yield ['@WSX',         'qwerty',     1, 4];
+        yield ['6tfGHJ',       'qwerty',     2, 3];
+        yield ['hGFd',         'qwerty',     1, 2];
+        yield ['/;p09876yhn',  'qwerty',     3, 0];
+        yield ['Xdr%',         'qwerty',     1, 2];
+        yield ['159-',         'keypad',     1, 0];
+        yield ['*84',          'keypad',     1, 0];
+        yield ['/8520',        'keypad',     1, 0];
+        yield ['369',          'keypad',     1, 0];
+        yield ['/963.',        'mac_keypad', 1, 0];
+        yield ['*-632.0214',   'mac_keypad', 9, 0];
+        yield ['aoEP%yIxkjq:', 'dvorak',     4, 5];
+        yield [';qoaOQ:Aoq;a', 'dvorak',    11, 4];
     }
 
     /**
-     * @dataProvider spatialDataProvider
      * @param string $password
      * @param string $keyboard
      * @param int    $turns
      * @param int    $shifts
      */
+    #[DataProvider('spatialDataProvider')]
     public function testSpatialPatterns(string $password, string $keyboard, int $turns, int $shifts): void
     {
         $graphs = [$keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]];
@@ -191,26 +187,19 @@ class SpatialTest extends AbstractMatchTest
     }
 
     /**
-     * @return array[]
+     * @return Iterator<int, mixed>
      */
-    public function complexGuessProvider(): array
+    public static function complexGuessProvider(): Iterator
     {
-        return [
-            ['6yhgf',        2, 19596],
-            ['asde3w',       3, 203315],
-            ['zxcft6yh',     3, 558460],
-            ['xcvgy7uj',     3, 558460],
-            ['ertghjm,.',    5, 30160744],
-            ['qwerfdsazxcv', 5, 175281377],
-        ];
+        yield ['6yhgf',        2, 19596];
+        yield ['asde3w',       3, 203315];
+        yield ['zxcft6yh',     3, 558460];
+        yield ['xcvgy7uj',     3, 558460];
+        yield ['ertghjm,.',    5, 30160744];
+        yield ['qwerfdsazxcv', 5, 175281377];
     }
 
-    /**
-     * @dataProvider complexGuessProvider
-     * @param string $token
-     * @param int $turns
-     * @param float $expected
-     */
+    #[DataProvider('complexGuessProvider')]
     public function testGuessesComplexCase(string $token, int $turns, float $expected): void
     {
         $match = new SpatialMatch($token, 0, strlen($token) - 1, $token, [
@@ -220,7 +209,6 @@ class SpatialTest extends AbstractMatchTest
         ]);
 
         $actual = $match->getGuesses();
-        $this->assertIsFloat($actual);
 
         $this->assertEqualsWithDelta(
             $expected,

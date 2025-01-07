@@ -12,6 +12,6 @@ class BinomialProviderPhp73Gmp extends AbstractBinomialProvider
      */
     protected function calculate(int $n, int $k): float
     {
-        return (float)gmp_strval(gmp_binomial($n, $k));
+        return (float) gmp_strval(gmp_binomial($n, $k));
     }
 }

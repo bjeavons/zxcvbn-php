@@ -8,20 +8,16 @@ use ZxcvbnPhp\Matchers\BaseMatch;
 
 class MockMatch extends BaseMatch
 {
-    /** @var float */
-    protected $guesses;
-
-    public function __construct(int $begin, int $end, float $guesses)
+    public function __construct(int $begin, int $end, protected float $guesses)
     {
         parent::__construct('', $begin, $end, '');
-        $this->guesses = $guesses;
     }
 
     /**
      * Get feedback to a user based on the match.
      * @param  bool $isSoleMatch
      *   Whether this is the only match in the password
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{warning: string, suggestions: string[]}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
@@ -41,12 +37,12 @@ class MockMatch extends BaseMatch
      *
      * @param string $password
      *   Password to check for match.
-     * @param array $userInputs
+     * @param array<int, string> $userInputs
      *   Array of values related to the user (optional).
      * @code
      *   array('Alice Smith')
      * @endcode
-     * @return array
+     * @return array<int, mixed>
      *   Array of Match objects
      */
     public static function match(string $password, array $userInputs = []): array

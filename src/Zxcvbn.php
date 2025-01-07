@@ -11,32 +11,20 @@ namespace ZxcvbnPhp;
  */
 class Zxcvbn
 {
-    /**
-     * @var
-     */
-    protected $matcher;
+    protected Matcher $matcher;
 
-    /**
-     * @var
-     */
-    protected $scorer;
+    protected Scorer $scorer;
 
-    /**
-     * @var
-     */
-    protected $timeEstimator;
+    protected TimeEstimator $timeEstimator;
 
-    /**
-     * @var
-     */
-    protected $feedback;
+    protected Feedback $feedback;
 
     public function __construct()
     {
-        $this->matcher = new \ZxcvbnPhp\Matcher();
-        $this->scorer = new \ZxcvbnPhp\Scorer();
-        $this->timeEstimator = new \ZxcvbnPhp\TimeEstimator();
-        $this->feedback = new \ZxcvbnPhp\Feedback();
+        $this->matcher = new Matcher();
+        $this->scorer = new Scorer();
+        $this->timeEstimator = new TimeEstimator();
+        $this->feedback = new Feedback();
     }
 
     public function addMatcher(string $className): self
@@ -49,10 +37,10 @@ class Zxcvbn
     /**
      * Calculate password strength via non-overlapping minimum entropy patterns.
      *
-     * @param string $password   Password to measure
-     * @param array  $userInputs Optional user inputs
+     * @param string              $password   Password to measure
+     * @param array<int, string>  $userInputs Optional user inputs
      *
-     * @return array Strength result array with keys:
+     * @return array<string, mixed> Strength result array with keys:
      *               password
      *               entropy
      *               match_sequence
@@ -63,9 +51,7 @@ class Zxcvbn
         $timeStart = microtime(true);
 
         $sanitizedInputs = array_map(
-            function ($input) {
-                return mb_strtolower((string) $input);
-            },
+            static fn ($input) => mb_strtolower((string) $input),
             $userInputs
         );
 
@@ -82,8 +68,8 @@ class Zxcvbn
             $result,
             $attackTimes,
             [
-                'feedback'  => $feedback,
-                'calc_time' => microtime(true) - $timeStart
+                'feedback' => $feedback,
+                'calc_time' => microtime(true) - $timeStart,
             ]
         );
     }

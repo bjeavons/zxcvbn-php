@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ZxcvbnPhp\Test\Matchers;
 
 use PHPUnit\Framework\TestCase;
+use ZxcvbnPhp\Matchers\BaseMatch;
 
 abstract class AbstractMatchTest extends TestCase
 {
@@ -15,12 +16,11 @@ abstract class AbstractMatchTest extends TestCase
      *
      * @see test-matching.coffee
      *
-     * @param  string $pattern
-     * @param  array  $prefixes
-     * @param  array  $suffixes
-     * @return array a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
+     * @param  array<int, string>  $prefixes
+     * @param  array<int, string>  $suffixes
+     * @return array<int, mixed> a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
      */
-    protected function generatePasswords($pattern, $prefixes, $suffixes)
+    protected function generatePasswords(string $pattern, array $prefixes, array $suffixes): array
     {
         $output = [];
 
@@ -33,8 +33,8 @@ abstract class AbstractMatchTest extends TestCase
 
         foreach ($prefixes as $prefix) {
             foreach ($suffixes as $suffix) {
-                $i = strlen($prefix);
-                $j = strlen($prefix) + strlen($pattern) - 1;
+                $i = strlen((string) $prefix);
+                $j = strlen((string) $prefix) + strlen($pattern) - 1;
 
                 $output[] = [
                     $prefix . $pattern . $suffix,
@@ -48,31 +48,30 @@ abstract class AbstractMatchTest extends TestCase
     }
 
     /**
-     * [checkMatches description]
      * @param  string       $prefix       This is prepended to the message of any checks that are run
-     * @param  array        $matches      [description]
-     * @param  array|string $patternNames array of pattern names, or a single pattern which will be repeated
-     * @param  array        $patterns     [description]
-     * @param  array        $ijs          [description]
-     * @param  array        $props        [description]
+     * @param  array<int, BaseMatch> $matches
+     * @param  array<int, string>|string $patternNames array of pattern names, or a single pattern which will be repeated
+     * @param  array<int, string> $patterns
+     * @param  array<int, mixed>    $ijs
+     * @param  array<string, mixed> $props
      */
     protected function checkMatches(
-        $prefix,
-        $matches,
-        $patternNames,
-        $patterns,
-        $ijs,
-        $props
-    ) {
+        string $prefix,
+        array $matches,
+        array|string $patternNames,
+        array $patterns,
+        array $ijs,
+        array $props
+    ): void {
         if (is_string($patternNames)) {
             # shortcut: if checking for a list of the same type of patterns,
             # allow passing a string 'pat' instead of array ['pat', 'pat', ...]
             $patternNames = array_fill(0, count($patterns), $patternNames);
         }
 
-        $this->assertSame(
+        $this->assertCount(
             count($patterns),
-            count($matches),
+            $matches,
             $prefix . ": matches.length == " . count($patterns)
         );
 
@@ -80,7 +79,7 @@ abstract class AbstractMatchTest extends TestCase
             $match = $matches[$k];
             $patternName = $patternNames[$k];
             $pattern = $patterns[$k];
-            list($i, $j) = $ijs[$k];
+            [$i, $j] = $ijs[$k];
 
             $this->assertSame(
                 $patternName,

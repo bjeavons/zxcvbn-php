@@ -10,12 +10,10 @@ final class Bruteforce extends BaseMatch
 {
     public const BRUTEFORCE_CARDINALITY = 10;
 
-    public $pattern = 'bruteforce';
+    public string $pattern = 'bruteforce';
 
     /**
-     * @param string $password
-     * @param array $userInputs
-     * @return Bruteforce[]
+     * @return array<Bruteforce>
      */
     public static function match(string $password, array $userInputs = []): array
     {
@@ -24,29 +22,28 @@ final class Bruteforce extends BaseMatch
         return [$match];
     }
 
-
     /**
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{'warning': string, "suggestions": array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
-            'warning' => "",
+            'warning' => '',
             'suggestions' => [
-            ]
+            ],
         ];
     }
 
     public function getRawGuesses(): float
     {
-        $guesses = pow(self::BRUTEFORCE_CARDINALITY, mb_strlen($this->token));
-        if ($guesses === INF) {
+        $guesses = self::BRUTEFORCE_CARDINALITY ** mb_strlen((string) $this->token);
+        if ($guesses >= PHP_FLOAT_MAX) {
             return PHP_FLOAT_MAX;
         }
 
         // small detail: make bruteforce matches at minimum one guess bigger than smallest allowed
         // submatch guesses, such that non-bruteforce submatches over the same [i..j] take precedence.
-        if (mb_strlen($this->token) === 1) {
+        if (mb_strlen((string) $this->token) === 1) {
             $minGuesses = Scorer::MIN_SUBMATCH_GUESSES_SINGLE_CHAR + 1;
         } else {
             $minGuesses = Scorer::MIN_SUBMATCH_GUESSES_MULTI_CHAR + 1;

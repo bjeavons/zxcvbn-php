@@ -4,24 +4,34 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use ZxcvbnPhp\Matchers\L33tMatch;
 use ZxcvbnPhp\Matchers\BaseMatch;
 
 class L33tTest extends AbstractMatchTest
 {
-    protected $testTable = [
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $testTable = [
         'a' => ['4', '@'],
         'c' => ['(', '{', '[', '<'],
         'g' => ['6', '9'],
         'o' => ['0'],
     ];
 
-    // Generally we only need to test the public interface of the matchers, but it can be useful
-    // to occasionally test protected methods to ensure consistency with upstream.
+    /**
+     * Generally we only need to test the public interface of the matchers, but it can be useful
+     * to occasionally test protected methods to ensure consistency with upstream.
+     *
+     * @param array<int, mixed> $args
+     * @return array<string, mixed>
+     */
     protected static function callProtectedMethod(string $name, array $args)
     {
-        $class = new ReflectionClass('\\ZxcvbnPhp\\Test\\Matchers\\MockL33tMatch');
+        $class = new ReflectionClass(MockL33tMatch::class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
         return $method->invokeArgs(null, $args);
@@ -120,49 +130,45 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
-    public function commonCaseProvider(): array
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function commonCaseProvider(): Iterator
     {
-        return [
-            [
-                'password'        => 'p4ssword',
-                'pattern'         => 'p4ssword',
-                'word'            => 'password',
-                'dictionary_name' => 'words',
-                'rank'            => 3,
-                'ij'              => [0, 7],
-                'sub'             => ['4' => 'a']
-            ],
-            [
-                'password'        => 'p@ssw0rd',
-                'pattern'         => 'p@ssw0rd',
-                'word'            => 'password',
-                'dictionary_name' => 'words',
-                'rank'            => 3,
-                'ij'              => [0, 7],
-                'sub'             => ['@' => 'a', '0' => 'o']
-            ],
-            [
-                'password'        => 'aSdfO{G0asDfO',
-                'pattern'         => '{G0',
-                'word'            => 'cgo',
-                'dictionary_name' => 'words2',
-                'rank'            => 1,
-                'ij'              => [5, 7],
-                'sub'             => ['{' => 'c', '0' => 'o']
-            ],
+        yield [
+            'password'        => 'p4ssword',
+            'pattern'         => 'p4ssword',
+            'word'            => 'password',
+            'dictionary_name' => 'words',
+            'rank'            => 3,
+            'ij'              => [0, 7],
+            'sub'             => ['4' => 'a']
+        ];
+        yield [
+            'password'        => 'p@ssw0rd',
+            'pattern'         => 'p@ssw0rd',
+            'word'            => 'password',
+            'dictionary_name' => 'words',
+            'rank'            => 3,
+            'ij'              => [0, 7],
+            'sub'             => ['@' => 'a', '0' => 'o']
+        ];
+        yield [
+            'password'        => 'aSdfO{G0asDfO',
+            'pattern'         => '{G0',
+            'word'            => 'cgo',
+            'dictionary_name' => 'words2',
+            'rank'            => 1,
+            'ij'              => [5, 7],
+            'sub'             => ['{' => 'c', '0' => 'o']
         ];
     }
 
     /**
-     * @dataProvider commonCaseProvider
-     * @param string $password
-     * @param string $pattern
-     * @param string $word
-     * @param string $dictionary
-     * @param int $rank
      * @param int[] $ij
-     * @param array $substitutions
+     * @param string[] $substitutions
      */
+    #[DataProvider('commonCaseProvider')]
     public function testCommonL33tSubstitutions(string $password, string $pattern, string $word, string $dictionary, int $rank, array $ij, array $substitutions): void
     {
         $this->checkMatches(
@@ -245,7 +251,7 @@ class L33tTest extends AbstractMatchTest
      * The character '1' can map to both 'i' and 'l' - there was previously a bug that prevented it from matching
      * against the latter
      */
-    public function testSubstitutionOfCharacterL()
+    public function testSubstitutionOfCharacterL(): void
     {
         $this->checkMatches(
             "matches against overlapping l33t patterns",
@@ -261,17 +267,17 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessesL33t()
+    public function testGuessesL33t(): void
     {
         $match = new L33tMatch('aaa@@@', 0, 5, 'aaa@@@', [
             'rank' => 32,
-            'sub' => array('@' => 'a')
+            'sub' => ['@' => 'a']
         ]);
         $expected = 32.0 * 41;    // rank * l33t variations
         $this->assertSame($expected, $match->getGuesses(), "guesses are doubled when word is reversed");
     }
 
-    public function testGuessesL33tAndUppercased()
+    public function testGuessesL33tAndUppercased(): void
     {
         $match = new L33tMatch('AaA@@@', 0, 5, 'AaA@@@', [
             'rank' => 32,
@@ -285,30 +291,29 @@ class L33tTest extends AbstractMatchTest
         );
     }
 
-    public function variationsProvider(): array
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function variationsProvider(): Iterator
     {
-        return [
-            [ '',  1, [] ],
-            [ 'a', 1, [] ],
-            [ '4', 2, ['4' => 'a'] ],
-            [ '4pple', 2, ['4' => 'a'] ],
-            [ 'abcet', 1, [] ],
-            [ '4bcet', 2, ['4' => 'a'] ],
-            [ 'a8cet', 2, ['8' => 'b'] ],
-            [ 'abce+', 2, ['+' => 't'] ],
-            [ '48cet', 4, ['4' => 'a', '8' => 'b'] ],
-            ['a4a4aa', /* binom(6, 2) */ 15 + /* binom(6, 1) */ 6, ['4' => 'a']],
-            ['4a4a44', /* binom(6, 2) */ 15 + /* binom(6, 1) */ 6, ['4' => 'a']],
-            ['a44att+', (/* binom(4, 2) */ 6 + /* binom(4, 1) */ 4) * /* binom(3, 1) */ 3, ['4' => 'a', '+' => 't']],
-        ];
+        yield [ '',  1, [] ];
+        yield [ 'a', 1, [] ];
+        yield [ '4', 2, ['4' => 'a'] ];
+        yield [ '4pple', 2, ['4' => 'a'] ];
+        yield [ 'abcet', 1, [] ];
+        yield [ '4bcet', 2, ['4' => 'a'] ];
+        yield [ 'a8cet', 2, ['8' => 'b'] ];
+        yield [ 'abce+', 2, ['+' => 't'] ];
+        yield [ '48cet', 4, ['4' => 'a', '8' => 'b'] ];
+        yield ['a4a4aa', /* binom(6, 2) */ 15 + /* binom(6, 1) */ 6, ['4' => 'a']];
+        yield ['4a4a44', /* binom(6, 2) */ 15 + /* binom(6, 1) */ 6, ['4' => 'a']];
+        yield ['a44att+', (/* binom(4, 2) */ 6 + /* binom(4, 1) */ 4) * /* binom(3, 1) */ 3, ['4' => 'a', '+' => 't']];
     }
 
     /**
-     * @dataProvider variationsProvider
-     * @param string $token
-     * @param float  $expectedGuesses
-     * @param array  $substitutions
+     * @param string[] $substitutions
      */
+    #[DataProvider('variationsProvider')]
     public function testGuessesL33tVariations(string $token, float $expectedGuesses, array $substitutions): void
     {
         $match = new L33tMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1, 'sub' => $substitutions]);

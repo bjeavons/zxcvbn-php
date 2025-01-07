@@ -8,7 +8,7 @@ use ZxcvbnPhp\Matchers\Bruteforce;
 
 class BruteforceTest extends AbstractMatchTest
 {
-    public function testMatch()
+    public function testMatch(): void
     {
         $password = 'uH2nvQbugW';
 
@@ -22,7 +22,7 @@ class BruteforceTest extends AbstractMatchTest
         );
     }
 
-    public function testMultibyteMatch()
+    public function testMultibyteMatch(): void
     {
         $password = '中华人民共和国';
 
@@ -36,17 +36,17 @@ class BruteforceTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessesMax()
+    public function testGuessesMax(): void
     {
         $token = str_repeat('a', 1000);
         $match = new Bruteforce($token, 0, 999, $token);
-        $this->assertNotEquals(INF, $match->getGuesses(), "long string doesn't return infinite guesses");
+        $this->assertNotSame(INF, $match->getGuesses(), "long string doesn't return infinite guesses");
     }
 
-    public function testGuessesMultibyteCharacter()
+    public function testGuessesMultibyteCharacter(): void
     {
         $token = '🙂'; // smiley face emoji
         $match = new Bruteforce($token, 0, 1, $token);
-        $this->assertSame(11.0, $match->getGuesses(), "multibyte character treated as one character");
+        $this->assertEqualsWithDelta(11.0, $match->getGuesses(), PHP_FLOAT_EPSILON, "multibyte character treated as one character");
     }
 }

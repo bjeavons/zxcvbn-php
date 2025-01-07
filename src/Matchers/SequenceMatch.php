@@ -9,23 +9,33 @@ class SequenceMatch extends BaseMatch
 {
     public const MAX_DELTA = 5;
 
-    public $pattern = 'sequence';
+    public string $pattern = 'sequence';
 
     /** @var string The name of the detected sequence. */
-    public $sequenceName;
+    public string $sequenceName;
 
     /** @var int The number of characters in the complete sequence space. */
-    public $sequenceSpace;
+    public int $sequenceSpace;
 
     /** @var bool True if the sequence is ascending, and false if it is descending. */
-    public $ascending;
+    public bool $ascending;
+
+    /**
+     * @param array{'sequenceName'?: string, 'sequenceSpace'?: int, 'ascending'?: bool} $params
+     */
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = ['sequenceName' => '', 'sequenceSpace' => 0, 'ascending' => false])
+    {
+        parent::__construct($password, $begin, $end, $token);
+
+        $this->sequenceName = $params['sequenceName'] ?? '';
+        $this->sequenceSpace = $params['sequenceSpace'] ?? 0;
+        $this->ascending = $params['ascending'] ?? false;
+    }
 
     /**
      * Match sequences of three or more characters.
      *
-     * @param string $password
-     * @param array $userInputs
-     * @return SequenceMatch[]
+     * @return array<SequenceMatch>
      */
     public static function match(string $password, array $userInputs = []): array
     {
@@ -58,7 +68,10 @@ class SequenceMatch extends BaseMatch
         return $matches;
     }
 
-    public static function findSequenceMatch(string $password, int $begin, int $end, int $delta, array &$matches)
+    /**
+     * @param array<int, self> $matches
+     */
+    public static function findSequenceMatch(string $password, int $begin, int $end, int $delta, array &$matches): void
     {
         if ($end - $begin > 1 || abs($delta) === 1) {
             if (abs($delta) > 0 && abs($delta) <= self::MAX_DELTA) {
@@ -87,41 +100,24 @@ class SequenceMatch extends BaseMatch
     }
 
     /**
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{'warning': string, "suggestions": array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
         return [
-            'warning' => "Sequences like abc or 6543 are easy to guess",
+            'warning' => 'Sequences like abc or 6543 are easy to guess',
             'suggestions' => [
-                'Avoid sequences'
-            ]
+                'Avoid sequences',
+            ],
         ];
-    }
-
-    /**
-     * @param string $password
-     * @param int $begin
-     * @param int $end
-     * @param string $token
-     * @param array $params An array with keys: [sequenceName, sequenceSpace, ascending].
-     */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
-    {
-        parent::__construct($password, $begin, $end, $token);
-        if (!empty($params)) {
-            $this->sequenceName = $params['sequenceName'] ?? '';
-            $this->sequenceSpace = $params['sequenceSpace'] ?? 0;
-            $this->ascending = $params['ascending'] ?? false;
-        }
     }
 
     protected function getRawGuesses(): float
     {
-        $firstCharacter = mb_substr($this->token, 0, 1);
+        $firstCharacter = mb_substr((string) $this->token, 0, 1);
         $guesses = 0;
 
-        if (in_array($firstCharacter, array('a', 'A', 'z', 'Z', '0', '1', '9'), true)) {
+        if (in_array($firstCharacter, ['a', 'A', 'z', 'Z', '0', '1', '9'], true)) {
             $guesses += 4;  // lower guesses for obvious starting points
         } elseif (ctype_digit($firstCharacter)) {
             $guesses += 10; // digits
@@ -131,12 +127,12 @@ class SequenceMatch extends BaseMatch
             $guesses += 26;
         }
 
-        if (!$this->ascending) {
+        if (! $this->ascending) {
             // need to try a descending sequence in addition to every ascending sequence ->
             // 2x guesses
             $guesses *= 2;
         }
 
-        return $guesses * mb_strlen($this->token);
+        return $guesses * mb_strlen((string) $this->token);
     }
 }

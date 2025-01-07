@@ -4,40 +4,39 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matchers\SequenceMatch;
 
-/**
- * @covers \ZxcvbnPhp\Matchers\SequenceMatch
- */
+#[CoversClass(SequenceMatch::class)]
 class SequenceTest extends AbstractMatchTest
 {
-    public function shortPasswordProvider()
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function shortPasswordProvider(): Iterator
     {
-        return [
-            [''],
-            ['a'],
-            ['1'],
-        ];
+        yield [''];
+        yield ['a'];
+        yield ['1'];
     }
 
-    /**
-     * @dataProvider shortPasswordProvider
-     * @param $password
-     */
-    public function testShortPassword($password)
+    #[DataProvider('shortPasswordProvider')]
+    public function testShortPassword(string $password): void
     {
         $matches = SequenceMatch::match($password);
-        $this->assertEmpty($matches, "doesn't match length-" . strlen($password) . " sequences");
+        $this->assertEmpty($matches, "doesn't match length-" . strlen((string) $password) . " sequences");
     }
 
-    public function testNonSequence()
+    public function testNonSequence(): void
     {
         $password = 'password';
         $matches = SequenceMatch::match($password);
         $this->assertEmpty($matches, "doesn't match password that's not a sequence");
     }
 
-    public function testOverlappingPatterns()
+    public function testOverlappingPatterns(): void
     {
         $password = 'abcbabc';
 
@@ -53,13 +52,13 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testEmbeddedSequencePatterns()
+    public function testEmbeddedSequencePatterns(): void
     {
         $prefixes = ['!', '22'];
         $suffixes = ['!', '22'];
         $pattern = 'jihg';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as [$password, $i, $j]) {
             $this->checkMatches(
                 "matches embedded sequence patterns",
                 SequenceMatch::match($password),
@@ -74,32 +73,28 @@ class SequenceTest extends AbstractMatchTest
         }
     }
 
-    public function sequenceProvider()
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function sequenceProvider(): Iterator
     {
-        return [
-            ['ABC',   'upper',  true],
-            ['CBA',   'upper',  false],
-            ['PQR',   'upper',  true],
-            ['RQP',   'upper',  false],
-            ['XYZ',   'upper',  true],
-            ['ZYX',   'upper',  false],
-            ['abcd',  'lower',  true],
-            ['dcba',  'lower',  false],
-            ['jihg',  'lower',  false],
-            ['wxyz',  'lower',  true],
-            ['zxvt',  'lower',  false],
-            ['0369',  'digits', true],
-            ['97531', 'digits', false]
-        ];
+        yield ['ABC',   'upper',  true];
+        yield ['CBA',   'upper',  false];
+        yield ['PQR',   'upper',  true];
+        yield ['RQP',   'upper',  false];
+        yield ['XYZ',   'upper',  true];
+        yield ['ZYX',   'upper',  false];
+        yield ['abcd',  'lower',  true];
+        yield ['dcba',  'lower',  false];
+        yield ['jihg',  'lower',  false];
+        yield ['wxyz',  'lower',  true];
+        yield ['zxvt',  'lower',  false];
+        yield ['0369',  'digits', true];
+        yield ['97531', 'digits', false];
     }
 
-    /**
-     * @dataProvider sequenceProvider
-     * @param string $password
-     * @param string $name
-     * @param bool $ascending
-     */
-    public function testSequenceInformation($password, $name, $ascending)
+    #[DataProvider('sequenceProvider')]
+    public function testSequenceInformation(string $password, string $name, bool $ascending): void
     {
         $this->checkMatches(
             "matches " . $password . " as a " . $name . " sequence",
@@ -114,7 +109,7 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testMultipleMatches()
+    public function testMultipleMatches(): void
     {
         $password = 'pass123wordZYX';
         $this->checkMatches(
@@ -130,7 +125,7 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testMultibytePassword()
+    public function testMultibytePassword(): void
     {
         $pattern = 'muÃeca';
 
@@ -147,7 +142,7 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testMultibyteSequence()
+    public function testMultibyteSequence(): void
     {
         $pattern = 'αβγδεζ';
 
@@ -164,23 +159,23 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function guessProvider()
+    /**
+     * @return Iterator<int, mixed>
+     */
+    public static function guessProvider(): Iterator
     {
-        return array(
-            array('ab',   true,  4 * 2),        // obvious start * len-2
-            array('XYZ',  true,  26 * 3),       // base26 * len-3
-            array('4567', true,  10 * 4),       // base10 * len-4
-            array('7654', false, 10 * 4 * 2),   // base10 * len-4 * descending
-            array('ZYX',  false, 4 * 3 * 2),    // obvious start * len-3 * descending
-        );
+        yield ['ab',   true,  4 * 2];
+        // obvious start * len-2
+        yield ['XYZ',  true,  26 * 3];
+        // base26 * len-3
+        yield ['4567', true,  10 * 4];
+        // base10 * len-4
+        yield ['7654', false, 10 * 4 * 2];
+        // base10 * len-4 * descending
+        yield ['ZYX',  false, 4 * 3 * 2];
     }
 
-    /**
-     * @dataProvider guessProvider
-     * @param string $token
-     * @param bool $ascending
-     * @param float $expectedGuesses
-     */
+    #[DataProvider('guessProvider')]
     public function testGuesses(string $token, bool $ascending, float $expectedGuesses): void
     {
         $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => $ascending]);
@@ -191,7 +186,7 @@ class SequenceTest extends AbstractMatchTest
         );
     }
 
-    public function testFeedback()
+    public function testFeedback(): void
     {
         $token = 'rstuvw';
         $match = new SequenceMatch($token, 0, strlen($token) - 1, $token, ['ascending' => true]);

@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matchers\DictionaryMatch;
 
 class DictionaryTest extends AbstractMatchTest
 {
-    protected static $testDicts = [
+    /**
+     * @var array<string, mixed>
+     */
+    protected static array $testDicts = [
         'd1' => [
             'motherboard' => 1,
             'mother' => 2,
@@ -26,20 +31,15 @@ class DictionaryTest extends AbstractMatchTest
     ];
 
     /**
-     * @return string[][]
+     * @return Iterator<int, mixed>
      */
-    public function madeUpWordsProvider(): array
+    public static function madeUpWordsProvider(): Iterator
     {
-        return [
-            ['jjj'],
-            ['kdncpqw'],
-        ];
+        yield ['jjj'];
+        yield ['kdncpqw'];
     }
 
-    /**
-     * @dataProvider madeUpWordsProvider
-     * @param string $password
-     */
+    #[DataProvider('madeUpWordsProvider')]
     public function testWordsNotInDictionary(string $password): void
     {
         $matches = DictionaryMatch::match($password);
@@ -176,9 +176,7 @@ class DictionaryTest extends AbstractMatchTest
         $patterns = ['foo', 'bar'];
 
         $matches = DictionaryMatch::match($password, ['foo', 'bar']);
-        $matches = array_values(array_filter($matches, function ($match) {
-            return $match->dictionaryName === 'user_inputs';
-        }));
+        $matches = array_values(array_filter($matches, fn($match) => $match->dictionaryName === 'user_inputs'));
 
         $this->checkMatches(
             "matches with provided user input dictionary",
@@ -227,7 +225,7 @@ class DictionaryTest extends AbstractMatchTest
     public function testGuessesBaseRank(): void
     {
         $match = new DictionaryMatch('aaaaa', 0, 5, 'aaaaaa', ['rank' => 32]);
-        $this->assertSame(32.0, $match->getGuesses(), "base guesses == the rank");
+        $this->assertEqualsWithDelta(32.0, $match->getGuesses(), PHP_FLOAT_EPSILON, "base guesses == the rank");
     }
 
     public function testGuessesCapitalization(): void
@@ -238,31 +236,29 @@ class DictionaryTest extends AbstractMatchTest
     }
 
     /**
-     * @return array[]
+     * @return Iterator<int, mixed>
      */
-    public function uppercaseVariationProvider(): array
+    public static function uppercaseVariationProvider(): Iterator
     {
-        return [
-            [ '',       1 ],
-            [ 'a',      1 ],
-            [ 'A',      2 ],
-            [ 'abcdef', 1 ],
-            [ 'Abcdef', 2 ],
-            [ 'abcdeF', 2 ],
-            [ 'ABCDEF', 2 ],
-            [ 'aBcdef', 6 ],    // 6 choose 1
-            [ 'aBcDef', 21 ],   // 6 choose 1 + 6 choose 2
-            [ 'ABCDEf', 6 ],    // 6 choose 1
-            [ 'aBCDEf', 21 ],   // 6 choose 1 + 6 choose 2
-            [ 'ABCdef', 41 ],   // 6 choose 1 + 6 choose 2 + 6 choose 3
-        ];
+        yield [ '',       1 ];
+        yield [ 'a',      1 ];
+        yield [ 'A',      2 ];
+        yield [ 'abcdef', 1 ];
+        yield [ 'Abcdef', 2 ];
+        yield [ 'abcdeF', 2 ];
+        yield [ 'ABCDEF', 2 ];
+        yield [ 'aBcdef', 6 ];
+        // 6 choose 1
+        yield [ 'aBcDef', 21 ];
+        // 6 choose 1 + 6 choose 2
+        yield [ 'ABCDEf', 6 ];
+        // 6 choose 1
+        yield [ 'aBCDEf', 21 ];
+        // 6 choose 1 + 6 choose 2
+        yield [ 'ABCdef', 41 ];
     }
 
-    /**
-     * @dataProvider uppercaseVariationProvider
-     * @param string $token
-     * @param float $expectedGuesses
-     */
+    #[DataProvider('uppercaseVariationProvider')]
     public function testGuessesUppercaseVariations(string $token, float $expectedGuesses): void
     {
         $match = new DictionaryMatch($token, 0, strlen($token) - 1, $token, ['rank' => 1]);
@@ -394,11 +390,7 @@ class DictionaryTest extends AbstractMatchTest
     }
 
     /**
-     * @param string $token
-     * @param string $dictionary
-     * @param int $rank
-     * @param bool $soleMatch
-     * @return array
+     * @return array<string, mixed>
      */
     private function getFeedbackForToken(string $token, string $dictionary, int $rank, bool $soleMatch): array
     {

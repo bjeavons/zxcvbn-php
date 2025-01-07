@@ -8,6 +8,9 @@ use ZxcvbnPhp\Matchers\L33tMatch;
 
 class MockL33tMatch extends L33tMatch
 {
+    /**
+     * @return array<string, mixed>
+     */
     protected static function getRankedDictionaries(): array
     {
         return [
@@ -23,6 +26,9 @@ class MockL33tMatch extends L33tMatch
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected static function getL33tTable(): array
     {
         return [

@@ -6,14 +6,11 @@ namespace ZxcvbnPhp\Math\Impl;
 
 abstract class AbstractBinomialProviderWithFallback extends AbstractBinomialProvider
 {
-    /**
-     * @var AbstractBinomialProvider|null
-     */
-    private $fallback = null;
+    private ?AbstractBinomialProvider $fallback = null;
 
     protected function calculate(int $n, int $k): float
     {
-        return  $this->tryCalculate($n, $k) ?? $this->getFallbackProvider()->calculate($n, $k);
+        return $this->tryCalculate($n, $k) ?? $this->getFallbackProvider()->calculate($n, $k);
     }
 
     abstract protected function tryCalculate(int $n, int $k): ?float;

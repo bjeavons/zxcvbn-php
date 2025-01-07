@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matchers\DateMatch;
 
 class DateTest extends AbstractMatchTest
 {
-    public function separatorProvider()
+    public static function separatorProvider(): Iterator
     {
-        return [
-            [''],
-            [' '],
-            ['-'],
-            ['/'],
-            ['\\'],
-            ['_'],
-            ['.'],
-        ];
+        yield [''];
+        yield [' '];
+        yield ['-'];
+        yield ['/'];
+        yield ['\\'];
+        yield ['_'];
+        yield ['.'];
     }
 
     /**
-     * @dataProvider separatorProvider
      * @param string $sep
      */
-    public function testSeparators($sep)
+    #[DataProvider('separatorProvider')]
+    public function testSeparators($sep): void
     {
         $password = "13{$sep}2{$sep}1921";
 
@@ -44,14 +44,14 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testDateOrders()
+    public function testDateOrders(): void
     {
-        list($d, $m, $y) = [8, 8, 88];
+        [$d, $m, $y] = [8, 8, 88];
         $orders = ['mdy', 'dmy', 'ymd', 'ydm'];
         foreach ($orders as $order) {
             $password = str_replace(
                 ['y', 'm', 'd'],
-                [$y, $m, $d],
+                [(string) $y, (string) $m, (string) $d],
                 $order
             );
             $this->checkMatches(
@@ -70,7 +70,7 @@ class DateTest extends AbstractMatchTest
         }
     }
 
-    public function testMatchesClosestToReferenceYear()
+    public function testMatchesClosestToReferenceYear(): void
     {
         $password = '111504';
         $this->checkMatches(
@@ -88,23 +88,21 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function normalDateProvider()
+    public static function normalDateProvider(): Iterator
     {
-        return [
-            [1,  1,  1999],
-            [11, 8,  2000],
-            [9,  12, 2005],
-            [22, 11, 1551]
-        ];
+        yield [1,  1,  1999];
+        yield [11, 8,  2000];
+        yield [9,  12, 2005];
+        yield [22, 11, 1551];
     }
 
     /**
-     * @dataProvider normalDateProvider
      * @param int $day
      * @param int $month
      * @param int $year
      */
-    public function testNormalDatesWithoutSeparator($day, $month, $year)
+    #[DataProvider('normalDateProvider')]
+    public function testNormalDatesWithoutSeparator($day, $month, $year): void
     {
         $password = "{$year}{$month}{$day}";
         $this->checkMatches(
@@ -121,12 +119,12 @@ class DateTest extends AbstractMatchTest
     }
 
     /**
-     * @dataProvider normalDateProvider
      * @param int $day
      * @param int $month
      * @param int $year
      */
-    public function testNormalDatesWithSeparator($day, $month, $year)
+    #[DataProvider('normalDateProvider')]
+    public function testNormalDatesWithSeparator($day, $month, $year): void
     {
         $password = "{$year}.{$month}.{$day}";
         $this->checkMatches(
@@ -142,7 +140,7 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testMatchesZeroPaddedDates()
+    public function testMatchesZeroPaddedDates(): void
     {
         $password = "02/02/02";
         $this->checkMatches(
@@ -160,7 +158,7 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testFullDateMatched()
+    public function testFullDateMatched(): void
     {
         $password = "2018-01-20";
         $this->checkMatches(
@@ -178,13 +176,13 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testMatchesEmbeddedDates()
+    public function testMatchesEmbeddedDates(): void
     {
         $prefixes = ['a', 'ab'];
         $suffixes = ['!'];
         $pattern = '1/1/91';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as [$password, $i, $j]) {
             $this->checkMatches(
                 "matches embedded dates",
                 DateMatch::match($password),
@@ -200,7 +198,7 @@ class DateTest extends AbstractMatchTest
         }
     }
 
-    public function testMatchesOverlappingDates()
+    public function testMatchesOverlappingDates(): void
     {
         $password = "12/20/1991.12.20";
         $this->checkMatches(
@@ -218,7 +216,7 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testMatchesDatesPadded()
+    public function testMatchesDatesPadded(): void
     {
         $password = "912/20/919";
         $this->checkMatches(
@@ -236,17 +234,17 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testReferenceYearImplementation()
+    public function testReferenceYearImplementation(): void
     {
         $this->assertSame((int)date('Y'), DateMatch::getReferenceYear(), "reference year implementation");
     }
 
-    public function testNonDateThatLooksLikeDate()
+    public function testNonDateThatLooksLikeDate(): void
     {
         $this->assertEmpty(DateMatch::match('30-31-00'), "no match on invalid date");
     }
 
-    public function testGuessDistanceFromReferenceYear()
+    public function testGuessDistanceFromReferenceYear(): void
     {
         $token = '1123';
         $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
@@ -264,7 +262,7 @@ class DateTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessMinYearSpace()
+    public function testGuessMinYearSpace(): void
     {
         $token = '112010';
         $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
@@ -278,7 +276,7 @@ class DateTest extends AbstractMatchTest
         $this->assertSame($expected, $match->getGuesses(), "recent years assume MIN_YEAR_SPACE");
     }
 
-    public function testGuessWithSeparator()
+    public function testGuessWithSeparator(): void
     {
         $token = '1/1/2010';
         $match = new DateMatch($token, 0, strlen($token) - 1, $token, [
@@ -292,7 +290,7 @@ class DateTest extends AbstractMatchTest
         $this->assertSame($expected, $match->getGuesses(), "extra guesses are added for separators");
     }
 
-    public function testFeedback()
+    public function testFeedback(): void
     {
         $token = '26/01/1990';
         $match = new DateMatch($token, 0, strlen($token) - 1, $token, [

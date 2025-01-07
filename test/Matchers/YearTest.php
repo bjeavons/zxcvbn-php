@@ -4,34 +4,30 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Test\Matchers;
 
+use Iterator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matchers\DateMatch;
 use ZxcvbnPhp\Matchers\YearMatch;
 
-/**
- * @covers \ZxcvbnPhp\Matchers\YearMatch
- */
+#[CoversClass(YearMatch::class)]
 class YearTest extends AbstractMatchTest
 {
-    public function testNoMatchForNonYear()
+    public function testNoMatchForNonYear(): void
     {
         $password = 'password';
         $this->assertEmpty(YearMatch::match($password));
     }
 
-    public function recentYearProvider()
+    public static function recentYearProvider(): Iterator
     {
-        return [
-            ['1922'],
-            ['2001'],
-            ['2017']
-        ];
+        yield ['1922'];
+        yield ['2001'];
+        yield ['2017'];
     }
 
-    /**
-     * @dataProvider recentYearProvider
-     * @param $password
-     */
-    public function testRecentYears($password)
+    #[DataProvider('recentYearProvider')]
+    public function testRecentYears(string $password): void
     {
         $this->checkMatches(
             "matches recent year",
@@ -43,32 +39,27 @@ class YearTest extends AbstractMatchTest
         );
     }
 
-    public function nonRecentYearProvider()
+    public static function nonRecentYearProvider(): Iterator
     {
-        return [
-            ['1420'],
-            ['1899'],
-            ['2345']
-        ];
+        yield ['1420'];
+        yield ['1899'];
+        yield ['2345'];
     }
 
-    /**
-     * @dataProvider nonRecentYearProvider
-     * @param $password
-     */
-    public function testNonRecentYears($password)
+    #[DataProvider('nonRecentYearProvider')]
+    public function testNonRecentYears(string $password): void
     {
         $matches = YearMatch::match($password);
         $this->assertEmpty($matches, "does not match non-recent year");
     }
 
-    public function testYearSurroundedByWords()
+    public function testYearSurroundedByWords(): void
     {
         $prefixes = ['car', 'dog'];
         $suffixes = ['car', 'dog'];
         $pattern = '1900';
 
-        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as list($password, $i, $j)) {
+        foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as [$password, $i, $j]) {
             $this->checkMatches(
                 "identifies years surrounded by words",
                 YearMatch::match($password),
@@ -85,7 +76,7 @@ class YearTest extends AbstractMatchTest
         $this->assertSame('1900', $matches[0]->token, 'Token incorrect');
     }
 
-    public function testYearWithinOtherNumbers()
+    public function testYearWithinOtherNumbers(): void
     {
         $password = '419004';
         $this->checkMatches(
@@ -98,7 +89,7 @@ class YearTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessesPast()
+    public function testGuessesPast(): void
     {
         $token = '1972';
         $match = new YearMatch($token, 0, 3, $token);
@@ -110,7 +101,7 @@ class YearTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessesFuture()
+    public function testGuessesFuture(): void
     {
         $token = '2050';
         $match = new YearMatch($token, 0, 3, $token);
@@ -122,19 +113,21 @@ class YearTest extends AbstractMatchTest
         );
     }
 
-    public function testGuessesUnderMinimumYearSpace()
+    public function testGuessesUnderMinimumYearSpace(): void
     {
         $token = '2005';
         $match = new YearMatch($token, 0, 3, $token);
 
-        $this->assertSame(
-            20.0, // DateMatch::MIN_YEAR_SPACE
+        $this->assertEqualsWithDelta(
+            20.0,
+            // DateMatch::MIN_YEAR_SPACE
             $match->getGuesses(),
+            PHP_FLOAT_EPSILON,
             "guesses of MIN_YEAR_SPACE for a year close to REFERENCE_YEAR"
         );
     }
 
-    public function testFeedback()
+    public function testFeedback(): void
     {
         $token = '2010';
         $match = new YearMatch($token, 0, strlen($token) - 1, $token);

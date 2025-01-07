@@ -20,39 +20,45 @@ class Matcher
         Matchers\YearMatch::class,
     ];
 
-    private $additionalMatchers = [];
+    /**
+     * @var array<string, BaseMatch>
+     */
+    private array $additionalMatchers = [];
 
     /**
      * Get matches for a password.
      *
      * @param string $password  Password string to match
-     * @param array $userInputs Array of values related to the user (optional)
+     * @param array<int, mixed> $userInputs Array of values related to the user (optional)
+     *
      * @code array('Alice Smith')
+     *
      * @endcode
      *
-     * @return MatchInterface[] Array of Match objects.
+     * @return array<int, BaseMatch> Array of Match objects.
      *
      * @see  zxcvbn/src/matching.coffee::omnimatch
      */
     public function getMatches(string $password, array $userInputs = []): array
     {
         $matches = [];
+        /** @var MatchInterface $matcher */
         foreach ($this->getMatchers() as $matcher) {
             $matched = $matcher::match($password, $userInputs);
-            if (is_array($matched) && !empty($matched)) {
+            if (! empty($matched)) {
                 $matches[] = $matched;
             }
         }
 
         $matches = array_merge([], ...$matches);
-        self::usortStable($matches, [$this, 'compareMatches']);
+        self::usortStable($matches, $this->compareMatches(...));
 
         return $matches;
     }
 
     public function addMatcher(string $className): self
     {
-        if (!is_a($className, MatchInterface::class, true)) {
+        if (! is_a($className, MatchInterface::class, true)) {
             throw new \InvalidArgumentException(sprintf('Matcher class must implement %s', MatchInterface::class));
         }
 
@@ -71,9 +77,7 @@ class Matcher
      * This function taken from https://github.com/vanderlee/PHP-stable-sort-functions
      * Copyright © 2015-2018 Martijn van der Lee (http://martijn.vanderlee.com). MIT License applies.
      *
-     * @param array $array
-     * @param callable $value_compare_func
-     * @return bool
+     * @param array<int, mixed> $array
      */
     public static function usortStable(array &$array, callable $value_compare_func): bool
     {
@@ -81,9 +85,9 @@ class Matcher
         foreach ($array as &$item) {
             $item = [$index++, $item];
         }
-        $result = usort($array, function ($a, $b) use ($value_compare_func) {
+        $result = usort($array, static function ($a, $b) use ($value_compare_func) {
             $result = $value_compare_func($a[1], $b[1]);
-            return $result == 0 ? $a[0] - $b[0] : $result;
+            return $result === 0 ? $a[0] - $b[0] : $result;
         });
         foreach ($array as &$item) {
             $item = $item[1];
@@ -103,7 +107,7 @@ class Matcher
     /**
      * Load available Match objects to match against a password.
      *
-     * @return array Array of classes implementing MatchInterface
+     * @return array<int, BaseMatch> Array of classes implementing BaseMatch
      */
     protected function getMatchers(): array
     {

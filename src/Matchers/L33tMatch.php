@@ -9,26 +9,35 @@ use ZxcvbnPhp\Math\Binomial;
 
 /**
  * Class L33tMatch extends DictionaryMatch to translate l33t into dictionary words for matching.
+ *
  * @package ZxcvbnPhp\Matchers
  */
 class L33tMatch extends DictionaryMatch
 {
-    /** @var array An array of substitutions made to get from the token to the dictionary word. */
-    public $sub = [];
+    /** @var array<string, string> An array of substitutions made to get from the token to the dictionary word. */
+    public array $sub = [];
 
     /** @var string A user-readable string that shows which substitutions were detected. */
-    public $subDisplay;
+    public string $subDisplay;
 
     /** @var bool Whether or not the token contained l33t substitutions. */
-    public $l33t = true;
+    public bool $l33t = true;
 
     /**
-     * Match occurences of l33t words in password to dictionary words.
+     * @param array{'sub'?: array<mixed>, 'sub_display'?: string} $params
+     */
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
+    {
+        parent::__construct($password, $begin, $end, $token, $params);
+
+        $this->sub = $params['sub'] ?? [];
+        $this->subDisplay = $params['sub_display'] ?? '';
+    }
+
+    /**
+     * Match occurrences of l33t words in password to dictionary words.
      *
-     * @param string $password
-     * @param array $userInputs
-     * @param array $rankedDictionaries
-     * @return L33tMatch[]
+     * @return array<L33tMatch>
      */
     public static function match(string $password, array $userInputs = [], array $rankedDictionaries = []): array
     {
@@ -39,14 +48,14 @@ class L33tMatch extends DictionaryMatch
         }
 
         $matches = [];
-        if (!$rankedDictionaries) {
+        if (! $rankedDictionaries) {
             $rankedDictionaries = static::getRankedDictionaries();
         }
 
         foreach ($maps as $map) {
             $translatedWord = static::translate($password, $map);
 
-            /** @var L33tMatch[] $results */
+            /** @var array<L33tMatch> $results */
             $results = parent::match($translatedWord, $userInputs, $rankedDictionaries);
             foreach ($results as $match) {
                 $token = mb_substr($password, $match->begin, $match->end - $match->begin + 1);
@@ -65,9 +74,9 @@ class L33tMatch extends DictionaryMatch
 
                 $display = [];
                 foreach ($map as $i => $t) {
-                    if (mb_strpos($token, (string)$i) !== false) {
+                    if (mb_strpos($token, (string) $i) !== false) {
                         $match->sub[$i] = $t;
-                        $display[] = "$i -> $t";
+                        $display[] = "{$i} -> {$t}";
                     }
                 }
                 $match->token = $token;
@@ -77,28 +86,12 @@ class L33tMatch extends DictionaryMatch
             }
         }
 
-        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
+        Matcher::usortStable($matches, Matcher::compareMatches(...));
         return $matches;
     }
 
     /**
-     * @param string $password
-     * @param int $begin
-     * @param int $end
-     * @param string $token
-     * @param array $params An array with keys: [sub, sub_display].
-     */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
-    {
-        parent::__construct($password, $begin, $end, $token, $params);
-        if (!empty($params)) {
-            $this->sub = $params['sub'] ?? [];
-            $this->subDisplay = $params['sub_display'] ?? null;
-        }
-    }
-
-    /**
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{'warning': string, "suggestions": array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
@@ -110,15 +103,16 @@ class L33tMatch extends DictionaryMatch
     }
 
     /**
-     * @param string $string
-     * @param array  $map
-     * @return string
+     * @param array<string> $map
      */
     protected static function translate(string $string, array $map): string
     {
         return str_replace(array_keys($map), array_values($map), $string);
     }
 
+    /**
+     * @return array<string, array<string>>
+     */
     protected static function getL33tTable(): array
     {
         return [
@@ -137,6 +131,9 @@ class L33tMatch extends DictionaryMatch
         ];
     }
 
+    /**
+     * @return array<string, array<string>>
+     */
     protected static function getL33tSubtable(string $password): array
     {
         // The preg_split call below is a multibyte compatible version of str_split
@@ -156,19 +153,29 @@ class L33tMatch extends DictionaryMatch
         return $subTable;
     }
 
+    /**
+     * @param array<string, array<string>> $subtable
+     *
+     * @return array<int, mixed>
+     */
     protected static function getL33tSubstitutions(array $subtable): array
     {
         $keys = array_keys($subtable);
         $substitutions = self::substitutionTableHelper($subtable, $keys, [[]]);
 
         // Converts the substitution arrays from [ [a, b], [c, d] ] to [ a => b, c => d ]
-        $substitutions = array_map(function (array $subArray): array {
-            return array_combine(array_column($subArray, 0), array_column($subArray, 1));
-        }, $substitutions);
+        $substitutions = array_map(static fn (array $subArray): array => array_combine(array_column($subArray, 0), array_column($subArray, 1)), $substitutions);
 
         return $substitutions;
     }
 
+    /**
+     * @param array<string, array<string>> $table
+     * @param array<int, string> $keys
+     * @param array<int, mixed> $subs
+     *
+     * @return array<int, mixed>
+     */
     protected static function substitutionTableHelper(array $table, array $keys, array $subs): array
     {
         if (empty($keys)) {
@@ -217,14 +224,10 @@ class L33tMatch extends DictionaryMatch
         $variations = 1;
 
         foreach ($this->sub as $substitution => $letter) {
-            $characters = preg_split('//u', mb_strtolower($this->token), -1, PREG_SPLIT_NO_EMPTY);
+            $characters = preg_split('//u', mb_strtolower((string) $this->token), -1, PREG_SPLIT_NO_EMPTY);
 
-            $subbed = count(array_filter($characters, function ($character) use ($substitution) {
-                return (string)$character === (string)$substitution;
-            }));
-            $unsubbed = count(array_filter($characters, function ($character) use ($letter) {
-                return (string)$character === (string)$letter;
-            }));
+            $subbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $substitution));
+            $unsubbed = count(array_filter($characters, static fn ($character) => (string) $character === (string) $letter));
 
             if ($subbed === 0 || $unsubbed === 0) {
                 // for this sub, password is either fully subbed (444) or fully unsubbed (aaa)
