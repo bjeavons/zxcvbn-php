@@ -79,7 +79,7 @@ class ZxcvbnTest extends TestCase
         yield ['fortitude22', 2, ['dictionary', 'repeat',], '2 minutes', 1140700];
         yield ['absoluteadnap', 2, ['dictionary', 'dictionary',], '25 minutes', 15187504];
         yield ['knifeandspoon', 3, ['dictionary', 'dictionary', 'dictionary'], '1 day', 1108057600];
-        yield ['h1dden_26191', 3, ['dictionary', 'bruteforce', 'date'], '3 days', 2993690800];
+        yield ['h1dden_26191', 3, ['dictionary', 'bruteforce', 'date'], '4 days', 3081378400];
         yield ['4rfv1236yhn!', 4, ['spatial', 'sequence', 'bruteforce'], '1 month', 38980000000];
         yield ['BVidSNqe3oXVyE1996', 4, ['bruteforce', 'regex',], 'centuries', 10000000000010000];
     }

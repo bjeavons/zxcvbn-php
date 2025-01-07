@@ -139,7 +139,7 @@ class L33tTest extends AbstractMatchTest
             'password'        => 'p4ssword',
             'pattern'         => 'p4ssword',
             'word'            => 'password',
-            'dictionary_name' => 'words',
+            'dictionary' => 'words',
             'rank'            => 3,
             'ij'              => [0, 7],
             'sub'             => ['4' => 'a']
@@ -148,7 +148,7 @@ class L33tTest extends AbstractMatchTest
             'password'        => 'p@ssw0rd',
             'pattern'         => 'p@ssw0rd',
             'word'            => 'password',
-            'dictionary_name' => 'words',
+            'dictionary' => 'words',
             'rank'            => 3,
             'ij'              => [0, 7],
             'sub'             => ['@' => 'a', '0' => 'o']
@@ -157,7 +157,7 @@ class L33tTest extends AbstractMatchTest
             'password'        => 'aSdfO{G0asDfO',
             'pattern'         => '{G0',
             'word'            => 'cgo',
-            'dictionary_name' => 'words2',
+            'dictionary' => 'words2',
             'rank'            => 1,
             'ij'              => [5, 7],
             'sub'             => ['{' => 'c', '0' => 'o']
@@ -166,10 +166,10 @@ class L33tTest extends AbstractMatchTest
 
     /**
      * @param int[] $ij
-     * @param string[] $substitutions
+     * @param string[] $sub
      */
     #[DataProvider('commonCaseProvider')]
-    public function testCommonL33tSubstitutions(string $password, string $pattern, string $word, string $dictionary, int $rank, array $ij, array $substitutions): void
+    public function testCommonL33tSubstitutions(string $password, string $pattern, string $word, string $dictionary, int $rank, array $ij, array $sub): void
     {
         $this->checkMatches(
             "matches against common l33t substitutions",
@@ -179,7 +179,7 @@ class L33tTest extends AbstractMatchTest
             [$ij],
             [
                 'l33t' => [true],
-                'sub' => [$substitutions],
+                'sub' => [$sub],
                 'matchedWord' => [$word],
                 'rank' => [$rank],
                 'dictionaryName' => [$dictionary]
