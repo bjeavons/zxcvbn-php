@@ -16,7 +16,6 @@ jobs:
       matrix:
         operating-system:
           - ubuntu-latest
-          - macos-latest
         php-versions:
           - '8.2'
           - '8.3'
