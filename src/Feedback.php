@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp;
 
-use ZxcvbnPhp\Matchers\MatchInterface;
+use ZxcvbnPhp\Matchers\BaseMatch;
 
 /**
  * Feedback - gives some user guidance based on the strength
@@ -15,19 +15,19 @@ use ZxcvbnPhp\Matchers\MatchInterface;
 class Feedback
 {
     /**
-     * @param int $score
-     * @param MatchInterface[] $sequence
-     * @return array
+     * @param array<BaseMatch> $sequence
+     *
+     * @return array<string, mixed>
      */
     public function getFeedback(int $score, array $sequence): array
     {
         // starting feedback
         if (count($sequence) === 0) {
             return [
-                'warning'     => '',
+                'warning' => '',
                 'suggestions' => [
-                    "Use a few words, avoid common phrases",
-                    "No need for symbols, digits, or uppercase letters",
+                    'Use a few words, avoid common phrases',
+                    'No need for symbols, digits, or uppercase letters',
                 ],
             ];
         }
@@ -35,7 +35,7 @@ class Feedback
         // no feedback if score is good or great.
         if ($score > 2) {
             return [
-                'warning'     => '',
+                'warning' => '',
                 'suggestions' => [],
             ];
         }

@@ -4,6 +4,9 @@
         <exclude name="Generic.Files.LineLength.TooLong" />
     </rule>
 
+    <file>src</file>
+    <file>test</file>
+
     <arg name="ignore" value="vendor/"/>
     <arg name="ignore" value="build/"/>
 </ruleset>

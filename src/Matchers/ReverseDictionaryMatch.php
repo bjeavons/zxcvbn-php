@@ -9,19 +9,19 @@ use ZxcvbnPhp\Matcher;
 class ReverseDictionaryMatch extends DictionaryMatch
 {
     /** @var bool Whether or not the matched word was reversed in the token. */
-    public $reversed = true;
+    public bool $reversed = true;
 
     /**
-     * Match occurences of reversed dictionary words in password.
+     * Match occurrences of reversed dictionary words in password.
      *
-     * @param $password
-     * @param array $userInputs
-     * @param array $rankedDictionaries
-     * @return ReverseDictionaryMatch[]
+     * @param array<string> $userInputs
+     * @param array<string, mixed> $rankedDictionaries
+     *
+     * @return array<ReverseDictionaryMatch>
      */
     public static function match(string $password, array $userInputs = [], array $rankedDictionaries = []): array
     {
-        /** @var ReverseDictionaryMatch[] $matches */
+        /** @var array<ReverseDictionaryMatch> $matches */
         $matches = parent::match(self::mbStrRev($password), $userInputs, $rankedDictionaries);
         foreach ($matches as $match) {
             $tempBegin = $match->begin;
@@ -32,23 +32,18 @@ class ReverseDictionaryMatch extends DictionaryMatch
             $match->begin = mb_strlen($password) - 1 - $match->end;
             $match->end = mb_strlen($password) - 1 - $tempBegin;
         }
-        Matcher::usortStable($matches, [Matcher::class, 'compareMatches']);
+        Matcher::usortStable($matches, Matcher::compareMatches(...));
         return $matches;
     }
 
-    protected function getRawGuesses(): float
-    {
-        return parent::getRawGuesses() * 2;
-    }
-
     /**
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{'warning': string, "suggestions": array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
         $feedback = parent::getFeedback($isSoleMatch);
 
-        if (mb_strlen($this->token) >= 4) {
+        if (mb_strlen((string) $this->token) >= 4) {
             $feedback['suggestions'][] = "Reversed words aren't much harder to guess";
         }
 
@@ -58,7 +53,11 @@ class ReverseDictionaryMatch extends DictionaryMatch
     public static function mbStrRev(string $string, ?string $encoding = null): string
     {
         if ($encoding === null) {
-            $encoding = mb_detect_encoding($string) ?: 'UTF-8';
+            $encoding = mb_detect_encoding($string);
+
+            if ($encoding === false) {
+                $encoding = 'UTF-8';
+            }
         }
         $length = mb_strlen($string, $encoding);
         $reversed = '';
@@ -67,5 +66,10 @@ class ReverseDictionaryMatch extends DictionaryMatch
         }
 
         return $reversed;
+    }
+
+    protected function getRawGuesses(): float
+    {
+        return parent::getRawGuesses() * 2;
     }
 }

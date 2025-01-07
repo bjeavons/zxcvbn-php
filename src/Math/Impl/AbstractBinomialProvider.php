@@ -11,7 +11,7 @@ abstract class AbstractBinomialProvider implements BinomialProvider
     public function binom(int $n, int $k): float
     {
         if ($k < 0 || $n < 0) {
-            throw new \DomainException("n and k must be non-negative");
+            throw new \DomainException('n and k must be non-negative');
         }
 
         if ($k > $n) {

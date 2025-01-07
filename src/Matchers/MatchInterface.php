@@ -10,11 +10,13 @@ interface MatchInterface
      * Match this password.
      *
      * @param string $password   Password to check for match
-     * @param array  $userInputs Array of values related to the user (optional)
+     * @param array<mixed> $userInputs Array of values related to the user (optional)
+     *
      * @code array('Alice Smith')
+     *
      * @endcode
      *
-     * @return array|BaseMatch[] Array of Match objects
+     * @return array<BaseMatch> Array of Match objects
      */
     public static function match(string $password, array $userInputs = []): array;
 

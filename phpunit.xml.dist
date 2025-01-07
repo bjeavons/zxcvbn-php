@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
          stopOnFailure="false"
          bootstrap="test/config/bootstrap.php">
 
+    <source>
+            <include>
+                    <directory>./src/</directory>
+            </include>
+    </source>
+
     <testsuites>
-       <testsuite name="Zxcvbn-PHP">
-         <directory suffix="Test.php">test/</directory>
-       </testsuite>
+        <testsuite name="Zxcvbn-PHP">
+            <directory suffix="Test.php">test/</directory>
+            <exclude>
+                test/Matchers/AbstractMatchTest.php
+            </exclude>
+        </testsuite>
     </testsuites>
-
-    <filter>
-      <whitelist processUncoveredFilesFromWhitelist="true">
-        <directory suffix=".php">src</directory>
-      </whitelist>
-    </filter>
-
-    <logging>
-      <log type="coverage-html" target="build/coverage"/>
-      <log type="coverage-clover" target="build/logs/clover.xml"/>
-      <log type="junit" target="build/logs/junit.xml"/>
-    </logging>
 
 </phpunit>

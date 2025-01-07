@@ -14,26 +14,39 @@ class RepeatMatch extends BaseMatch
     public const LAZY_MATCH = '/(.+?)\1+/u';
     public const ANCHORED_LAZY_MATCH = '/^(.+?)\1+$/u';
 
-    public $pattern = 'repeat';
+    public string $pattern = 'repeat';
 
-    /** @var MatchInterface[] An array of matches for the repeated section itself. */
-    public $baseMatches = [];
+    /** @var array<MatchInterface> An array of matches for the repeated section itself. */
+    public array $baseMatches = [];
 
     /** @var int The number of guesses required for the repeated section itself. */
-    public $baseGuesses;
+    public int $baseGuesses;
 
     /** @var int The number of times the repeated section is repeated. */
-    public $repeatCount;
+    public int $repeatCount;
 
     /** @var string The string that was repeated in the token. */
-    public $repeatedChar;
+    public string $repeatedChar;
+
+    /**
+     * @param array{'repeated_char'?: string, 'base_guesses'?: int, 'base_matches'?: array<mixed>, 'repeat_count'?: int} $params
+     */
+    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
+    {
+        parent::__construct($password, $begin, $end, $token);
+
+        $this->repeatedChar = $params['repeated_char'] ?? '';
+        $this->baseGuesses = isset($params['base_guesses']) ? (int) $params['base_guesses'] : 0;
+        $this->baseMatches = $params['base_matches'] ?? [];
+        $this->repeatCount = isset($params['repeat_count']) ? (int) $params['repeat_count'] : 0;
+    }
 
     /**
      * Match 3 or more repeated characters.
      *
-     * @param string $password
-     * @param array $userInputs
-     * @return RepeatMatch[]
+     * @param array<mixed> $userInputs
+     *
+     * @return array<RepeatMatch>
      */
     public static function match(string $password, array $userInputs = []): array
     {
@@ -44,14 +57,16 @@ class RepeatMatch extends BaseMatch
             $greedyMatches = self::findAll($password, self::GREEDY_MATCH, $lastIndex);
             $lazyMatches = self::findAll($password, self::LAZY_MATCH, $lastIndex);
 
-            if (empty($greedyMatches)) {
+            if ($greedyMatches === []) {
                 break;
             }
 
-            if (mb_strlen($greedyMatches[0][0]['token']) > mb_strlen($lazyMatches[0][0]['token'])) {
+            if (mb_strlen((string) $greedyMatches[0][0]['token']) > mb_strlen((string) $lazyMatches[0][0]['token'])) {
                 $match = $greedyMatches[0];
-                preg_match(self::ANCHORED_LAZY_MATCH, $match[0]['token'], $anchoredMatch);
-                $repeatedChar = $anchoredMatch[1];
+                $repeatedChar = '';
+                if (preg_match(self::ANCHORED_LAZY_MATCH, (string) $match[0]['token'], $anchoredMatch)) {
+                    $repeatedChar = $anchoredMatch[1];
+                }
             } else {
                 $match = $lazyMatches[0];
                 $repeatedChar = $match[1]['token'];
@@ -64,7 +79,7 @@ class RepeatMatch extends BaseMatch
             $baseMatches = $baseAnalysis['sequence'];
             $baseGuesses = $baseAnalysis['guesses'];
 
-            $repeatCount = mb_strlen($match[0]['token']) / mb_strlen($repeatedChar);
+            $repeatCount = mb_strlen((string) $match[0]['token']) / mb_strlen((string) $repeatedChar);
 
             $matches[] = new static(
                 $password,
@@ -73,9 +88,9 @@ class RepeatMatch extends BaseMatch
                 $match[0]['token'],
                 [
                     'repeated_char' => $repeatedChar,
-                    'base_guesses'  => $baseGuesses,
-                    'base_matches'  => $baseMatches,
-                    'repeat_count'  => $repeatCount,
+                    'base_guesses' => $baseGuesses,
+                    'base_matches' => $baseMatches,
+                    'repeat_count' => $repeatCount,
                 ]
             );
 
@@ -86,38 +101,20 @@ class RepeatMatch extends BaseMatch
     }
 
     /**
-     * @return array{'warning': string, "suggestions": string[]}
+     * @return array{'warning': string, "suggestions": array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
-        $warning = mb_strlen($this->repeatedChar) == 1
+        $warning = mb_strlen($this->repeatedChar) === 1
             ? 'Repeats like "aaa" are easy to guess'
             : 'Repeats like "abcabcabc" are only slightly harder to guess than "abc"';
 
         return [
-            'warning'     => $warning,
+            'warning' => $warning,
             'suggestions' => [
                 'Avoid repeated words and characters',
             ],
         ];
-    }
-
-    /**
-     * @param string $password
-     * @param int $begin
-     * @param int $end
-     * @param string $token
-     * @param array $params An array with keys: [repeated_char, base_guesses, base_matches, repeat_count].
-     */
-    public function __construct(string $password, int $begin, int $end, string $token, array $params = [])
-    {
-        parent::__construct($password, $begin, $end, $token);
-        if (!empty($params)) {
-            $this->repeatedChar = $params['repeated_char'] ?? '';
-            $this->baseGuesses = $params['base_guesses'] ?? 0;
-            $this->baseMatches = $params['base_matches'] ?? [];
-            $this->repeatCount = $params['repeat_count'] ?? 0;
-        }
     }
 
     protected function getRawGuesses(): float

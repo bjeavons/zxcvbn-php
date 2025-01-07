@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace ZxcvbnPhp\Math;
 
-use ZxcvbnPhp\Math\Impl\BinomialProviderPhp73Gmp;
 use ZxcvbnPhp\Math\Impl\BinomialProviderFloat64;
 use ZxcvbnPhp\Math\Impl\BinomialProviderInt64;
+use ZxcvbnPhp\Math\Impl\BinomialProviderPhp73Gmp;
 
 class Binomial
 {
-    private static $provider = null;
+    private static ?BinomialProvider $provider = null;
 
     private function __construct()
     {
-        throw new \LogicException(__CLASS__ . " is static");
+        throw new \LogicException(self::class . ' is static');
     }
 
     /**
      * Calculate binomial coefficient (n choose k).
-     *
-     * @param int $n
-     * @param int $k
-     * @return float
      */
     public static function binom(int $n, int $k): float
     {
@@ -39,15 +35,15 @@ class Binomial
     }
 
     /**
-     * @return string[]
+     * @return array<class-string>
      */
     public static function getUsableProviderClasses(): array
     {
         // In order of priority.  The first provider with a value of true will be used.
         $possibleProviderClasses = [
             BinomialProviderPhp73Gmp::class => function_exists('gmp_binomial'),
-            BinomialProviderInt64::class    => PHP_INT_SIZE >= 8,
-            BinomialProviderFloat64::class  => PHP_FLOAT_DIG >= 15,
+            BinomialProviderInt64::class => PHP_INT_SIZE >= 8,
+            BinomialProviderFloat64::class => PHP_FLOAT_DIG >= 15,
         ];
 
         $possibleProviderClasses = array_filter($possibleProviderClasses);
@@ -59,12 +55,18 @@ class Binomial
     {
         $providerClasses = self::getUsableProviderClasses();
 
-        if (!$providerClasses) {
-            throw new \LogicException("No valid providers");
+        if ($providerClasses === []) {
+            throw new \LogicException('No valid providers');
         }
 
         $bestProviderClass = reset($providerClasses);
 
-        return new $bestProviderClass();
+        $provider = new $bestProviderClass();
+
+        if (! $provider instanceof BinomialProvider) {
+            throw new \LogicException('Inval provider class: ' . $bestProviderClass);
+        }
+
+        return $provider;
     }
 }

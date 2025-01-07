@@ -1,45 +1,77 @@
 name: CI
 
-on: push
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: "0 6 * * 3"
+  pull_request:
+    branches: [ master ]
 
 jobs:
   all:
     runs-on: ${{ matrix.operating-system }}
     strategy:
+      fail-fast: false
       matrix:
         operating-system:
           - ubuntu-latest
-          # - windows-latest # Disabled - apparently checkouts have \r\n which breaks phpcs
-          - macos-latest
         php-versions:
-          - '7.4'
-          - '8.0'
-          - '8.1'
           - '8.2'
           - '8.3'
           - '8.4'
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
         extensions: mbstring, intl
-        ini-values: post_max_size=256M, short_open_tag=On
-        coverage: xdebug
-        tools: php-cs-fixer, phpunit:7
+        coverage: pcov
+
+    - name: Get Composer Cache Directory 2
+      id: composer-cache
+      run: |
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v4
+      id: actions-cache
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Cache PHP dependencies
+      uses: actions/cache@v4
+      id: vendor-cache
+      with:
+        path: vendor
+        key: ${{ runner.os }}-build-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
 
     - name: Composer Install
       run: composer install --no-progress
 
     - name: Code style checks
-      run: ./vendor/bin/phpcs .
+      run: ./vendor/bin/phpcs
+
+    - name: PHPStan code analysis
+      run: php vendor/bin/phpstan analyze
+
+    - name: PHPinsights code analysis
+      run: php vendor/bin/phpinsights analyse --no-interaction || true
+
+    - name: Execute Rector
+      run: vendor/bin/rector --dry-run
 
     - name: Unit tests
-      run: ./vendor/bin/phpunit
+      run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
 
-    - name: PHPStan
-      run: ./vendor/bin/phpstan analyze
+    - name: Send code coverage report to Codecov.io
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: coverage.xml
