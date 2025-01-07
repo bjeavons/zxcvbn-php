@@ -18,16 +18,17 @@ abstract class AbstractMatchTest extends TestCase
      *
      * @param  array<int, string>  $prefixes
      * @param  array<int, string>  $suffixes
+     *
      * @return array<int, mixed> a list of triplets [variant, i, j] where [i,j] is the start/end of the pattern, inclusive
      */
     protected function generatePasswords(string $pattern, array $prefixes, array $suffixes): array
     {
         $output = [];
 
-        if (!in_array('', $prefixes)) {
+        if (! in_array('', $prefixes)) {
             array_unshift($prefixes, '');
         }
-        if (!in_array('', $suffixes)) {
+        if (! in_array('', $suffixes)) {
             array_unshift($suffixes, '');
         }
 
@@ -39,7 +40,7 @@ abstract class AbstractMatchTest extends TestCase
                 $output[] = [
                     $prefix . $pattern . $suffix,
                     $i,
-                    $j
+                    $j,
                 ];
             }
         }
@@ -72,7 +73,7 @@ abstract class AbstractMatchTest extends TestCase
         $this->assertCount(
             count($patterns),
             $matches,
-            $prefix . ": matches.length == " . count($patterns)
+            $prefix . ': matches.length == ' . count($patterns)
         );
 
         foreach ($patterns as $k => $pattern) {
@@ -84,17 +85,17 @@ abstract class AbstractMatchTest extends TestCase
             $this->assertSame(
                 $patternName,
                 $match->pattern,
-                "$prefix matches[$k].pattern == '$patternName'"
+                "{$prefix} matches[{$k}].pattern == '{$patternName}'"
             );
             $this->assertSame(
                 [$i, $j],
                 [$match->begin, $match->end],
-                "$prefix matches[$k] should have [i, j] of [$i, $j]"
+                "{$prefix} matches[{$k}] should have [i, j] of [{$i}, {$j}]"
             );
             $this->assertSame(
                 $pattern,
                 $match->token,
-                "$prefix matches[$k].token == '$pattern'"
+                "{$prefix} matches[{$k}].token == '{$pattern}'"
             );
 
             foreach ($props as $propName => $propList) {
@@ -103,7 +104,7 @@ abstract class AbstractMatchTest extends TestCase
                 $this->assertSame(
                     $propList[$k],
                     $match->$propName,
-                    "$prefix matches[$k].$propName == $propMessage"
+                    "{$prefix} matches[{$k}].{$propName} == {$propMessage}"
                 );
             }
         }

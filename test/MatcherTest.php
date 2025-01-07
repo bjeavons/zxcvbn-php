@@ -42,7 +42,7 @@ class MatcherTest extends TestCase
             ['dictionary', [ 0,  6]],
             ['dictionary', [ 7, 15]],
             ['date',       [16, 23]],
-            ['repeat',     [24, 27]]
+            ['repeat',     [24, 27]],
         ];
 
         $matches = $matcher->getMatches($password);
@@ -53,7 +53,7 @@ class MatcherTest extends TestCase
             }
         }
 
-        $this->assertEmpty($expectedMatches, "matches multiple patterns");
+        $this->assertEmpty($expectedMatches, 'matches multiple patterns');
     }
 
     /**
@@ -65,8 +65,8 @@ class MatcherTest extends TestCase
         $matcher = new Matcher();
         $matches = $matcher->getMatches('_wQbgL491', ['PJnD', 'WQBG', 'ZhwZ']);
 
-        $this->assertInstanceOf(DictionaryMatch::class, $matches[0], "user input match is correct class");
-        $this->assertSame('wQbg', $matches[0]->token, "user input match has correct token");
+        $this->assertInstanceOf(DictionaryMatch::class, $matches[0], 'user input match is correct class');
+        $this->assertSame('wQbg', $matches[0]->token, 'user input match has correct token');
     }
 
     public function testAddMatcherWillThrowException(): void

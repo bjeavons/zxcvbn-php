@@ -22,7 +22,7 @@ class MockL33tMatch extends L33tMatch
             ],
             'words2' => [
                 'cgo' => 1,
-            ]
+            ],
         ];
     }
 

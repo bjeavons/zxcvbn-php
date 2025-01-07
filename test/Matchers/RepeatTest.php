@@ -8,7 +8,6 @@ use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ZxcvbnPhp\Matcher;
-use ZxcvbnPhp\Matchers\Bruteforce;
 use ZxcvbnPhp\Matchers\RepeatMatch;
 use ZxcvbnPhp\Matchers\SequenceMatch;
 use ZxcvbnPhp\Scorer;
@@ -21,7 +20,7 @@ class RepeatTest extends AbstractMatchTest
         foreach (['', '#'] as $password) {
             $this->assertEmpty(
                 RepeatMatch::match($password),
-                "doesn't match length-" . strlen($password) . " repeat patterns"
+                "doesn't match length-" . strlen($password) . ' repeat patterns'
             );
         }
     }
@@ -34,7 +33,7 @@ class RepeatTest extends AbstractMatchTest
 
         foreach ($this->generatePasswords($pattern, $prefixes, $suffixes) as [$password, $i, $j]) {
             $this->checkMatches(
-                "matches embedded repeat patterns",
+                'matches embedded repeat patterns',
                 RepeatMatch::match($password),
                 'repeat',
                 [$pattern],
@@ -54,14 +53,14 @@ class RepeatTest extends AbstractMatchTest
                 $pattern = str_repeat($chr, $length);
 
                 $this->checkMatches(
-                    "matches repeats with base character '$chr'",
+                    "matches repeats with base character '{$chr}'",
                     RepeatMatch::match($pattern),
                     'repeat',
                     [$pattern],
                     [[0, strlen($pattern) - 1]],
                     [
                         'repeatedChar' => [$chr],
-                        'repeatCount' => [$length]
+                        'repeatCount' => [$length],
                     ]
                 );
             }
@@ -73,7 +72,7 @@ class RepeatTest extends AbstractMatchTest
         $str = 'BBB1111aaaaa@@@@@@';
         $patterns = ['BBB','1111','aaaaa','@@@@@@'];
         $this->checkMatches(
-            "matches multiple adjacent repeats",
+            'matches multiple adjacent repeats',
             RepeatMatch::match($str),
             'repeat',
             $patterns,
@@ -162,7 +161,7 @@ class RepeatTest extends AbstractMatchTest
             [
                 'repeatedChar' => ['abc'],
                 'repeatCount' => [2],
-                'baseGuesses' => [13]
+                'baseGuesses' => [13],
             ]
         );
     }
@@ -179,7 +178,7 @@ class RepeatTest extends AbstractMatchTest
             [[0, 2]],
             [
                 'repeatedChar' => ['🙂'],
-                'repeatCount' => [3]
+                'repeatCount' => [3],
             ]
         );
     }
@@ -196,7 +195,7 @@ class RepeatTest extends AbstractMatchTest
             [[7, 8]],
             [
                 'repeatedChar' => ['l'],
-                'repeatCount' => [2]
+                'repeatCount' => [2],
             ]
         );
     }
@@ -236,7 +235,7 @@ class RepeatTest extends AbstractMatchTest
             [[2, 3], [7, 8]],
             [
                 'repeatedChar' => ['o', 'o'],
-                'repeatCount' => [2, 2]
+                'repeatCount' => [2, 2],
             ]
         );
     }
@@ -250,12 +249,6 @@ class RepeatTest extends AbstractMatchTest
         yield [ 'batterystaplebatterystaplebatterystaple', 'batterystaple', 3,  85277994];
     }
 
-    /**
-     * @param string $token
-     * @param string $repeatedChar
-     * @param int    $repeatCount
-     * @param float  $expectedGuesses
-     */
     #[DataProvider('guessesProvider')]
     public function testGuesses(string $token, string $repeatedChar, int $repeatCount, float $expectedGuesses): void
     {
@@ -285,12 +278,12 @@ class RepeatTest extends AbstractMatchTest
         $this->assertSame(
             'Repeats like "aaa" are easy to guess',
             $feedback['warning'],
-            "one repeated character gives correct warning"
+            'one repeated character gives correct warning'
         );
         $this->assertContains(
             'Avoid repeated words and characters',
             $feedback['suggestions'],
-            "one repeated character gives correct suggestion"
+            'one repeated character gives correct suggestion'
         );
     }
 
@@ -306,12 +299,12 @@ class RepeatTest extends AbstractMatchTest
         $this->assertSame(
             'Repeats like "abcabcabc" are only slightly harder to guess than "abc"',
             $feedback['warning'],
-            "multiple repeated characters gives correct warning"
+            'multiple repeated characters gives correct warning'
         );
         $this->assertContains(
             'Avoid repeated words and characters',
             $feedback['suggestions'],
-            "multiple repeated characters gives correct suggestion"
+            'multiple repeated characters gives correct suggestion'
         );
     }
 }

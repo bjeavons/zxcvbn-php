@@ -6,7 +6,6 @@ namespace ZxcvbnPhp\Test\Matchers;
 
 use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ZxcvbnPhp\Matchers\BaseMatch;
 use ZxcvbnPhp\Matchers\SpatialMatch;
 use ZxcvbnPhp\Math\Binomial;
 
@@ -45,14 +44,14 @@ class SpatialTest extends AbstractMatchTest
 
     public function testSurroundedPattern(): void
     {
-        $pattern = "6tfGHJ";
+        $pattern = '6tfGHJ';
         $password = "rz!{$pattern}%z";
 
         // for testing, make a subgraph that contains a single keyboard
         $graphs = ['qwerty' => SpatialMatch::getAdjacencyGraphs()['qwerty']];
 
         $this->checkMatches(
-            "matches against spatial patterns surrounded by non-spatial patterns",
+            'matches against spatial patterns surrounded by non-spatial patterns',
             SpatialMatch::match($password, [], $graphs),
             'spatial',
             [$pattern],
@@ -86,19 +85,13 @@ class SpatialTest extends AbstractMatchTest
         yield [';qoaOQ:Aoq;a', 'dvorak',    11, 4];
     }
 
-    /**
-     * @param string $password
-     * @param string $keyboard
-     * @param int    $turns
-     * @param int    $shifts
-     */
     #[DataProvider('spatialDataProvider')]
     public function testSpatialPatterns(string $password, string $keyboard, int $turns, int $shifts): void
     {
         $graphs = [$keyboard => SpatialMatch::getAdjacencyGraphs()[$keyboard]];
 
         $this->checkMatches(
-            "matches '$password' as a $keyboard pattern",
+            "matches '{$password}' as a {$keyboard} pattern",
             SpatialMatch::match($password, [], $graphs),
             'spatial',
             [$password],
@@ -113,9 +106,9 @@ class SpatialTest extends AbstractMatchTest
 
     public function testShiftedCountForMultipleMatches(): void
     {
-        $password = "!QAZ1qaz";
+        $password = '!QAZ1qaz';
         $this->checkMatches(
-            "shifted count is correct for two matches in a row",
+            'shifted count is correct for two matches in a row',
             SpatialMatch::match($password),
             'spatial',
             ['!QAZ', '1qaz'],
@@ -126,16 +119,6 @@ class SpatialTest extends AbstractMatchTest
                 'shiftedCount' => [4, 0],
             ]
         );
-    }
-
-    protected function getBaseGuessCount(string $token): float
-    {
-        // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
-        // - 1 term because: not counting spatial patterns of length 1
-        // eg for length==6, multiplier is 5 for needing to try len2,len3,..,len6
-        return SpatialMatch::KEYBOARD_STARTING_POSITION
-            * SpatialMatch::KEYBOARD_AVERAGE_DEGREES
-            * (strlen($token) - 1);
     }
 
     public function testGuessesBasic(): void
@@ -150,7 +133,7 @@ class SpatialTest extends AbstractMatchTest
         $this->assertSame(
             $this->getBaseGuessCount($token),
             $match->getGuesses(),
-            "with no turns or shifts, guesses is starts * degree * (len-1)"
+            'with no turns or shifts, guesses is starts * degree * (len-1)'
         );
     }
 
@@ -166,7 +149,7 @@ class SpatialTest extends AbstractMatchTest
         $this->assertSame(
             $this->getBaseGuessCount($token) * (Binomial::binom(6, 2) + Binomial::binom(6, 1)),
             $match->getGuesses(),
-            "guesses is added for shifted keys, similar to capitals in dictionary matching"
+            'guesses is added for shifted keys, similar to capitals in dictionary matching'
         );
     }
 
@@ -182,7 +165,7 @@ class SpatialTest extends AbstractMatchTest
         $this->assertSame(
             $this->getBaseGuessCount($token) * 2,
             $match->getGuesses(),
-            "when everything is shifted, guesses are double"
+            'when everything is shifted, guesses are double'
         );
     }
 
@@ -214,7 +197,7 @@ class SpatialTest extends AbstractMatchTest
             $expected,
             $actual,
             1.0,
-            "spatial guesses accounts for turn positions, directions and starting keys"
+            'spatial guesses accounts for turn positions, directions and starting keys'
         );
     }
 
@@ -231,12 +214,12 @@ class SpatialTest extends AbstractMatchTest
         $this->assertSame(
             'Straight rows of keys are easy to guess',
             $feedback['warning'],
-            "spatial match in straight line gives correct warning"
+            'spatial match in straight line gives correct warning'
         );
         $this->assertContains(
             'Use a longer keyboard pattern with more turns',
             $feedback['suggestions'],
-            "spatial match in straight line gives correct suggestion"
+            'spatial match in straight line gives correct suggestion'
         );
     }
 
@@ -253,12 +236,22 @@ class SpatialTest extends AbstractMatchTest
         $this->assertSame(
             'Short keyboard patterns are easy to guess',
             $feedback['warning'],
-            "spatial match with turns gives correct warning"
+            'spatial match with turns gives correct warning'
         );
         $this->assertContains(
             'Use a longer keyboard pattern with more turns',
             $feedback['suggestions'],
-            "spatial match with turns gives correct suggestion"
+            'spatial match with turns gives correct suggestion'
         );
+    }
+
+    protected function getBaseGuessCount(string $token): float
+    {
+        // KEYBOARD_STARTING_POSITIONS * KEYBOARD_AVERAGE_DEGREE * (length - 1)
+        // - 1 term because: not counting spatial patterns of length 1
+        // eg for length==6, multiplier is 5 for needing to try len2,len3,..,len6
+        return SpatialMatch::KEYBOARD_STARTING_POSITION
+            * SpatialMatch::KEYBOARD_AVERAGE_DEGREES
+            * (strlen($token) - 1);
     }
 }

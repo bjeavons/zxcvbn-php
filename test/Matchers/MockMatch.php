@@ -15,9 +15,11 @@ class MockMatch extends BaseMatch
 
     /**
      * Get feedback to a user based on the match.
+     *
      * @param  bool $isSoleMatch
      *   Whether this is the only match in the password
-     * @return array{warning: string, suggestions: string[]}
+     *
+     * @return array{warning: string, suggestions: array<string>}
      */
     public function getFeedback(bool $isSoleMatch): array
     {
@@ -39,9 +41,12 @@ class MockMatch extends BaseMatch
      *   Password to check for match.
      * @param array<int, string> $userInputs
      *   Array of values related to the user (optional).
+     *
      * @code
      *   array('Alice Smith')
+     *
      * @endcode
+     *
      * @return array<int, mixed>
      *   Array of Match objects
      */

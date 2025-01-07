@@ -13,7 +13,7 @@ class BruteforceTest extends AbstractMatchTest
         $password = 'uH2nvQbugW';
 
         $this->checkMatches(
-            "matches entire string",
+            'matches entire string',
             Bruteforce::match($password),
             'bruteforce',
             [$password],
@@ -27,7 +27,7 @@ class BruteforceTest extends AbstractMatchTest
         $password = '中华人民共和国';
 
         $this->checkMatches(
-            "matches entire string with multibyte characters",
+            'matches entire string with multibyte characters',
             Bruteforce::match($password),
             'bruteforce',
             [$password],
@@ -47,6 +47,6 @@ class BruteforceTest extends AbstractMatchTest
     {
         $token = '🙂'; // smiley face emoji
         $match = new Bruteforce($token, 0, 1, $token);
-        $this->assertEqualsWithDelta(11.0, $match->getGuesses(), PHP_FLOAT_EPSILON, "multibyte character treated as one character");
+        $this->assertEqualsWithDelta(11.0, $match->getGuesses(), PHP_FLOAT_EPSILON, 'multibyte character treated as one character');
     }
 }

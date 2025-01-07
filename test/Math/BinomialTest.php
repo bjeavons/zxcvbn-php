@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ZxcvbnPhp\Test\Math;
 
 use Iterator;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ZxcvbnPhp\Math\Binomial;
@@ -43,11 +42,6 @@ class BinomialTest extends TestCase
         $this->assertInstanceOf($provider, Binomial::getProvider());
     }
 
-    /**
-     * @param int   $n
-     * @param int   $k
-     * @param float $expected
-     */
     #[DataProvider('binomialDataProvider')]
     public function testBinomialCoefficient(int $n, int $k, float $expected): void
     {
@@ -56,11 +50,11 @@ class BinomialTest extends TestCase
             $this->assertInstanceOf(BinomialProvider::class, $provider);
 
             $value = $provider->binom($n, $k);
-            $this->assertSame($expected, $value, "$providerClass returns expected result for ($n, $k)");
+            $this->assertSame($expected, $value, "{$providerClass} returns expected result for ({$n}, {$k})");
 
             if ($k <= $n) {  // Behavior is undefined for $k > n; don't test that
                 $flippedValue = $provider->binom($n, $n - $k);
-                $this->assertSame($value, $flippedValue, "$providerClass is symmetrical");
+                $this->assertSame($value, $flippedValue, "{$providerClass} is symmetrical");
             }
         }
     }
